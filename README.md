@@ -14,23 +14,35 @@ You need two things installed on your computer:
 2.  **Python**: [Download here](https://www.python.org/downloads/) (Download the latest version). 
     *   **CRITICAL**: During Python installation, make sure to check the box that says **"Add Python to PATH"**.
 
-### 2. Prepare the Project
-1. Open your **Terminal** (Mac) or **Command Prompt** (Windows).
-2. Change into the project directory (type `cd ` and drag the folder into the terminal).
-3. Type the following command and press **Enter**:
+### 2. Prepare and Start the Project
+
+**Quick Start (Copy & Paste):**
+If you have Git and Node.js installed, just copy and paste this single line into your terminal (Mac) or Command Prompt (Windows):
+
+```bash
+git clone https://github.com/Danncode10/Marriage-License-System.git && cd Marriage-License-System && npm run install-all && npm run start-portal
+```
+
+---
+
+**Manual Steps:**
+1. Open your **Terminal** or **Command Prompt**.
+2. Clone the project:
+    ```bash
+    git clone https://github.com/Danncode10/Marriage-License-System.git
+    ```
+3. Enter the folder:
+    ```bash
+    cd Marriage-License-System
+    ```
+4. Install everything:
     ```bash
     npm run install-all
     ```
-    *This will automatically install all requirements for both the website and the Excel script.*
-
-### 3. Start the Portal
-To run the system:
-1. Open your terminal in the **root** project folder.
-2. Type:
+5. Start the portal:
     ```bash
     npm run start-portal
     ```
-3. Open your browser and go to: `http://localhost:3000`
 
 Every time you want to use the portal, simply repeat these steps.
 
