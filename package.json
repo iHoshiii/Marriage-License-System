@@ -1,0 +1,8 @@
+{
+    "name": "marriage-portal-root",
+    "version": "1.0.0",
+    "scripts": {
+        "install-all": "cd ui && npm install && pip install openpyxl pandas numpy",
+        "start-portal": "cd ui && npm run dev"
+    }
+}
