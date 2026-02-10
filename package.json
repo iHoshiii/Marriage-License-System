@@ -5,5 +5,8 @@
         "setup-env": "echo NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co > ui/.env.local && echo NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy >> ui/.env.local",
         "install-all": "npm run setup-env && cd ui && npm install && pip install openpyxl pandas numpy",
         "start-portal": "cd ui && npm run dev"
+    },
+    "dependencies": {
+        "select-philippines-address": "^1.0.6"
     }
 }
