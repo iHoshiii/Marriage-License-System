@@ -12,7 +12,6 @@ import { barangays, cities } from "select-philippines-address";
 
 const NUEVA_VIZCAYA_CODE = "0250";
 
-// Common religions in the Philippines for the quick-select list
 const RELIGIONS = [
     "Roman Catholic",
     "Islam",
@@ -53,16 +52,9 @@ export default function MarriageForm() {
     const [gBrgyOptions, setGBrgyOptions] = useState<any[]>([]);
     const [bBrgyOptions, setBBrgyOptions] = useState<any[]>([]);
 
-    // Birth Place Options
-    const [gBirthBrgyOptions, setGBirthBrgyOptions] = useState<any[]>([]);
-    const [bBirthBrgyOptions, setBBirthBrgyOptions] = useState<any[]>([]);
-
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [applicationCode, setApplicationCode] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const [gSameAsAddress, setGSameAsAddress] = useState(true);
-    const [bSameAsAddress, setBSameAsAddress] = useState(true);
 
     useEffect(() => {
         cities(NUEVA_VIZCAYA_CODE).then((res: any) => setTownOptions(res));
@@ -87,38 +79,7 @@ export default function MarriageForm() {
         const res = await barangays(cityCode);
         if (prefix === 'g') setGBrgyOptions(res);
         else setBBrgyOptions(res);
-
-        // If "same as address" is active, update birth place too (clear barangay part)
-        if ((prefix === 'g' && gSameAsAddress) || (prefix === 'b' && bSameAsAddress)) {
-            const formattedPlace = `${cityName}, NUEVA VIZCAYA`;
-            setFormData(prev => ({ ...prev, [`${prefix}BirthPlace`]: formattedPlace }));
-        }
     };
-
-    const handleBrgyChange = (prefix: 'g' | 'b', brgyName: string) => {
-        setFormData(prev => {
-            const newData = { ...prev, [`${prefix}Brgy`]: brgyName };
-
-            // If "same as address" is active, update birth place with the new barangay
-            const isSame = prefix === 'g' ? gSameAsAddress : bSameAsAddress;
-            if (isSame) {
-                const town = newData[`${prefix}Town`];
-                const prov = newData[`${prefix}Prov`];
-                newData[`${prefix}BirthPlace`] = `${brgyName}, ${town}, ${prov}`;
-            }
-
-            return newData;
-        });
-    };
-
-    const handleBirthTownChange = async (prefix: 'g' | 'b', cityCode: string, cityName: string) => {
-        const res = await barangays(cityCode);
-        if (prefix === 'g') setGBirthBrgyOptions(res);
-        else setBBirthBrgyOptions(res);
-
-        setFormData(prev => ({ ...prev, [`${prefix}BirthPlace`]: `${cityName}, NUEVA VIZCAYA` }));
-    };
-
 
     const generateExcel = async () => {
         setLoading(true);
@@ -148,7 +109,6 @@ export default function MarriageForm() {
 
     return (
         <div className="min-h-screen bg-slate-50/50 pb-20">
-            {/* Global Datalist for Religion - Put it once here so both inputs can use it */}
             <datalist id="religion-list">
                 {RELIGIONS.map((rel) => (
                     <option key={rel} value={rel} />
@@ -205,17 +165,19 @@ export default function MarriageForm() {
                                             <Field label="Birthday"><Input type="date" value={formData.gBday} onChange={e => { const b = e.target.value; setFormData({ ...formData, gBday: b, gAge: calculateAge(b) }); }} /></Field>
                                             <Field label="Age"><Input type="number" value={formData.gAge || ""} onChange={e => setFormData({ ...formData, gAge: parseInt(e.target.value) || 0 })} /></Field>
                                             <Field label="Religion" className="col-span-2 md:col-span-1">
-                                                <Input
-                                                    list="religion-list"
-                                                    placeholder="Select or type..."
-                                                    value={formData.gReligion}
-                                                    onChange={e => setFormData({ ...formData, gReligion: e.target.value })}
+                                                <Input 
+                                                    list="religion-list" 
+                                                    placeholder="Select or type..." 
+                                                    value={formData.gReligion} 
+                                                    onChange={e => setFormData({ ...formData, gReligion: e.target.value })} 
                                                 />
                                             </Field>
                                         </div>
+                                        <Field label="Place of Birth"><Input placeholder="Solano, Nueva Vizcaya" value={formData.gBirthPlace} onChange={e => setFormData({ ...formData, gBirthPlace: e.target.value })} /></Field>
+                                        
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <Field label="Town/Municipality">
-                                                <select
+                                                <select 
                                                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                     value={townOptions.find(t => t.city_name === formData.gTown)?.city_code || ""}
                                                     onChange={(e) => {
@@ -223,88 +185,21 @@ export default function MarriageForm() {
                                                         handleTownChange('g', e.target.value, town?.city_name || "");
                                                     }}
                                                 >
-                                                    <option value="">Select Town</option>
+                                                    <option value="" disabled hidden>Select Town</option>
                                                     {townOptions.map(t => <option key={t.city_code} value={t.city_code}>{t.city_name}</option>)}
                                                 </select>
                                             </Field>
                                             <Field label="Barangay">
-                                                <select
+                                                <select 
                                                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
                                                     value={formData.gBrgy}
                                                     disabled={!gBrgyOptions.length}
-                                                    onChange={(e) => handleBrgyChange('g', e.target.value)}
+                                                    onChange={(e) => setFormData({ ...formData, gBrgy: e.target.value })}
                                                 >
-                                                    <option value="">Select Barangay</option>
+                                                    <option value="" disabled hidden>Select Barangay</option>
                                                     {gBrgyOptions.map(b => <option key={b.brgy_code} value={b.brgy_name}>{b.brgy_name}</option>)}
                                                 </select>
                                             </Field>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <label className="text-xs font-bold text-slate-600 ml-1 uppercase tracking-tight">Place of Birth</label>
-                                            </div>
-
-                                            <div className="flex bg-slate-100/80 p-1 rounded-xl w-full border border-slate-200/50">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setGSameAsAddress(true);
-                                                        const place = `${formData.gBrgy ? formData.gBrgy + ', ' : ''}${formData.gTown}, ${formData.gProv}`;
-                                                        setFormData(prev => ({ ...prev, gBirthPlace: place }));
-                                                    }}
-                                                    className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center gap-2 ${gSameAsAddress ? 'bg-white shadow-md text-primary' : 'text-slate-400 hover:text-slate-600'}`}
-                                                >
-                                                    <div className={`w-2 h-2 rounded-full ${gSameAsAddress ? 'bg-primary' : 'bg-slate-300'}`} />
-                                                    SAME AS ADDRESS
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setGSameAsAddress(false)}
-                                                    className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center gap-2 ${!gSameAsAddress ? 'bg-white shadow-md text-primary' : 'text-slate-400 hover:text-slate-600'}`}
-                                                >
-                                                    <div className={`w-2 h-2 rounded-full ${!gSameAsAddress ? 'bg-primary' : 'bg-slate-300'}`} />
-                                                    DIFFERENT ADDRESS
-                                                </button>
-                                            </div>
-
-                                            {gSameAsAddress ? (
-                                                <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 animate-in fade-in zoom-in-95 duration-300">
-                                                    <p className="text-xs font-medium text-primary/70 mb-1 flex items-center gap-2">
-                                                        <span className="w-1 h-1 bg-primary rounded-full" />
-                                                        Current Selection
-                                                    </p>
-                                                    <p className="text-sm font-bold text-slate-700">{formData.gBirthPlace || "Select address first..."}</p>
-                                                </div>
-                                            ) : (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-1">
-                                                    <Field label="Birth Town">
-                                                        <select
-                                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                                            onChange={(e) => {
-                                                                const town = townOptions.find(t => t.city_code === e.target.value);
-                                                                handleBirthTownChange('g', e.target.value, town?.city_name || "");
-                                                            }}
-                                                        >
-                                                            <option value="">Select Town</option>
-                                                            {townOptions.map(t => <option key={t.city_code} value={t.city_code}>{t.city_name}</option>)}
-                                                        </select>
-                                                    </Field>
-                                                    <Field label="Birth Barangay">
-                                                        <select
-                                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-                                                            disabled={!gBirthBrgyOptions.length}
-                                                            onChange={(e) => {
-                                                                const townName = formData.gBirthPlace.split(',').pop()?.trim() || formData.gTown;
-                                                                setFormData({ ...formData, gBirthPlace: `${e.target.value}, ${townName}, NUEVA VIZCAYA` });
-                                                            }}
-                                                        >
-                                                            <option value="">Select Barangay</option>
-                                                            {gBirthBrgyOptions.map(b => <option key={b.brgy_code} value={b.brgy_name}>{b.brgy_name}</option>)}
-                                                        </select>
-                                                    </Field>
-                                                </div>
-                                            )}
                                         </div>
 
                                         <FamilySubSection prefix="g" person="Groom" data={formData} setData={setFormData} />
@@ -322,17 +217,19 @@ export default function MarriageForm() {
                                             <Field label="Birthday"><Input type="date" value={formData.bBday} onChange={e => { const b = e.target.value; setFormData({ ...formData, bBday: b, bAge: calculateAge(b) }); }} /></Field>
                                             <Field label="Age"><Input type="number" value={formData.bAge || ""} onChange={e => setFormData({ ...formData, bAge: parseInt(e.target.value) || 0 })} /></Field>
                                             <Field label="Religion" className="col-span-2 md:col-span-1">
-                                                <Input
-                                                    list="religion-list"
-                                                    placeholder="Select or type..."
-                                                    value={formData.bReligion}
-                                                    onChange={e => setFormData({ ...formData, bReligion: e.target.value })}
+                                                <Input 
+                                                    list="religion-list" 
+                                                    placeholder="Select or type..." 
+                                                    value={formData.bReligion} 
+                                                    onChange={e => setFormData({ ...formData, bReligion: e.target.value })} 
                                                 />
                                             </Field>
                                         </div>
+                                        <Field label="Place of Birth"><Input placeholder="Solano, Nueva Vizcaya" value={formData.bBirthPlace} onChange={e => setFormData({ ...formData, bBirthPlace: e.target.value })} /></Field>
+                                        
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <Field label="Town/Municipality">
-                                                <select
+                                                <select 
                                                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                                     value={townOptions.find(t => t.city_name === formData.bTown)?.city_code || ""}
                                                     onChange={(e) => {
@@ -340,88 +237,21 @@ export default function MarriageForm() {
                                                         handleTownChange('b', e.target.value, town?.city_name || "");
                                                     }}
                                                 >
-                                                    <option value="">Select Town</option>
+                                                    <option value="" disabled hidden>Select Town</option>
                                                     {townOptions.map(t => <option key={t.city_code} value={t.city_code}>{t.city_name}</option>)}
                                                 </select>
                                             </Field>
                                             <Field label="Barangay">
-                                                <select
+                                                <select 
                                                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
                                                     value={formData.bBrgy}
                                                     disabled={!bBrgyOptions.length}
-                                                    onChange={(e) => handleBrgyChange('b', e.target.value)}
+                                                    onChange={(e) => setFormData({ ...formData, bBrgy: e.target.value })}
                                                 >
-                                                    <option value="">Select Barangay</option>
+                                                    <option value="" disabled hidden>Select Barangay</option>
                                                     {bBrgyOptions.map(b => <option key={b.brgy_code} value={b.brgy_name}>{b.brgy_name}</option>)}
                                                 </select>
                                             </Field>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <label className="text-xs font-bold text-slate-600 ml-1 uppercase tracking-tight">Place of Birth</label>
-                                            </div>
-
-                                            <div className="flex bg-slate-100/80 p-1 rounded-xl w-full border border-slate-200/50">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setBSameAsAddress(true);
-                                                        const place = `${formData.bBrgy ? formData.bBrgy + ', ' : ''}${formData.bTown}, ${formData.bProv}`;
-                                                        setFormData(prev => ({ ...prev, bBirthPlace: place }));
-                                                    }}
-                                                    className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center gap-2 ${bSameAsAddress ? 'bg-white shadow-md text-primary' : 'text-slate-400 hover:text-slate-600'}`}
-                                                >
-                                                    <div className={`w-2 h-2 rounded-full ${bSameAsAddress ? 'bg-primary' : 'bg-slate-300'}`} />
-                                                    SAME AS ADDRESS
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setBSameAsAddress(false)}
-                                                    className={`flex-1 py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center gap-2 ${!bSameAsAddress ? 'bg-white shadow-md text-primary' : 'text-slate-400 hover:text-slate-600'}`}
-                                                >
-                                                    <div className={`w-2 h-2 rounded-full ${!bSameAsAddress ? 'bg-primary' : 'bg-slate-300'}`} />
-                                                    DIFFERENT ADDRESS
-                                                </button>
-                                            </div>
-
-                                            {bSameAsAddress ? (
-                                                <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 animate-in fade-in zoom-in-95 duration-300">
-                                                    <p className="text-xs font-medium text-primary/70 mb-1 flex items-center gap-2">
-                                                        <span className="w-1 h-1 bg-primary rounded-full" />
-                                                        Current Selection
-                                                    </p>
-                                                    <p className="text-sm font-bold text-slate-700">{formData.bBirthPlace || "Select address first..."}</p>
-                                                </div>
-                                            ) : (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-1">
-                                                    <Field label="Birth Town">
-                                                        <select
-                                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                                            onChange={(e) => {
-                                                                const town = townOptions.find(t => t.city_code === e.target.value);
-                                                                handleBirthTownChange('b', e.target.value, town?.city_name || "");
-                                                            }}
-                                                        >
-                                                            <option value="">Select Town</option>
-                                                            {townOptions.map(t => <option key={t.city_code} value={t.city_code}>{t.city_name}</option>)}
-                                                        </select>
-                                                    </Field>
-                                                    <Field label="Birth Barangay">
-                                                        <select
-                                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-                                                            disabled={!bBirthBrgyOptions.length}
-                                                            onChange={(e) => {
-                                                                const townName = formData.bBirthPlace.split(',').pop()?.trim() || formData.bTown;
-                                                                setFormData({ ...formData, bBirthPlace: `${e.target.value}, ${townName}, NUEVA VIZCAYA` });
-                                                            }}
-                                                        >
-                                                            <option value="">Select Barangay</option>
-                                                            {bBirthBrgyOptions.map(b => <option key={b.brgy_code} value={b.brgy_name}>{b.brgy_name}</option>)}
-                                                        </select>
-                                                    </Field>
-                                                </div>
-                                            )}
                                         </div>
 
                                         <FamilySubSection prefix="b" person="Bride" data={formData} setData={setFormData} />
@@ -505,27 +335,84 @@ function FamilySubSection({ prefix, person, data, setData }: any) {
         </div>
     );
 }
-
 function GiverSubSection({ prefix, age, data, setData }: any) {
     if (!age || age < 18 || age > 24) return null;
     const label = age <= 20 ? "CONSENT" : "ADVICE";
+
+    const handleSelection = (val: string) => {
+        if (val === "Father") {
+            setData({
+                ...data,
+                [`${prefix}GiverF`]: data[`${prefix}FathF`],
+                [`${prefix}GiverM`]: data[`${prefix}FathM`],
+                [`${prefix}GiverL`]: data[`${prefix}FathL`],
+                [`${prefix}GiverRelation`]: "Father"
+            });
+        } else if (val === "Mother") {
+            setData({
+                ...data,
+                [`${prefix}GiverF`]: data[`${prefix}MothF`],
+                [`${prefix}GiverM`]: data[`${prefix}MothM`],
+                [`${prefix}GiverL`]: data[`${prefix}MothL`],
+                [`${prefix}GiverRelation`]: "Mother"
+            });
+        } else if (val === "Others") {
+            setData({
+                ...data,
+                [`${prefix}GiverF`]: "",
+                [`${prefix}GiverM`]: "",
+                [`${prefix}GiverL`]: "",
+                [`${prefix}GiverRelation`]: ""
+            });
+        }
+    };
+
     return (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-6 border-t border-slate-100">
             <div className="p-6 bg-secondary/10 rounded-2xl border border-secondary/30 space-y-4">
-                <LabelWithIcon icon={<FileText className="w-3 h-3 text-primary" />} text={`PERSON GIVING ${label}`} />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <Input placeholder="First Name" value={data[`${prefix}GiverF`]} onChange={e => setData({ ...data, [`${prefix}GiverF`]: e.target.value })} />
-                    <Input placeholder="Middle Name" value={data[`${prefix}GiverM`]} onChange={e => setData({ ...data, [`${prefix}GiverM`]: e.target.value })} />
-                    <Input placeholder="Last Name" value={data[`${prefix}GiverL`]} onChange={e => setData({ ...data, [`${prefix}GiverL`]: e.target.value })} />
+                {/* Header with Dropdown */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <LabelWithIcon icon={<FileText className="w-3 h-3 text-primary" />} text={`PERSON GIVING ${label}`} />
+                    
+                    <div className="flex items-center gap-2">
+                        <select 
+                            className="text-xs border border-slate-300 rounded-md px-3 py-1.5 bg-white font-medium focus:ring-2 focus:ring-primary outline-none"
+                            onChange={(e) => handleSelection(e.target.value)}
+                            defaultValue=""
+                        >
+                            <option value="" disabled hidden>Select Parent...</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Others">Others (Manual Type)</option>
+                        </select>
+                    </div>
                 </div>
-                <Field label="Relationship (e.g. Father)">
-                    <Input placeholder="Father" value={data[`${prefix}GiverRelation`]} onChange={e => setData({ ...data, [`${prefix}GiverRelation`]: e.target.value })} />
+
+
+                 {/* person giving advice/consent dropdown */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <Field label="First Name">
+                        <Input placeholder="First Name" value={data[`${prefix}GiverF`]} onChange={e => setData({ ...data, [`${prefix}GiverF`]: e.target.value })} />
+                    </Field>
+                    <Field label="Middle Name">
+                        <Input placeholder="Middle Name" value={data[`${prefix}GiverM`]} onChange={e => setData({ ...data, [`${prefix}GiverM`]: e.target.value })} />
+                    </Field>
+                    <Field label="Last Name">
+                        <Input placeholder="Last Name" value={data[`${prefix}GiverL`]} onChange={e => setData({ ...data, [`${prefix}GiverL`]: e.target.value })} />
+                    </Field>
+                </div>
+                
+                <Field label="Relationship (e.g. Guardian / Aunt / Grandparent)">
+                    <Input 
+                        placeholder="Type relationship here..." 
+                        value={data[`${prefix}GiverRelation`]} 
+                        onChange={e => setData({ ...data, [`${prefix}GiverRelation`]: e.target.value })} 
+                    />
                 </Field>
             </div>
         </motion.div>
     );
 }
-
 function LabelWithIcon({ icon, text }: { icon: React.ReactNode, text: string }) {
     return (
         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
