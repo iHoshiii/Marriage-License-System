@@ -2,8 +2,11 @@
     "name": "marriage-portal-root",
     "version": "1.0.0",
     "scripts": {
-        "setup-env": "echo NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co > ui/.env.local && echo NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy >> ui/.env.local",
-        "install-all": "npm run setup-env && cd ui && npm install && pip install openpyxl pandas numpy",
+        "setup-env": "node -e \"const fs=require('fs'); const content='NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co\\nNEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy\\n'; if(!fs.existsSync('ui')) fs.mkdirSync('ui'); fs.writeFileSync('ui/.env.local', content);\"",
+        "install-all": "npm run setup-env && npm install && cd ui && npm install && pip install openpyxl pandas numpy",
         "start-portal": "cd ui && npm run dev"
+    },
+    "dependencies": {
+        "select-philippines-address": "^1.0.6"
     }
 }
