@@ -62,10 +62,17 @@ export default function MarriageForm() {
     };
 
     useEffect(() => {
-        // Fetch all provinces across all regions
+        // Fetch all provinces across all regions and deduplicate
         regions().then(async (regs: any) => {
             const allProvs = await Promise.all(regs.map((r: any) => provinces(r.region_code)));
-            setProvincesList(allProvs.flat().sort((a, b) => a.province_name.localeCompare(b.province_name)));
+            const flatProvs = allProvs.flat();
+
+            // Deduplicate by province_code
+            const uniqueProvs = Array.from(
+                new Map(flatProvs.map((p: any) => [p.province_code, p])).values()
+            );
+
+            setProvincesList(uniqueProvs.sort((a, b) => a.province_name.localeCompare(b.province_name)));
         });
 
         cities(NUEVA_VIZCAYA_CODE).then((res: any) => setTownOptions(res));
@@ -261,7 +268,7 @@ export default function MarriageForm() {
                                             <Field label="Province">
                                                 <select className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" value={provincesList.find(p => p.province_name === formData.gProv)?.province_code || ""} onChange={(e) => { const prov = provincesList.find(p => p.province_code === e.target.value); handleProvinceChange('g', e.target.value, prov?.province_name || ""); }}>
                                                     <option value="" disabled hidden>Select Province</option>
-                                                    {provincesList.map(p => <option key={p.province_code} value={p.province_code}>{p.province_name}</option>)}
+                                                    {provincesList.map((p, idx) => <option key={`grov-${p.province_code}-${idx}`} value={p.province_code}>{p.province_name}</option>)}
                                                 </select>
                                             </Field>
                                             <Field label="Town/Municipality">
@@ -325,7 +332,7 @@ export default function MarriageForm() {
                                                             }}
                                                         >
                                                             <option value="" disabled hidden>Select Province</option>
-                                                            {provincesList.map(p => <option key={p.province_code} value={p.province_code}>{p.province_name}</option>)}
+                                                            {provincesList.map((p, idx) => <option key={`gbirth-${p.province_code}-${idx}`} value={p.province_code}>{p.province_name}</option>)}
                                                         </select>
                                                     </Field>
                                                     <Field label="Birth Town">
@@ -393,7 +400,7 @@ export default function MarriageForm() {
                                             <Field label="Province">
                                                 <select className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" value={provincesList.find(p => p.province_name === formData.bProv)?.province_code || ""} onChange={(e) => { const prov = provincesList.find(p => p.province_code === e.target.value); handleProvinceChange('b', e.target.value, prov?.province_name || ""); }}>
                                                     <option value="" disabled hidden>Select Province</option>
-                                                    {provincesList.map(p => <option key={p.province_code} value={p.province_code}>{p.province_name}</option>)}
+                                                    {provincesList.map((p, idx) => <option key={`brov-${p.province_code}-${idx}`} value={p.province_code}>{p.province_name}</option>)}
                                                 </select>
                                             </Field>
                                             <Field label="Town/Municipality">
@@ -457,7 +464,7 @@ export default function MarriageForm() {
                                                             }}
                                                         >
                                                             <option value="" disabled hidden>Select Province</option>
-                                                            {provincesList.map(p => <option key={p.province_code} value={p.province_code}>{p.province_name}</option>)}
+                                                            {provincesList.map((p, idx) => <option key={`bbirth-${p.province_code}-${idx}`} value={p.province_code}>{p.province_name}</option>)}
                                                         </select>
                                                     </Field>
                                                     <Field label="Birth Town">
