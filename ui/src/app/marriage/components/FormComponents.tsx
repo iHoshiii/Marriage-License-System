@@ -106,17 +106,17 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
     if (!age || age < 18 || age > 24) return null;
     const label = age <= 20 ? "CONSENT" : "ADVICE";
 
-    // 1. Check if Parent Names are actually filled out in the section above
-    const hasFatherName = data[`${prefix}FathF`]?.trim() !== "" && data[`${prefix}FathL`]?.trim() !== "";
-    const hasMotherName = data[`${prefix}MothF`]?.trim() || data[`${prefix}MothL`]?.trim() !== "";
-
+    // 1. Define variables at the top so the whole component can see them
     const selectedRelation = data[`${prefix}GiverRelation`] || "";
+    
+    const hasFatherName = !!(data[`${prefix}FathF`]?.trim() && data[`${prefix}FathL`]?.trim());
+    const hasMotherName = !!(data[`${prefix}MothF`]?.trim() && data[`${prefix}MothL`]?.trim());
 
-    // 2. Logic: If they chose "Father" but Father name is empty OR "Mother" but Mother name is empty
     const showMissingParentWarning = 
         (selectedRelation === "Father" && !hasFatherName) || 
         (selectedRelation === "Mother" && !hasMotherName);
 
+    // 2. The Logic Function
     const handleRelationshipChange = (val: string) => {
         let newData = { ...data, [`${prefix}GiverRelation`]: val };
 
@@ -129,7 +129,7 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
             newData[`${prefix}GiverM`] = data[`${prefix}MothM`];
             newData[`${prefix}GiverL`] = data[`${prefix}MothL`];
         } else {
-            // Clear fields if switching to "Other" or if the Parent info is missing
+            // This clears the names if "Other" is picked OR if parent data is missing
             newData[`${prefix}GiverF`] = "";
             newData[`${prefix}GiverM`] = "";
             newData[`${prefix}GiverL`] = "";
@@ -145,7 +145,7 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Field label="Relationship">
                         <select 
-                            className={`flex h-10 w-full rounded-md border ${showMissingParentWarning ? 'border-rose-500 ring-2 ring-rose-100' : 'border-input'} bg-white px-3 py-2 text-sm focus:outline-none`}
+                            className={`flex h-10 w-full rounded-md border ${showMissingParentWarning ? 'border-rose-500 ring-2 ring-rose-100' : 'border-input'} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary`}
                             value={selectedRelation}
                             onChange={(e) => handleRelationshipChange(e.target.value)}
                         >
@@ -171,16 +171,16 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
                     </AnimatePresence>
                 </div>
 
-                {/* THE WARNING MESSAGE */}
                 <AnimatePresence>
                     {showMissingParentWarning && (
                         <motion.div 
                             initial={{ opacity: 0, y: -10 }} 
                             animate={{ opacity: 1, y: 0 }}
-                            className="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2 text-amber-700 text-[11px] font-bold"
+                            exit={{ opacity: 0 }}
+                            className="p-3 bg-rose-50 border border-rose-200 rounded-lg flex items-center gap-2 text-rose-700 text-[11px] font-bold uppercase tracking-tight"
                         >
                             <span className="text-base">⚠️</span>
-                            PLEASE FILL UP THE {selectedRelation.toUpperCase()}'S NAME IN THE PARENTS SECTION ABOVE FIRST.
+                            PLEASE FILL UP THE {selectedRelation.toUpperCase()} DETAILS IN THE SECTION ABOVE FIRST
                         </motion.div>
                     )}
                 </AnimatePresence>
