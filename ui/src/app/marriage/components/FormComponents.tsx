@@ -99,14 +99,14 @@ interface GiverSubSectionProps {
     age: number;
     data: any;
     setData: (data: any) => void;
-    toTitleCase: (str: string) => string; // Ensure this line is present
+    toTitleCase: (str: string) => string;
 }
 
 export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: GiverSubSectionProps) {
     if (!age || age < 18 || age > 24) return null;
     const label = age <= 20 ? "CONSENT" : "ADVICE";
 
-    // 1. Define variables at the top so the whole component can see them
+    // variables
     const selectedRelation = data[`${prefix}GiverRelation`] || "";
     
     const hasFatherName = !!(data[`${prefix}FathF`]?.trim() && data[`${prefix}FathL`]?.trim());
@@ -115,8 +115,6 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
     const showMissingParentWarning = 
         (selectedRelation === "Father" && !hasFatherName) || 
         (selectedRelation === "Mother" && !hasMotherName);
-
-    // 2. The Logic Function
     const handleRelationshipChange = (val: string) => {
         let newData = { ...data, [`${prefix}GiverRelation`]: val };
 
@@ -129,7 +127,7 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
             newData[`${prefix}GiverM`] = data[`${prefix}MothM`];
             newData[`${prefix}GiverL`] = data[`${prefix}MothL`];
         } else {
-            // This clears the names if "Other" is picked OR if parent data is missing
+            // clears the names if "Other" is picked OR if parent data is missing
             newData[`${prefix}GiverF`] = "";
             newData[`${prefix}GiverM`] = "";
             newData[`${prefix}GiverL`] = "";
@@ -149,12 +147,14 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
                             value={selectedRelation}
                             onChange={(e) => handleRelationshipChange(e.target.value)}
                         >
-                            <option value="">Select Relationship</option>
+                            {/* default "select RELATIONSHIP"*/}
+                            <option value="" disabled={selectedRelation !== ""}>Select Relationship</option>
                             <option value="Father">Father</option>
                             <option value="Mother">Mother</option>
                             <option value="Other">Other (Specify)</option>
                         </select>
                     </Field>
+
 
                     <AnimatePresence>
                         {selectedRelation === "Other" && (
@@ -214,4 +214,4 @@ export function GiverSubSection({ prefix, age, data, setData, toTitleCase }: Giv
             </div>
         </motion.div>
     );
-}
+}   
