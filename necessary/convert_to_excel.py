@@ -12,7 +12,6 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 def cm_to_pixels(cm):
     return int((cm / 2.54) * 96)
-
 def process_excel(data):
     try:
         # Load paths relative to script location
