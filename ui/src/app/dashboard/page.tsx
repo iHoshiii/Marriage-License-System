@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logout } from "@/app/logout/actions";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import {
   LayoutDashboard,
@@ -17,6 +17,7 @@ import {
   Search
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { getUserProfile } from "@/utils/roles";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -32,12 +33,15 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  const profile = await getUserProfile();
+  const userRole = profile?.role || "user";
+
   const userInitials = user.email?.split("@")[0].substring(0, 2).toUpperCase() || "US";
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 uppercase">
+    <div className="flex min-h-screen bg-zinc-50">
       {/* Sidebar - Hidden on mobile, visible on desktop */}
-      <aside className="hidden w-64 border-r border-zinc-200 bg-white p-6 flex flex-col">
+      <aside className="hidden w-64 border-r border-zinc-200 bg-white p-6 flex-col md:flex">
         <div className="flex items-center gap-2 mb-10 px-2">
           <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center">
             <ShieldCheck className="text-white h-5 w-5" />
@@ -77,19 +81,22 @@ export default async function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="h-16 border-b border-zinc-200 bg-white px-8 flex items-center justify-between">
+          {/* Mobile Menu Button could go here */}
           <div className="flex-1 max-w-md">
-            <Input
-              placeholder="Search..."
-              className="h-9 bg-zinc-50 border-none"
-              icon={<Search className="h-4 w-4" />}
-            />
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
+              <Input
+                placeholder="Search..."
+                className="h-9 bg-zinc-50 border-none pl-9"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <button className="p-2 text-zinc-500 hover:bg-zinc-100 rounded-lg relative transition-colors">
               <Bell className="h-5 w-5" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
             </button>
-            <Avatar fallback={userInitials} className="cursor-pointer hover:ring-2 ring-zinc-200 transition-all" />
+            <Avatar className="cursor-pointer hover:ring-2 ring-zinc-200 transition-all" fallback={userInitials} />
           </div>
         </header>
 
@@ -100,9 +107,6 @@ export default async function DashboardPage() {
                 <h1 className="text-2xl font-bold text-zinc-900">Dashboard Overview</h1>
                 <p className="text-zinc-500">Welcome back, {user.email}</p>
               </div>
-              <Button className="font-semibold shadow-md active:scale-95 transition-transform">
-                Generate Report
-              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -111,9 +115,9 @@ export default async function DashboardPage() {
                   <div className="h-12 w-12 bg-blue-50 dark:bg-blue-900/10 rounded-xl flex items-center justify-center">
                     <Mail className="text-blue-600 dark:text-blue-400 h-6 w-6" />
                   </div>
-                  <div>
+                  <div className="overflow-hidden">
                     <p className="text-sm text-zinc-500 font-medium">Email Address</p>
-                    <p className="text-base font-bold truncate max-w-[150px]">{user.email}</p>
+                    <p className="text-base font-bold truncate" title={user.email}>{user.email}</p>
                   </div>
                 </div>
               </Card>
@@ -122,9 +126,9 @@ export default async function DashboardPage() {
                   <div className="h-12 w-12 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl flex items-center justify-center">
                     <Key className="text-emerald-600 dark:text-emerald-400 h-6 w-6" />
                   </div>
-                  <div>
+                  <div className="overflow-hidden">
                     <p className="text-sm text-zinc-500 font-medium">User ID</p>
-                    <p className="text-base font-bold truncate max-w-[150px]">{user.id.substring(0, 12)}...</p>
+                    <p className="text-base font-bold truncate" title={user.id}>{user.id.substring(0, 8)}...</p>
                   </div>
                 </div>
               </Card>
@@ -154,24 +158,24 @@ export default async function DashboardPage() {
               </Link>
             </div>
 
-            <Card className="p-0 overflow-hidden">
-              <div className="p-6 border-b border-zinc-200 dark:border-zinc-800">
-                <h3 className="font-bold text-lg dark:text-white">Account Details</h3>
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-900">
+            <Card className="overflow-hidden">
+              <CardHeader className="border-b border-zinc-200 bg-zinc-50/50">
+                <CardTitle>Account Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 p-6">
+                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-zinc-100">
                   <span className="text-zinc-500 font-medium">Role</span>
-                  <span className="text-right font-semibold dark:text-zinc-200">Administrator</span>
+                  <span className="text-right font-semibold capitalize">{userRole}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-900">
+                <div className="grid grid-cols-2 gap-4 pb-4 border-b border-zinc-100">
                   <span className="text-zinc-500 font-medium">Last Login</span>
-                  <span className="text-right font-semibold dark:text-zinc-200">Just now</span>
+                  <span className="text-right font-semibold">{new Date(user.last_sign_in_at || Date.now()).toLocaleDateString()}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <span className="text-zinc-500 font-medium">Auth Provider</span>
-                  <span className="text-right font-semibold dark:text-zinc-200 uppercase">{user.app_metadata.provider || "Email"}</span>
+                  <span className="text-right font-semibold uppercase">{user.app_metadata.provider || "Email"}</span>
                 </div>
-              </div>
+              </CardContent>
             </Card>
           </div>
         </main>

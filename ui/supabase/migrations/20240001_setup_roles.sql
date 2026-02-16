@@ -6,21 +6,26 @@ create table if not exists public.profiles (
   full_name text,
   avatar_url text,
   website text,
-  role text default 'user' check (role in ('user', 'admin'))
+  role text default 'user' check (role in ('user', 'admin', 'employee'))
 );
 
 -- 2. Add 'role' column if it doesn't exist (idempotent)
 do $$
 begin
   if not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'profiles' and column_name = 'role') then
-    alter table public.profiles add column role text default 'user' check (role in ('user', 'admin'));
+    alter table public.profiles add column role text default 'user' check (role in ('user', 'admin', 'employee'));
+  else
+    -- Update the check constraint to include 'employee' if it exists but is old
+    -- Dropping constraint is safer
+    alter table public.profiles drop constraint if exists profiles_role_check;
+    alter table public.profiles add constraint profiles_role_check check (role in ('user', 'admin', 'employee'));
   end if;
 end $$;
 
 -- 3. Enable RLS
 alter table public.profiles enable row level security;
 
--- 4. Create policies (drop existing to ensure freshness or use 'create policy if not exists' logic - Supabase pure SQL doesn't have IF NOT EXISTS for policies easily without a do block, but standard creation might fail if exists. IDEMPOTENT approach below)
+-- 4. Create policies
 
 -- Policy: Public profiles are viewable by everyone
 drop policy if exists "Public profiles are viewable by everyone." on public.profiles;
