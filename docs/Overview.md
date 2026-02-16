@@ -51,7 +51,7 @@ The system follows a hybrid architecture combining modern web technologies with 
 ### 3. Marriage Application Form
 - **Dual Applicant Support**: Single comprehensive form collecting information for both groom and bride
 - **Comprehensive Data Collection**:
-  - Personal information (name, birth date, age, religion)
+  - Personal information (name, birth date, age, religion, phone number)
   - Address management with Philippine location hierarchy
   - Family information (parents, guardians)
   - Citizenship and residency details

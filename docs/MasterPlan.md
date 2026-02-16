@@ -26,7 +26,7 @@ Based on Overview.md core features: marriage application processing with dual ap
 |-------|-------------|--------------|------------|------------|-------------|
 | profiles | id (UUID) | auth.users(id) | role, full_name, employee_id | VARCHAR(20), TEXT, VARCHAR(10) | User/Employee/Admin profiles extending Supabase auth |
 | marriage_applications | id (UUID) | created_by → profiles(id), processed_by → profiles(id) | application_code, status, document_number | VARCHAR(20) UNIQUE, VARCHAR(20), INTEGER | Main application records with unique codes |
-| applicants | id (UUID) | application_id → marriage_applications(id), address_id → addresses(id) | type, first_name, middle_name, last_name, birth_date, age, religion, citizenship | VARCHAR(10), TEXT, TEXT, TEXT, DATE, INTEGER, TEXT, TEXT | Groom/Bride applicant data |
+| applicants | id (UUID) | application_id → marriage_applications(id), address_id → addresses(id) | type, first_name, middle_name, last_name, birth_date, age, religion, citizenship, phone_number | VARCHAR(10), TEXT, TEXT, TEXT, DATE, INTEGER, TEXT, TEXT, TEXT | Groom/Bride applicant data |
 | addresses | id (UUID) | - | province, municipality, barangay, street_address | TEXT, TEXT, TEXT, TEXT | Philippine address hierarchy |
 | user_document_uploads | id (UUID) | application_id → marriage_applications(id), uploaded_by → profiles(id) | document_type, file_path, file_size, file_name | VARCHAR(50), TEXT, INTEGER, TEXT | User-uploaded supporting documents |
 | application_photos | id (UUID) | application_id → marriage_applications(id) | photo_type, file_path, file_size | VARCHAR(10), TEXT, INTEGER | Photo storage metadata |
@@ -81,6 +81,7 @@ CREATE TABLE applicants (
   age INTEGER NOT NULL,
   religion TEXT,
   citizenship TEXT NOT NULL,
+  phone_number TEXT,
   address_id UUID REFERENCES addresses(id),
   father_name TEXT,
   father_citizenship TEXT,
