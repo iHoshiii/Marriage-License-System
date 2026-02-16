@@ -43,6 +43,7 @@ CREATE TABLE applicants (
   first_name TEXT NOT NULL,
   middle_name TEXT,
   last_name TEXT NOT NULL,
+  suffix TEXT, -- Name suffix (Jr., Sr., III, etc.)
   birth_date DATE NOT NULL,
   age INTEGER NOT NULL,
   religion TEXT,
