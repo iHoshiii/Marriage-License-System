@@ -9,17 +9,17 @@ Implement role-based authentication and dashboard system for the LGU Solano Marr
 - **Role Detection**: Check `profiles.role` on sign-in and redirect to appropriate dashboard
 
 ## Phase 1: Authentication & Role Infrastructure
-- [ ] Update profile creation trigger to assign 'user' role to new signups
-- [ ] Create role detection utilities (`getUserRole()`, `getUserProfile()`)
-- [ ] Implement role-based routing middleware
-- [ ] Update signup flow to ensure only 'user' accounts are created publicly
-- [ ] Add role validation and error handling
+- [x] Update profile creation trigger to assign 'user' role to new signups
+- [x] Create role detection utilities (`getUserRole()`, `getUserProfile()`)
+- [x] Implement role-based routing middleware
+- [x] Update signup flow to ensure only 'user' accounts are created publicly
+- [x] Add role validation and error handling
 
 ## Phase 2: Manual Employee/Admin Setup Process
-- [ ] Document process for admins to create employee accounts in Supabase
-- [ ] Create database functions for employee management
-- [ ] Test role assignments and access control
-- [ ] Verify RLS policies work with different roles
+- [x] Document process for admins to create employee accounts in Supabase
+- [x] Create database functions for employee management
+- [x] Test role assignments and access control
+- [x] Verify RLS policies work with different roles
 
 ## Phase 3: User Dashboard (`/dashboard/user`)
 - [ ] Create `/dashboard/user` route and layout

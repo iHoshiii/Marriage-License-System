@@ -130,4 +130,11 @@ The `type` field in `applicants` accepts:
 - `groom` - Male applicant
 - `bride` - Female applicant
 
+## User Roles
+
+The `role` field in the `profiles` table accepts these values:
+- `user` - Standard user who can submit applications (Default for new signups)
+- `employee` - Staff member who processes applications
+- `admin` - Administrator with full system access
+
 This mapping ensures consistent data transformation between the frontend form and the Supabase database schema.

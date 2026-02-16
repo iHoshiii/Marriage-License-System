@@ -19,6 +19,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { getUserProfile } from "@/utils/roles";
 
+// Ensure the page is always rendered dynamically to show latest database changes
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 
@@ -34,8 +37,12 @@ export default async function DashboardPage() {
   }
 
   const profile = await getUserProfile();
-  const userRole = profile?.role || "user";
 
+  // Debugging log to see what the server is actually fetching
+  console.log("Dashboard fetch - User ID:", user.id);
+  console.log("Dashboard fetch - Profile:", profile);
+
+  const userRole = profile?.role || "user";
   const userInitials = user.email?.split("@")[0].substring(0, 2).toUpperCase() || "US";
 
   return (
