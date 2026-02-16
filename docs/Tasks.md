@@ -2,6 +2,13 @@
 - [x] Supabase Setup
 - [x] Database design and RLS
 - [x] Storage Bucket
+- [ ] Login Form (Manual set role for admin and employee, but not for user)
 - [ ] User Roles & Dashboard Design
+  - [ ] Phase 1: Authentication & Role Infrastructure
+  - [ ] Phase 2: Manual Employee/Admin Setup Process
+  - [ ] Phase 3: User Dashboard Implementation
+  - [ ] Phase 4: Employee Dashboard Implementation
+  - [ ] Phase 5: Admin Dashboard Implementation
+  - [ ] Phase 6: Integration & Testing
 - [ ] 
 

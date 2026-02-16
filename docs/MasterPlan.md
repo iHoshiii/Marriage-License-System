@@ -316,6 +316,8 @@ WITH CHECK (true);
 ## 👥 User Roles & Dashboard Design
 Based on Overview.md three-tier role system: Users track applications, Employees process applications, Administrators oversee operations.
 
+**Authentication Approach**: Users self-register (auto-assigned 'user' role), employees/admins created manually in Supabase with explicit roles.
+
 ### User Dashboard (`/dashboard/user`):
 - **Application Status Tracking**: View current status (pending, approved, finished) for all submitted applications
 - **Office Visit Instructions**: Clear guidance to visit Municipal Office in Solano for processing
