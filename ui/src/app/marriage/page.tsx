@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, ChevronLeft, FileText, Heart, Scale, ShieldCheck, Trash2 } from 'lucide-react';
+import { ArrowRight, ChevronLeft, FileText, Heart, MapPin, Scale, ShieldCheck, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AddressSection } from "./components/AddressSection";
@@ -227,8 +227,8 @@ export default function MarriageForm() {
                                         // NEW FLOW: Only save to DB if user exists
                                         const { data: { user: currentUser } } = await supabase.auth.getUser();
 
-                                        // Generate application code
-                                        const generatedCode = `${Math.floor(1000 + Math.random() * 9000)}`;
+                                        // Generate application code (6 digits for uniqueness)
+                                        const generatedCode = `${Math.floor(100000 + Math.random() * 900000)}`;
 
                                         if (!currentUser) {
                                             console.log('No user logged in. Saving to localStorage for later...');
@@ -418,30 +418,36 @@ export default function MarriageForm() {
                                     </div>
 
                                     <div className="space-y-6">
-                                        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-left">
-                                            <h3 className="font-bold text-blue-900 flex items-center gap-2 mb-2">
-                                                <div className="w-6 h-6 rounded-full bg-blue-200 flex items-center justify-center text-xs">1</div>
-                                                Save Your Code
+                                        <div className="bg-blue-50 border border-blue-100 rounded-[2rem] p-8 text-left shadow-sm">
+                                            <h3 className="text-blue-800 font-black tracking-tight mb-6 flex items-center gap-2 text-xl italic uppercase">
+                                                <MapPin className="w-5 h-5" /> Final Steps
                                             </h3>
-                                            <p className="text-sm text-blue-800/80 pl-8 mb-4">You will need this code when you visit the Municipal Office.</p>
 
-                                            {user ? (
-                                                <>
-                                                    <h3 className="font-bold text-blue-900 flex items-center gap-2 mb-2">
-                                                        <div className="w-6 h-6 rounded-full bg-blue-200 flex items-center justify-center text-xs">2</div>
-                                                        Track your Application
-                                                    </h3>
-                                                    <p className="text-sm text-blue-800/80 pl-8">You are logged in. You can track your status in your dashboard.</p>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <h3 className="font-bold text-blue-900 flex items-center gap-2 mb-2">
-                                                        <div className="w-6 h-6 rounded-full bg-blue-200 flex items-center justify-center text-xs">2</div>
-                                                        Create an Account
-                                                    </h3>
-                                                    <p className="text-sm text-blue-800/80 pl-8">To track your application status and view instructions, proceed to create your account.</p>
-                                                </>
-                                            )}
+                                            <div className="space-y-4">
+                                                <div className="flex gap-4 items-start bg-white/60 p-5 rounded-2xl border border-blue-100">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-200 text-blue-900 flex items-center justify-center text-xs font-black shrink-0">1</div>
+                                                    <div className="space-y-0.5">
+                                                        <p className="text-slate-900 font-black text-sm uppercase tracking-tight">Save your Code</p>
+                                                        <p className="text-slate-600 text-[11px] font-bold leading-tight">Print or screenshot your 6-digit application code.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex gap-4 items-start bg-white/60 p-5 rounded-2xl border border-blue-100">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-200 text-blue-900 flex items-center justify-center text-xs font-black shrink-0">2</div>
+                                                    <div className="space-y-0.5">
+                                                        <p className="text-slate-900 font-black text-sm uppercase tracking-tight">Prepare Requirements</p>
+                                                        <p className="text-slate-600 text-[11px] font-bold leading-tight">Birth Certificate, CENOMAR, and Valid IDs (Original & Photocopy).</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex gap-4 items-start bg-white/60 p-5 rounded-2xl border border-blue-100">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-200 text-blue-900 flex items-center justify-center text-xs font-black shrink-0">3</div>
+                                                    <div className="space-y-0.5">
+                                                        <p className="text-slate-900 font-black text-sm uppercase tracking-tight">Visit Solano Office</p>
+                                                        <p className="text-slate-600 text-[11px] font-bold leading-tight">Proceed to the Solano Municipal Office to finalize your application.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div className="flex flex-col gap-4">

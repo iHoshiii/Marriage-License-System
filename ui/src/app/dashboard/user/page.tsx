@@ -176,13 +176,15 @@ export default function UserDashboard() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">My Applications</h1>
-                    <p className="text-zinc-500 mt-1">Track the status of your marriage license applications.</p>
+                    <p className="text-zinc-500 mt-1">Track the status of your marriage license application.</p>
                 </div>
-                <Link href="/marriage">
-                    <Button size="lg" className="rounded-xl shadow-lg shadow-primary/20">
-                        <PenSquare className="mr-2 h-5 w-5" /> New Application
-                    </Button>
-                </Link>
+                {(!applications || applications.length === 0) && (
+                    <Link href="/marriage">
+                        <Button size="lg" className="rounded-xl shadow-lg shadow-primary/20">
+                            <PenSquare className="mr-2 h-5 w-5" /> New Application
+                        </Button>
+                    </Link>
+                )}
             </div>
 
             {/* Grid Layout */}
@@ -265,28 +267,44 @@ export default function UserDashboard() {
                 {/* Right Column: Information & Help */}
                 <div className="space-y-6">
                     {/* Office Visit Instructions Card */}
-                    <Card className="bg-blue-50 border-blue-100 dark:bg-blue-900/10 dark:border-blue-900/20">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
-                                <MapPin className="h-5 w-5" /> Visit Instructions
+                    {/* Restored & Improved Visit Instructions */}
+                    <Card className="bg-blue-50 border-blue-100 shadow-sm rounded-3xl overflow-hidden">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="flex items-center gap-2 text-blue-800 font-black italic tracking-tight">
+                                <MapPin className="h-5 w-5" /> OFFICE VISIT GUIDE
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4 text-sm text-blue-900/80 dark:text-blue-200">
-                            <p>
-                                After submitting your application online, both parties must appear personally at the User Service Office.
+
+                        <CardContent className="space-y-4">
+                            <p className="text-slate-700 text-sm font-semibold leading-relaxed">
+                                Please visit the <span className="text-blue-700 font-black">Solano Municipal Office</span> with the following:
                             </p>
-                            <div className="space-y-2">
-                                <div className="flex gap-3 items-start bg-white/50 p-3 rounded-lg">
-                                    <div className="min-w-[24px] h-6 flex items-center justify-center bg-blue-200 text-blue-800 rounded-full text-xs font-bold">1</div>
-                                    <p>Bring valid IDs for both parties.</p>
+
+                            <div className="space-y-3">
+                                <div className="flex gap-4 items-start bg-white/60 p-4 rounded-2xl border border-blue-100 shadow-sm">
+                                    <div className="min-w-[28px] h-7 flex items-center justify-center bg-blue-200 text-blue-900 rounded-full text-xs font-black">1</div>
+                                    <div className="space-y-0.5">
+                                        <p className="text-slate-900 font-black text-sm">Birth Cert & CENOMAR</p>
+                                        <p className="text-slate-600 text-[11px] font-bold">Original & Photocopy (For both parties)</p>
+                                    </div>
                                 </div>
-                                <div className="flex gap-3 items-start bg-white/50 p-3 rounded-lg">
-                                    <div className="min-w-[24px] h-6 flex items-center justify-center bg-blue-200 text-blue-800 rounded-full text-xs font-bold">2</div>
-                                    <p>Bring PSA Birth Certificates (Original & Photocopy).</p>
+
+                                <div className="flex gap-4 items-start bg-white/60 p-4 rounded-2xl border border-blue-100 shadow-sm">
+                                    <div className="min-w-[28px] h-7 flex items-center justify-center bg-blue-200 text-blue-900 rounded-full text-xs font-black">2</div>
+                                    <div className="space-y-0.5">
+                                        <p className="text-slate-900 font-black text-sm">Valid ID</p>
+                                        <p className="text-slate-600 text-[11px] font-bold">Present to staff for verification</p>
+                                    </div>
                                 </div>
-                                <div className="flex gap-3 items-start bg-white/50 p-3 rounded-lg">
-                                    <div className="min-w-[24px] h-6 flex items-center justify-center bg-blue-200 text-blue-800 rounded-full text-xs font-bold">3</div>
-                                    <p>Provide your <strong>Application Code</strong> to the staff.</p>
+
+                                <div className="flex gap-4 items-start bg-white/60 p-4 rounded-2xl border border-blue-100 shadow-sm">
+                                    <div className="min-w-[28px] h-7 flex items-center justify-center bg-blue-200 text-blue-900 rounded-full text-xs font-black">3</div>
+                                    <div className="space-y-0.5">
+                                        <p className="text-slate-900 font-black text-sm">Application Code</p>
+                                        <p className="text-blue-700 text-lg font-black font-mono tracking-widest leading-none mt-1">
+                                            {applications && applications[0]?.application_code ? applications[0].application_code : '------'}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
