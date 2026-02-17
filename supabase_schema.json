@@ -1,0 +1,651 @@
+[
+  {
+    "table_name": "addresses",
+    "columns": [
+      {
+        "column": "street_address",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "barangay",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "province",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "created_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "municipality",
+        "type": "text",
+        "nullable": "NO"
+      }
+    ],
+    "policies": [
+      {
+        "name": "public_read_addresses",
+        "command": "SELECT",
+        "roles": [
+          "anon"
+        ],
+        "using": "true",
+        "check": null
+      },
+      {
+        "name": "authenticated_create_addresses",
+        "command": "INSERT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "check": "true"
+      }
+    ],
+    "foreign_keys": []
+  },
+  {
+    "table_name": "applicants",
+    "columns": [
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "application_id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "birth_date",
+        "type": "date",
+        "nullable": "NO"
+      },
+      {
+        "column": "age",
+        "type": "int4",
+        "nullable": "NO"
+      },
+      {
+        "column": "address_id",
+        "type": "uuid",
+        "nullable": "YES"
+      },
+      {
+        "column": "created_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "updated_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "phone_number",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "citizenship",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "religion",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "middle_name",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "first_name",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "type",
+        "type": "varchar",
+        "nullable": "NO"
+      },
+      {
+        "column": "suffix",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "last_name",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "mother_citizenship",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "mother_name",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "father_citizenship",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "father_name",
+        "type": "text",
+        "nullable": "YES"
+      }
+    ],
+    "policies": [
+      {
+        "name": "allow_applicant_creation",
+        "command": "INSERT",
+        "roles": [
+          "anon"
+        ],
+        "using": null,
+        "check": "true"
+      },
+      {
+        "name": "employees_manage_applicants",
+        "command": "ALL",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['employee'::character varying, 'admin'::character varying])::text[])))))",
+        "check": null
+      }
+    ],
+    "foreign_keys": [
+      {
+        "column": "application_id",
+        "references_table": "marriage_applications",
+        "references_column": "id"
+      },
+      {
+        "column": "address_id",
+        "references_table": "addresses",
+        "references_column": "id"
+      }
+    ]
+  },
+  {
+    "table_name": "application_photos",
+    "columns": [
+      {
+        "column": "uploaded_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "application_id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "file_size",
+        "type": "int4",
+        "nullable": "NO"
+      },
+      {
+        "column": "uploaded_by",
+        "type": "uuid",
+        "nullable": "YES"
+      },
+      {
+        "column": "photo_type",
+        "type": "varchar",
+        "nullable": "NO"
+      },
+      {
+        "column": "file_path",
+        "type": "text",
+        "nullable": "NO"
+      }
+    ],
+    "policies": [
+      {
+        "name": "employees_manage_application_photos",
+        "command": "ALL",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['employee'::character varying, 'admin'::character varying])::text[])))))",
+        "check": null
+      }
+    ],
+    "foreign_keys": [
+      {
+        "column": "application_id",
+        "references_table": "marriage_applications",
+        "references_column": "id"
+      },
+      {
+        "column": "uploaded_by",
+        "references_table": "profiles",
+        "references_column": "id"
+      }
+    ]
+  },
+  {
+    "table_name": "audit_logs",
+    "columns": [
+      {
+        "column": "created_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "action",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "application_id",
+        "type": "uuid",
+        "nullable": "YES"
+      },
+      {
+        "column": "user_id",
+        "type": "uuid",
+        "nullable": "YES"
+      },
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "details",
+        "type": "jsonb",
+        "nullable": "YES"
+      }
+    ],
+    "policies": [
+      {
+        "name": "authenticated_insert_audit_logs",
+        "command": "INSERT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "check": "true"
+      },
+      {
+        "name": "admins_view_audit_logs",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = 'admin'::text))))",
+        "check": null
+      }
+    ],
+    "foreign_keys": [
+      {
+        "column": "application_id",
+        "references_table": "marriage_applications",
+        "references_column": "id"
+      },
+      {
+        "column": "user_id",
+        "references_table": "profiles",
+        "references_column": "id"
+      }
+    ]
+  },
+  {
+    "table_name": "generated_documents",
+    "columns": [
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "generated_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "application_id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "file_path",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "file_size",
+        "type": "int4",
+        "nullable": "NO"
+      },
+      {
+        "column": "generated_by",
+        "type": "uuid",
+        "nullable": "YES"
+      }
+    ],
+    "policies": [
+      {
+        "name": "employees_manage_documents",
+        "command": "ALL",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['employee'::character varying, 'admin'::character varying])::text[])))))",
+        "check": null
+      }
+    ],
+    "foreign_keys": [
+      {
+        "column": "application_id",
+        "references_table": "marriage_applications",
+        "references_column": "id"
+      },
+      {
+        "column": "generated_by",
+        "references_table": "profiles",
+        "references_column": "id"
+      }
+    ]
+  },
+  {
+    "table_name": "marriage_applications",
+    "columns": [
+      {
+        "column": "document_number",
+        "type": "int4",
+        "nullable": "YES"
+      },
+      {
+        "column": "created_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "processed_by",
+        "type": "uuid",
+        "nullable": "YES"
+      },
+      {
+        "column": "updated_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "application_code",
+        "type": "varchar",
+        "nullable": "NO"
+      },
+      {
+        "column": "status",
+        "type": "varchar",
+        "nullable": "YES"
+      },
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "created_by",
+        "type": "uuid",
+        "nullable": "YES"
+      }
+    ],
+    "policies": [
+      {
+        "name": "users_view_own_applications",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(created_by = auth.uid())",
+        "check": null
+      },
+      {
+        "name": "employees_view_all_applications",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['employee'::character varying, 'admin'::character varying])::text[])))))",
+        "check": null
+      },
+      {
+        "name": "employees_update_applications",
+        "command": "UPDATE",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['employee'::character varying, 'admin'::character varying])::text[])))))",
+        "check": null
+      },
+      {
+        "name": "allow_application_creation",
+        "command": "INSERT",
+        "roles": [
+          "anon"
+        ],
+        "using": null,
+        "check": "true"
+      }
+    ],
+    "foreign_keys": [
+      {
+        "column": "created_by",
+        "references_table": "profiles",
+        "references_column": "id"
+      },
+      {
+        "column": "processed_by",
+        "references_table": "profiles",
+        "references_column": "id"
+      }
+    ]
+  },
+  {
+    "table_name": "profiles",
+    "columns": [
+      {
+        "column": "updated_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "role",
+        "type": "varchar",
+        "nullable": "NO"
+      },
+      {
+        "column": "full_name",
+        "type": "text",
+        "nullable": "YES"
+      },
+      {
+        "column": "employee_id",
+        "type": "varchar",
+        "nullable": "YES"
+      },
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "created_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      }
+    ],
+    "policies": [
+      {
+        "name": "users_insert_own_profile",
+        "command": "INSERT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "check": "((id = auth.uid()) AND ((role)::text = ANY ((ARRAY['user'::character varying, 'employee'::character varying, 'admin'::character varying])::text[])))"
+      },
+      {
+        "name": "admins_manage_employees",
+        "command": "ALL",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles profiles_1\n  WHERE ((profiles_1.id = auth.uid()) AND ((profiles_1.role)::text = 'admin'::text))))",
+        "check": null
+      },
+      {
+        "name": "Users can update own profile.",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "(( SELECT auth.uid() AS uid) = id)",
+        "check": null
+      },
+      {
+        "name": "profiles_select_policy",
+        "command": "SELECT",
+        "roles": [
+          "public"
+        ],
+        "using": "((auth.uid() = id) OR is_admin_or_employee())",
+        "check": null
+      },
+      {
+        "name": "profiles_update_policy",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "((auth.uid() = id) OR is_admin_or_employee())",
+        "check": null
+      },
+      {
+        "name": "users_employees_manage_own_profile",
+        "command": "ALL",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(auth.uid() = id)",
+        "check": null
+      },
+      {
+        "name": "admins_view_all_profiles",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles profiles_1\n  WHERE ((profiles_1.id = auth.uid()) AND ((profiles_1.role)::text = 'admin'::text))))",
+        "check": null
+      }
+    ],
+    "foreign_keys": []
+  },
+  {
+    "table_name": "user_document_uploads",
+    "columns": [
+      {
+        "column": "application_id",
+        "type": "uuid",
+        "nullable": "NO"
+      },
+      {
+        "column": "file_size",
+        "type": "int4",
+        "nullable": "NO"
+      },
+      {
+        "column": "file_name",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "uploaded_by",
+        "type": "uuid",
+        "nullable": "YES"
+      },
+      {
+        "column": "uploaded_at",
+        "type": "timestamptz",
+        "nullable": "YES"
+      },
+      {
+        "column": "document_type",
+        "type": "varchar",
+        "nullable": "NO"
+      },
+      {
+        "column": "file_path",
+        "type": "text",
+        "nullable": "NO"
+      },
+      {
+        "column": "id",
+        "type": "uuid",
+        "nullable": "NO"
+      }
+    ],
+    "policies": [
+      {
+        "name": "employees_view_all_documents",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['employee'::character varying, 'admin'::character varying])::text[])))))",
+        "check": null
+      },
+      {
+        "name": "users_manage_own_documents",
+        "command": "ALL",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(uploaded_by = auth.uid())",
+        "check": null
+      }
+    ],
+    "foreign_keys": [
+      {
+        "column": "uploaded_by",
+        "references_table": "profiles",
+        "references_column": "id"
+      },
+      {
+        "column": "application_id",
+        "references_table": "marriage_applications",
+        "references_column": "id"
+      }
+    ]
+  }
+]
