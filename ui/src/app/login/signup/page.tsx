@@ -10,96 +10,85 @@ import { Suspense } from "react";
 export default async function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-      {/* Dynamic Background Elements */}
+      {/* Background patterns */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-zinc-200/40 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-zinc-200/40 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] right-[10%] w-[20%] h-[20%] bg-zinc-100/60 rounded-full blur-[80px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-zinc-200/50 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-zinc-200/50 rounded-full blur-3xl" />
       </div>
 
-      <main className="w-full max-w-[440px] relative z-10 transition-all">
-        <div className="flex flex-col items-center mb-12">
-          <div className="w-16 h-16 bg-black rounded-[1.5rem] flex items-center justify-center mb-6 shadow-2xl shadow-black/10 transition-all hover:scale-105 active:scale-95">
-            <ShieldCheck className="text-white w-8 h-8" />
+      <main className="w-full max-w-md relative z-10">
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center mb-6 shadow-xl transition-all hover:scale-105">
+            <ShieldCheck className="text-white w-7 h-7" />
           </div>
-          <h1 className="text-4xl font-black tracking-tighter text-zinc-900 uppercase text-center leading-none">
-            Create <br /> Account
+          <h1 className="text-3xl font-black tracking-tighter text-zinc-900 uppercase">
+            Create Account
           </h1>
-          <p className="mt-4 text-zinc-500 font-medium tracking-tight text-center">
-            Join the Solano Marriage License System
+          <p className="mt-1 text-zinc-500 font-medium text-sm">
+            Solano Marriage License System
           </p>
         </div>
 
-        <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] p-4 bg-white/80 backdrop-blur-xl border border-white">
-          <div className="p-6">
-            <Suspense fallback={<div className="h-10 w-full animate-pulse bg-zinc-100 rounded-2xl mb-6" />}>
-              <NotificationHandler />
-            </Suspense>
+        <Card className="p-8 border-zinc-200/60 shadow-xl shadow-zinc-200/50 rounded-3xl bg-white/70 backdrop-blur-xl">
+          <Suspense fallback={<div className="h-10 w-full animate-pulse bg-zinc-100 rounded-xl mb-6" />}>
+            <NotificationHandler />
+          </Suspense>
 
-            <form action={signup} className="space-y-6">
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
-                >
-                  Email Address
-                </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="name@example.com"
-                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
-                    required
-                  />
-                </div>
+          <form action={signup} className="space-y-6">
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
+              >
+                Email Address
+              </label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+                icon={<Mail className="h-4 w-4" />}
+                className="h-12 bg-white/50 border-zinc-200 focus:border-black rounded-xl transition-all font-medium"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="password"
+                className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
+              >
+                Password
+              </label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                icon={<Lock className="h-4 w-4" />}
+                className="h-12 bg-white/50 border-zinc-200 focus:border-black rounded-xl transition-all font-medium"
+                minLength={6}
+                required
+              />
+              <div className="flex items-center gap-1.5 ml-1 mt-1">
+                <CheckCircle2 className="h-3 w-3 text-zinc-300" />
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">6+ characters required</p>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <label
-                  htmlFor="password"
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
-                >
-                  Password
-                </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
-                    <Lock className="h-4 w-4" />
-                  </div>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="••••••••"
-                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
-                    minLength={6}
-                    required
-                  />
-                </div>
-                <div className="flex items-center gap-1.5 ml-1 mt-1">
-                  <CheckCircle2 className="h-3 w-3 text-zinc-300" />
-                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">At least 6 characters required</p>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full h-14 rounded-2xl mt-4 font-black uppercase tracking-widest text-xs shadow-xl shadow-zinc-200 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                Get Started Now <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </form>
-          </div>
+            <Button type="submit" className="w-full h-12 rounded-xl mt-4 font-black uppercase tracking-widest text-xs shadow-lg shadow-zinc-200 transition-all hover:bg-zinc-800">
+              Get Started <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </form>
         </Card>
 
-        <p className="mt-10 text-center text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+        <p className="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-black border-b-2 border-black/10 hover:border-black transition-all ml-1"
+            className="text-black hover:underline underline-offset-4 ml-1"
           >
-            Sign in here
+            Sign in
           </Link>
         </p>
       </main>
