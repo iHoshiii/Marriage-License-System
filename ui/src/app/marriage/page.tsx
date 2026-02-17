@@ -259,10 +259,14 @@ export default function MarriageForm() {
                                         // Step B: Insert marriage_applications row, capture ID
                                         console.log('Step B: Inserting marriage application...');
 
+                                        // Get current user if any
+                                        const { data: { user: currentUser } } = await supabase.auth.getUser();
+
                                         const { data: appData, error: appError } = await supabase
                                             .from('marriage_applications')
                                             .insert([{
                                                 application_code: generatedCode,
+                                                created_by: currentUser?.id || null
                                             }])
                                             .select()
                                             .single();
@@ -335,6 +339,9 @@ export default function MarriageForm() {
                                         setApplicationCode(generatedCode);
                                         setIsSubmitted(true);
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                                        // Store application code in localStorage for claiming later
+                                        localStorage.setItem('application_code', generatedCode);
 
                                         // Redirect user to sign-up page with application code
                                         window.location.href = `/login/signup?code=${generatedCode}`;

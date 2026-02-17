@@ -1,5 +1,6 @@
-import { createClient } from "@/utils/supabase/server-utils";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,23 +15,143 @@ import {
     MapPin,
     PenSquare
 } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
-export const dynamic = "force-dynamic";
+interface Application {
+    id: string;
+    application_code: string;
+    status: string;
+    created_at: string;
+    applicants: Array<{
+        id: string;
+        type: string;
+        first_name: string;
+        middle_name?: string | null;
+        last_name: string;
+        suffix?: string | null;
+        birth_date: string;
+        age: number;
+        citizenship: string;
+        religion?: string | null;
+        father_name?: string | null;
+        mother_name?: string | null;
+        addresses: any;
+    }>;
+}
 
-export default async function UserDashboard() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+export default function UserDashboard() {
+    const [applications, setApplications] = useState<Application[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<any>(null);
 
-    if (!user) {
-        redirect("/login");
-    }
+    const fetchApplications = async (supabase: ReturnType<typeof createClient>, userId: string) => {
+        setLoading(true);
 
-    // Fetch applications for this user
-    const { data: applications, error } = await supabase
-        .from("marriage_applications")
-        .select("*")
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false });
+        // Fetch applications first
+        const { data: apps, error: appsError } = await supabase
+            .from("marriage_applications")
+            .select("*")
+            .eq("created_by", userId)
+            .order("created_at", { ascending: false });
+
+        if (appsError) {
+            console.error('Failed to fetch applications:', appsError);
+            setLoading(false);
+            return;
+        }
+
+        if (!apps || apps.length === 0) {
+            setApplications([]);
+            setLoading(false);
+            return;
+        }
+
+        // Fetch applicants for each application
+        const applicationsWithApplicants = await Promise.all(
+            apps.map(async (app) => {
+                const { data: applicants, error: applicantsError } = await supabase
+                    .from("applicants")
+                    .select(`
+                        *,
+                        addresses (*)
+                    `)
+                    .eq("application_id", app.id);
+
+                if (applicantsError) {
+                    console.error('Failed to fetch applicants for app', app.id, applicantsError.message, applicantsError);
+                    return { ...app, applicants: [] };
+                }
+
+                return { ...app, applicants: applicants || [] };
+            })
+        );
+
+        setApplications(applicationsWithApplicants);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        const initializeDashboard = async () => {
+            const supabase = createClient();
+
+            // Check authentication
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            if (!authUser) {
+                window.location.href = "/login";
+                return;
+            }
+            setUser(authUser);
+
+            // Check for application_code in localStorage and claim if exists
+            const applicationCode = localStorage.getItem('application_code');
+            if (applicationCode) {
+                console.log('Found application code in localStorage:', applicationCode);
+
+                // First, check if the application exists and is unclaimed
+                const { data: existingApp, error: checkError } = await supabase
+                    .from('marriage_applications')
+                    .select('id, created_by')
+                    .eq('application_code', applicationCode)
+                    .single();
+
+                if (checkError) {
+                    console.error('Error checking application:', checkError);
+                } else if (existingApp) {
+                    console.log('Found application:', existingApp);
+
+                    if (!existingApp.created_by) {
+                        // Claim the application
+                        const { error: claimError } = await supabase
+                            .from('marriage_applications')
+                            .update({ created_by: authUser.id })
+                            .eq('application_code', applicationCode);
+
+                        if (!claimError) {
+                            console.log('Application claimed successfully for user:', authUser.id);
+                            localStorage.removeItem('application_code');
+                        } else {
+                            console.error('Failed to claim application:', claimError.message, claimError);
+                        }
+                    } else {
+                        console.log('Application already claimed by user:', existingApp.created_by);
+                        localStorage.removeItem('application_code');
+                    }
+                } else {
+                    console.log('No application found with code:', applicationCode);
+                    localStorage.removeItem('application_code');
+                }
+            } else {
+                console.log('No application code found in localStorage');
+            }
+
+            // Fetch applications
+            await fetchApplications(supabase, authUser.id);
+        };
+
+        initializeDashboard();
+    }, []);
+
+    const [selectedApp, setSelectedApp] = useState<Application | null>(null);
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
@@ -83,32 +204,36 @@ export default async function UserDashboard() {
                                             </div>
                                             <CardTitle className="text-xl">Marriage License Application</CardTitle>
                                         </div>
-                                        <StatusBadge status={app.status} />
+                                        <StatusBadge status={app.status || 'submitted'} />
                                     </div>
                                 </CardHeader>
                                 <CardContent className="pt-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100">
-                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Next Step</h4>
-                                            {getNextStep(app.status)}
+                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Applicants</h4>
+                                            <div className="space-y-2">
+                                                {!app.applicants || app.applicants.length === 0 ? (
+                                                    <p className="text-sm text-zinc-400 italic">No applicant names loaded</p>
+                                                ) : (
+                                                    app.applicants.map((applicant: any) => (
+                                                        <div key={applicant.id} className="text-sm">
+                                                            <span className="font-medium text-zinc-900 capitalize">
+                                                                {applicant.type}: {applicant.first_name} {applicant.last_name}
+                                                            </span>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
                                         </div>
 
-                                        {/* Status Timeline / Details - Simplified for now */}
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-3 text-sm">
-                                                <div className="p-2 bg-blue-50 text-blue-600 rounded-md">
-                                                    <MapPin className="h-4 w-4" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-zinc-900">Municipal Civil Registrar</p>
-                                                    <p className="text-zinc-500 text-xs">Solano, Nueva Vizcaya</p>
-                                                </div>
-                                            </div>
+                                        <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100">
+                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Next Step</h4>
+                                            {getNextStep(app.status || 'submitted')}
                                         </div>
                                     </div>
                                 </CardContent>
                                 <CardFooter className="bg-zinc-50/30 border-t border-zinc-100 flex justify-end gap-3 py-4">
-                                    <Button variant="ghost" size="sm">View Details</Button>
+                                    <Button variant="ghost" size="sm" onClick={() => setSelectedApp(app)}>View Details</Button>
                                     {app.status === 'completed' && (
                                         <Button size="sm" className="gap-2">
                                             <Download className="h-4 w-4" /> Download Documents
@@ -164,6 +289,92 @@ export default async function UserDashboard() {
                     </Card>
                 </div>
             </div>
+
+            {/* Enhanced Detail Overlay */}
+            {selectedApp && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+                    <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto p-0 rounded-[2rem] border-none shadow-2xl flex flex-col">
+                        <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b px-8 py-5 flex justify-between items-center z-10">
+                            <div>
+                                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Application Review</h2>
+                                <p className="text-sm text-zinc-500 font-medium">#{selectedApp.application_code} • {new Date(selectedApp.created_at).toLocaleDateString()}</p>
+                            </div>
+                            <Button variant="ghost" className="rounded-full w-10 h-10 p-0" onClick={() => setSelectedApp(null)}>
+                                <span className="text-2xl">&times;</span>
+                            </Button>
+                        </div>
+
+                        <div className="p-8 space-y-8 bg-zinc-50/50">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {['groom', 'bride'].map((type) => {
+                                    const person = selectedApp.applicants?.find(a => a.type === type);
+                                    if (!person) return null;
+
+                                    return (
+                                        <div key={type} className="space-y-6">
+                                            <div className={`p-4 rounded-2xl border ${type === 'groom' ? 'bg-blue-50 border-blue-100 text-blue-700' : 'bg-rose-50 border-rose-100 text-rose-700'}`}>
+                                                <h3 className="text-lg font-black uppercase tracking-widest flex items-center gap-2">
+                                                    {type === 'groom' ? <div className="w-2 h-2 rounded-full bg-blue-500" /> : <div className="w-2 h-2 rounded-full bg-rose-500" />}
+                                                    {type}'s Information
+                                                </h3>
+                                            </div>
+
+                                            <div className="bg-white p-6 rounded-3xl border border-zinc-200 shadow-sm space-y-6">
+                                                {/* Personal Info */}
+                                                <section className="space-y-3">
+                                                    <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-widest border-b pb-1">Personal Details</h4>
+                                                    <div className="grid grid-cols-1 gap-3">
+                                                        <DetailItem label="Full Name" value={`${person.first_name} ${person.middle_name || ''} ${person.last_name} ${person.suffix || ''}`} />
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <DetailItem label="Birthday" value={new Date(person.birth_date).toLocaleDateString()} />
+                                                            <DetailItem label="Age" value={person.age?.toString()} />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <DetailItem label="Citizenship" value={person.citizenship} />
+                                                            <DetailItem label="Religion" value={person.religion} />
+                                                        </div>
+                                                    </div>
+                                                </section>
+
+                                                {/* Residence */}
+                                                <section className="space-y-3">
+                                                    <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-widest border-b pb-1">Current Residence</h4>
+                                                    <DetailItem
+                                                        label="Address"
+                                                        value={person.addresses ? `${person.addresses.barangay}, ${person.addresses.municipality}, ${person.addresses.province}` : 'No address provided'}
+                                                    />
+                                                </section>
+
+                                                {/* Parents info */}
+                                                <section className="space-y-3">
+                                                    <h4 className="text-[10px] font-black uppercase text-zinc-400 tracking-widest border-b pb-1">Parental Information</h4>
+                                                    <div className="space-y-3">
+                                                        <DetailItem label="Father's Name" value={person.father_name} />
+                                                        <DetailItem label="Mother's Name" value={person.mother_name} />
+                                                    </div>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <div className="border-t pt-6 text-center">
+                                <p className="text-xs text-zinc-400 italic">This application record is encrypted and legally binding under RA 10173.</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function DetailItem({ label, value }: { label: string, value?: string | null }) {
+    return (
+        <div>
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{label}</p>
+            <p className="text-sm font-semibold text-zinc-900 truncate">{value || 'N/A'}</p>
         </div>
     );
 }
