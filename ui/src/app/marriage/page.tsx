@@ -71,7 +71,7 @@ export default function MarriageForm() {
                             exit={{ opacity: 0 }}
                             className="absolute inset-0 bg-slate-900/80 backdrop-blur-md"
                         />
-                        
+
                         {!showLawDetails ? (
                             // Main Privacy Notice
                             <motion.div
@@ -82,20 +82,20 @@ export default function MarriageForm() {
                                 className="relative bg-white p-8 md:p-12 rounded-[2.5rem] max-w-2xl w-full shadow-2xl border border-slate-100"
                             >
                                 <div className="flex items-center gap-5 mb-8">
-                                <div className="flex-shrink-0 w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
-                                    <ShieldCheck className="w-10 h-10" />
+                                    <div className="flex-shrink-0 w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                                        <ShieldCheck className="w-10 h-10" />
+                                    </div>
+                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
+                                        Data Privacy Notice
+                                    </h2>
                                 </div>
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">
-                                    Data Privacy Notice
-                                </h2>
-                            </div>
                                 <div className="space-y-4 text-slate-600 mb-8 text-sm md:text-base leading-relaxed">
                                     <p>By proceeding with this application, you agree to the collection and processing of your personal information for the purpose of the <strong>Marriage License Application</strong>.</p>
                                     <ul className="list-disc pl-5 space-y-2 text-slate-500">
                                         <li>Your data will be used solely for civil registration and legal documents.</li>
                                         <li>
                                             Information is protected under the{" "}
-                                            <button 
+                                            <button
                                                 type="button"
                                                 onClick={() => setShowLawDetails(true)}
                                                 className="text-primary font-bold underline decoration-primary/30 hover:decoration-primary transition-all"
@@ -160,7 +160,7 @@ export default function MarriageForm() {
                                     </section>
                                 </div>
 
-                                <Button 
+                                <Button
                                     onClick={() => setShowLawDetails(false)}
                                     className="w-full h-14 rounded-2xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-900"
                                 >
@@ -263,8 +263,8 @@ export default function MarriageForm() {
                                             <AddressSection prefix="g" provincesList={provincesList} townOptions={townOptions} brgyOptions={gBrgyOptions} formData={formData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} />
                                             <BirthPlaceSection prefix="g" sameAsAddress={gSameAsAddress} setSameAsAddress={setGSameAsAddress} formData={formData} setFormData={setFormData} provincesList={provincesList} birthTownOptions={gBirthTownOptions} birthBrgyOptions={gBirthBrgyOptions} handleBirthProvinceChange={handleBirthProvinceChange} handleBirthTownChange={handleBirthTownChange} />
                                             <FamilySubSection prefix="g" person="Groom" data={formData} setData={setFormData} toTitleCase={toTitleCase} />
-                                            <GiverSubSection prefix="g" age={formData.gAge} data={formData} setData={setFormData} toTitleCase={toTitleCase} 
-/>
+                                            <GiverSubSection prefix="g" age={formData.gAge} data={formData} setData={setFormData} toTitleCase={toTitleCase}
+                                            />
                                         </SectionCard>
 
                                         <SectionCard title="Bride's Information" color="yellow">
@@ -346,16 +346,40 @@ export default function MarriageForm() {
                                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
                                         <FileText className="w-10 h-10 text-green-600" />
                                     </div>
-                                    <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">System Validated</h2>
-                                    <p className="text-slate-500 mb-8 font-medium">Application ID Generated</p>
+                                    <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Application Submitted</h2>
+                                    <p className="text-slate-500 mb-8 font-medium">Your Application Code Generated</p>
                                     <div className="bg-slate-50 px-8 py-6 rounded-3xl mb-10 border border-slate-100 shadow-inner">
                                         <span className="text-6xl font-black text-primary tracking-tighter">{applicationCode}</span>
                                     </div>
-                                    <div className="flex flex-col gap-4">
-                                        <Button onClick={generateExcel} disabled={loading} size="lg" variant="secondary" className="h-16 w-full text-xl shadow-xl rounded-2xl">
-                                            {loading ? "Exporting Data..." : "Download Excel Pack"}
-                                        </Button>
-                                        <Button variant="ghost" onClick={() => setIsSubmitted(false)} className="h-12 hover:bg-slate-50 rounded-xl">Edit Information</Button>
+
+                                    <div className="space-y-6">
+                                        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-left">
+                                            <h3 className="font-bold text-blue-900 flex items-center gap-2 mb-2">
+                                                <div className="w-6 h-6 rounded-full bg-blue-200 flex items-center justify-center text-xs">1</div>
+                                                Save Your Code
+                                            </h3>
+                                            <p className="text-sm text-blue-800/80 pl-8 mb-4">You will need this code when you visit the Municipal Office.</p>
+
+                                            <h3 className="font-bold text-blue-900 flex items-center gap-2 mb-2">
+                                                <div className="w-6 h-6 rounded-full bg-blue-200 flex items-center justify-center text-xs">2</div>
+                                                Create an Account
+                                            </h3>
+                                            <p className="text-sm text-blue-800/80 pl-8">To track your application status and view instructions, proceed to create your account.</p>
+                                        </div>
+
+                                        <div className="flex flex-col gap-4">
+                                            <Link href={`/login/signup?code=${applicationCode}`}>
+                                                <Button size="lg" className="h-16 w-full text-xl shadow-xl rounded-2xl font-bold">
+                                                    Create Account to Track
+                                                </Button>
+                                            </Link>
+                                            <div className="flex gap-4 justify-center">
+                                                <Button onClick={generateExcel} disabled={loading} variant="ghost" className="text-slate-500">
+                                                    {loading ? "Exporting..." : "Download File (Optional)"}
+                                                </Button>
+                                                <Button variant="ghost" onClick={() => setIsSubmitted(false)} className="text-slate-500">Edit Information</Button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </Card>
                             </motion.div>
@@ -367,7 +391,7 @@ export default function MarriageForm() {
             {/* Clear Form Modal */}
             <AnimatePresence>
                 {showClearAlert && (
-                   <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowClearAlert(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
                         <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-white p-8 rounded-[2.5rem] max-w-sm w-full shadow-2xl text-center border border-slate-100">
                             <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6"><Trash2 className="w-10 h-10" /></div>
