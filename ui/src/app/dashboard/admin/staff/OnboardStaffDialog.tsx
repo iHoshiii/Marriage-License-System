@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, UserPlus, Mail, IdCard, User, Loader2 } from "lucide-react";
+import { X, UserPlus, Mail, IdCard, User, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { onboardStaff } from "./actions";
@@ -75,6 +76,22 @@ export function OnboardStaffDialog({ children }: { children: React.ReactNode }) 
                                     >
                                         <X className="h-5 w-5" />
                                     </button>
+                                </div>
+                                <div
+                                    className="mb-8 p-6 rounded-[2rem] relative overflow-hidden group shadow-md"
+                                    style={{ backgroundColor: '#2563eb', color: 'white' }}
+                                >
+                                    <div className="relative z-10 flex items-start gap-4">
+                                        <div className="h-10 w-10 shrink-0 rounded-xl bg-white/20 flex items-center justify-center border border-white/30">
+                                            <AlertCircle className="h-5 w-5" style={{ color: 'white' }} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Prerequisite Action</p>
+                                            <p className="text-sm font-black leading-tight" style={{ color: 'white' }}>
+                                                Staff must first <Link href="/login/signup" className="underline underline-offset-4 decoration-white/40 hover:decoration-white transition-all">register an account</Link> before onboarding.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -154,4 +171,3 @@ export function OnboardStaffDialog({ children }: { children: React.ReactNode }) 
     );
 }
 
-import { AlertCircle } from "lucide-react";

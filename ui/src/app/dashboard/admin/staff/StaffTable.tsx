@@ -104,7 +104,7 @@ export function StaffTable({ initialStaff }: { initialStaff: any[] }) {
                         <th className="w-[40%] px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Employee</th>
                         <th className="w-[20%] px-6 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">ID / Role</th>
                         <th className="w-[20%] px-6 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Performance</th>
-                        <th className="w-[20%] pr-12 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-right">Actions</th>
+                        <th className="w-[20%] px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
@@ -146,8 +146,8 @@ export function StaffTable({ initialStaff }: { initialStaff: any[] }) {
                                     </div>
                                 </div>
                             </td>
-                            <td className="pr-12 py-6 text-right">
-                                <div className="flex justify-end items-center gap-3">
+                            <td className="px-8 py-6 text-center">
+                                <div className="flex justify-center items-center gap-3">
                                     <button
                                         onClick={() => triggerUpdateRole(member)}
                                         title={member.role === 'admin' ? 'Demote to Employee' : 'Promote to Admin'}
