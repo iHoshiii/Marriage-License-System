@@ -9,7 +9,8 @@ import {
     User,
     LogOut,
     ShieldCheck,
-    Bell
+    Bell,
+    Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +42,18 @@ export function Sidebar({ userRole = "user" }: SidebarProps) {
                         Dashboard
                     </Button>
                 </Link>
+
+                {userRole === "admin" && (
+                    <Link href="/dashboard/admin/staff">
+                        <Button
+                            variant={isActive("/dashboard/admin/staff") ? "secondary" : "ghost"}
+                            className={cn("w-full justify-start gap-3 h-11 px-3", isActive("/dashboard/admin/staff") ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
+                        >
+                            <Users className="h-4 w-4" />
+                            Staff Management
+                        </Button>
+                    </Link>
+                )}
 
 
                 <Link href="/dashboard/profile">
