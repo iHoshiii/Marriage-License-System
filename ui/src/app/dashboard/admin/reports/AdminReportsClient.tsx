@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
     XCircle,
     AlertCircle
 } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 interface Application {
     id: string;
@@ -47,12 +48,71 @@ interface Application {
     }>;
 }
 
-interface AdminReportsClientProps {
-    applications: Application[];
-}
-
-export default function AdminReportsClient({ applications }: AdminReportsClientProps) {
+export default function AdminReportsClient() {
+    const [applications, setApplications] = useState<Application[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [selectedTimeframe, setSelectedTimeframe] = useState<"all" | "month" | "week">("all");
+
+    // Fetch data on component mount
+    useEffect(() => {
+        const fetchReportsData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const supabase = createClient();
+
+                // First fetch applications
+                const { data: applicationsData, error: appsError } = await supabase
+                    .from("marriage_applications")
+                    .select("*")
+                    .order("created_at", { ascending: false });
+
+                if (appsError) {
+                    console.error("Error fetching applications:", appsError);
+                    setError("Failed to load applications data");
+                    setLoading(false);
+                    return;
+                }
+
+                if (!applicationsData || applicationsData.length === 0) {
+                    setApplications([]);
+                    setLoading(false);
+                    return;
+                }
+
+                // Then fetch applicants for each application
+                const applicationsWithApplicants = await Promise.all(
+                    applicationsData.map(async (app) => {
+                        const { data: applicants, error: applicantsError } = await supabase
+                            .from("applicants")
+                            .select(`
+                                *,
+                                addresses (*)
+                            `)
+                            .eq("application_id", app.id);
+
+                        if (applicantsError) {
+                            console.error('Failed to fetch applicants for app', app.id, applicantsError);
+                            return { ...app, applicants: [] };
+                        }
+
+                        return { ...app, applicants: applicants || [] };
+                    })
+                );
+
+                setApplications(applicationsWithApplicants);
+            } catch (err) {
+                console.error("Error in fetchReportsData:", err);
+                setError("An unexpected error occurred");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchReportsData();
+    }, []);
 
     // Calculate statistics
     const stats = useMemo(() => {
@@ -143,6 +203,109 @@ export default function AdminReportsClient({ applications }: AdminReportsClientP
             averageProcessingTime: calculateAverageProcessingTime(filteredApps)
         };
     }, [applications, selectedTimeframe]);
+
+    // Show loading state
+    if (loading) {
+        return (
+            <div className="space-y-8">
+                {/* Header Skeleton */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-2">
+                        <div className="h-9 w-64 bg-zinc-200 rounded animate-pulse" />
+                        <div className="h-4 w-80 bg-zinc-200 rounded animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="h-9 w-20 bg-zinc-200 rounded animate-pulse" />
+                        <div className="h-9 w-20 bg-zinc-200 rounded animate-pulse" />
+                        <div className="h-9 w-20 bg-zinc-200 rounded animate-pulse" />
+                        <div className="h-9 w-24 bg-zinc-200 rounded animate-pulse" />
+                    </div>
+                </div>
+
+                {/* Key Metrics Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <Card key={i} className="rounded-[2rem] border-zinc-100 shadow-xl shadow-zinc-200/40 overflow-hidden">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <div className="h-4 w-24 bg-zinc-200 rounded animate-pulse" />
+                                <div className="h-4 w-4 bg-zinc-200 rounded animate-pulse" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-8 w-16 bg-zinc-200 rounded animate-pulse mb-1" />
+                                <div className="h-3 w-20 bg-zinc-200 rounded animate-pulse" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Charts Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <Card key={i} className="rounded-[2.5rem] border-zinc-100 shadow-xl shadow-zinc-200/40">
+                            <CardHeader>
+                                <div className="flex items-center gap-2">
+                                    <div className="h-6 w-6 bg-zinc-200 rounded animate-pulse" />
+                                    <div className="h-6 w-48 bg-zinc-200 rounded animate-pulse" />
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {Array.from({ length: 5 }).map((_, j) => (
+                                    <div key={j} className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-3 w-3 bg-zinc-200 rounded-full animate-pulse" />
+                                            <div className="h-4 w-16 bg-zinc-200 rounded animate-pulse" />
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-4 w-8 bg-zinc-200 rounded animate-pulse" />
+                                            <div className="h-3 w-8 bg-zinc-200 rounded animate-pulse" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Trends Skeleton */}
+                <Card className="rounded-[2.5rem] border-zinc-100 shadow-xl shadow-zinc-200/40">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <div className="h-6 w-6 bg-zinc-200 rounded animate-pulse" />
+                            <div className="h-6 w-32 bg-zinc-200 rounded animate-pulse" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="text-center p-4 bg-zinc-50 rounded-2xl">
+                                    <div className="h-8 w-8 bg-zinc-200 rounded animate-pulse mx-auto mb-2" />
+                                    <div className="h-3 w-12 bg-zinc-200 rounded animate-pulse mx-auto" />
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    // Show error state
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <AlertCircle className="h-12 w-12 text-red-500" />
+                <h2 className="text-xl font-bold text-zinc-900">Failed to Load Reports</h2>
+                <p className="text-zinc-500 text-center max-w-md">{error}</p>
+                <Button
+                    onClick={() => window.location.reload()}
+                    variant="outline"
+                    className="mt-4"
+                >
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
