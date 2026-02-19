@@ -4,7 +4,7 @@ import { createAdminClient } from "@/utils/supabase/server-utils";
 import { revalidatePath } from "next/cache";
 
 export async function getAllApplications() {
-    const supabase = await createAdminClient();
+    const supabase = createAdminClient();
 
     const { data: apps, error } = await supabase
         .from("marriage_applications")
@@ -60,12 +60,18 @@ export async function getAllApplications() {
 }
 
 export async function updateApplicationStatus(applicationId: string, newStatus: string) {
-    const supabase = await createAdminClient();
+    console.log("updateApplicationStatus called with:", { applicationId, newStatus });
 
-    const { error } = await supabase
+    const supabase = createAdminClient();
+    console.log("Admin client created");
+
+    const { data, error } = await supabase
         .from("marriage_applications")
         .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq("id", applicationId);
+        .eq("id", applicationId)
+        .select();
+
+    console.log("Update result:", { data, error });
 
     if (error) {
         console.error("Error updating status:", error);

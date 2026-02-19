@@ -130,9 +130,19 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
 
     async function handleStatusChange(appId: string, newStatus: string) {
         setUpdatingId(appId);
-        await updateApplicationStatus(appId, newStatus);
-        setApps(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
-        if (selectedApp?.id === appId) setSelectedApp((prev: any) => ({ ...prev, status: newStatus }));
+        try {
+            const result = await updateApplicationStatus(appId, newStatus);
+            if (result.success) {
+                setApps(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
+                if (selectedApp?.id === appId) setSelectedApp((prev: any) => ({ ...prev, status: newStatus }));
+            } else {
+                console.error("Failed to update status:", result.error);
+                alert(`Failed to update status: ${result.error}`);
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+            alert("An error occurred while updating the status");
+        }
         setUpdatingId(null);
     }
 
