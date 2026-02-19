@@ -157,6 +157,15 @@
     ],
     "policies": [
       {
+        "name": "applicants_insert_authenticated_only",
+        "command": "INSERT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "check": "true"
+      },
+      {
         "name": "applicants_select_final",
         "command": "SELECT",
         "roles": [
@@ -165,15 +174,6 @@
         ],
         "using": "true",
         "check": null
-      },
-      {
-        "name": "applicants_insert_authenticated_only",
-        "command": "INSERT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": null,
-        "check": "true"
       }
     ],
     "foreign_keys": [
@@ -428,48 +428,21 @@
     ],
     "policies": [
       {
-        "name": "app_insert_authenticated",
-        "command": "INSERT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": null,
-        "check": "(created_by = auth.uid())"
-      },
-      {
-        "name": "users_view_own_applications",
-        "command": "SELECT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "(created_by = auth.uid())",
-        "check": null
-      },
-      {
-        "name": "employees_update_applications",
-        "command": "UPDATE",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "check_user_role(ARRAY['employee'::text, 'admin'::text])",
-        "check": null
-      },
-      {
-        "name": "allow_authenticated_view_unclaimed",
-        "command": "SELECT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "(created_by IS NULL)",
-        "check": null
-      },
-      {
         "name": "users_update_own_application_contact",
         "command": "UPDATE",
         "roles": [
           "authenticated"
         ],
         "using": "(created_by = auth.uid())",
+        "check": "(created_by = auth.uid())"
+      },
+      {
+        "name": "app_insert_authenticated",
+        "command": "INSERT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
         "check": "(created_by = auth.uid())"
       },
       {
@@ -482,6 +455,42 @@
         "check": null
       },
       {
+        "name": "admin_service_role_update",
+        "command": "ALL",
+        "roles": [
+          "public"
+        ],
+        "using": "((auth.role() = 'service_role'::text) OR check_user_role(ARRAY['admin'::text, 'employee'::text]))",
+        "check": null
+      },
+      {
+        "name": "allow_all_operations_for_service_role",
+        "command": "ALL",
+        "roles": [
+          "public"
+        ],
+        "using": "(auth.role() = 'service_role'::text)",
+        "check": null
+      },
+      {
+        "name": "allow_updates_for_staff",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "check_user_role(ARRAY['admin'::text, 'employee'::text])",
+        "check": null
+      },
+      {
+        "name": "users_view_own_applications",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(created_by = auth.uid())",
+        "check": null
+      },
+      {
         "name": "enforce_one_app_claim",
         "command": "UPDATE",
         "roles": [
@@ -489,6 +498,15 @@
         ],
         "using": "(created_by IS NULL)",
         "check": "((created_by = auth.uid()) AND (NOT (EXISTS ( SELECT 1\n   FROM marriage_applications marriage_applications_1\n  WHERE (marriage_applications_1.created_by = auth.uid())))))"
+      },
+      {
+        "name": "allow_authenticated_view_unclaimed",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(created_by IS NULL)",
+        "check": null
       }
     ],
     "foreign_keys": [
@@ -554,6 +572,15 @@
         "check": null
       },
       {
+        "name": "users_update_own_profile",
+        "command": "UPDATE",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(auth.uid() = id)",
+        "check": "(auth.uid() = id)"
+      },
+      {
         "name": "Admins can view all profiles",
         "command": "SELECT",
         "roles": [
@@ -570,15 +597,6 @@
         ],
         "using": "(id = auth.uid())",
         "check": null
-      },
-      {
-        "name": "users_update_own_profile",
-        "command": "UPDATE",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "(auth.uid() = id)",
-        "check": "(auth.uid() = id)"
       },
       {
         "name": "profiles_view_all_as_staff",

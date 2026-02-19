@@ -129,10 +129,14 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
     async function handleStatusChange(appId: string, newStatus: string) {
+        console.log("UI: handleStatusChange called with:", { appId, newStatus });
         setUpdatingId(appId);
         try {
+            console.log("UI: Calling updateApplicationStatus...");
             const result = await updateApplicationStatus(appId, newStatus);
+            console.log("UI: updateApplicationStatus result:", result);
             if (result.success) {
+                console.log("UI: Update successful, updating local state");
                 setApps(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
                 if (selectedApp?.id === appId) setSelectedApp((prev: any) => ({ ...prev, status: newStatus }));
             } else {
