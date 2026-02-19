@@ -428,22 +428,13 @@
     ],
     "policies": [
       {
-        "name": "enforce_one_app_claim",
-        "command": "UPDATE",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "(created_by IS NULL)",
-        "check": "((created_by = auth.uid()) AND (NOT (EXISTS ( SELECT 1\n   FROM marriage_applications marriage_applications_1\n  WHERE (marriage_applications_1.created_by = auth.uid())))))"
-      },
-      {
         "name": "app_insert_authenticated",
         "command": "INSERT",
         "roles": [
           "authenticated"
         ],
         "using": null,
-        "check": "(NOT (EXISTS ( SELECT 1\n   FROM marriage_applications marriage_applications_1\n  WHERE (marriage_applications_1.created_by = auth.uid()))))"
+        "check": "(created_by = auth.uid())"
       },
       {
         "name": "users_view_own_applications",
@@ -489,6 +480,15 @@
         ],
         "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[])))))",
         "check": null
+      },
+      {
+        "name": "enforce_one_app_claim",
+        "command": "UPDATE",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(created_by IS NULL)",
+        "check": "((created_by = auth.uid()) AND (NOT (EXISTS ( SELECT 1\n   FROM marriage_applications marriage_applications_1\n  WHERE (marriage_applications_1.created_by = auth.uid())))))"
       }
     ],
     "foreign_keys": [
@@ -545,21 +545,12 @@
     ],
     "policies": [
       {
-        "name": "profiles_view_all_as_staff",
+        "name": "users_view_own_profile",
         "command": "SELECT",
         "roles": [
           "authenticated"
         ],
-        "using": "is_admin_or_employee()",
-        "check": null
-      },
-      {
-        "name": "profiles_view_own",
-        "command": "SELECT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "(id = auth.uid())",
+        "using": "(auth.uid() = id)",
         "check": null
       },
       {
@@ -572,6 +563,15 @@
         "check": null
       },
       {
+        "name": "profiles_view_own",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(id = auth.uid())",
+        "check": null
+      },
+      {
         "name": "users_update_own_profile",
         "command": "UPDATE",
         "roles": [
@@ -581,12 +581,12 @@
         "check": "(auth.uid() = id)"
       },
       {
-        "name": "users_view_own_profile",
+        "name": "profiles_view_all_as_staff",
         "command": "SELECT",
         "roles": [
           "authenticated"
         ],
-        "using": "(auth.uid() = id)",
+        "using": "is_admin_or_employee()",
         "check": null
       }
     ],
