@@ -4,10 +4,10 @@ import { Avatar } from "@/components/ui/avatar";
 import { Bell, Search, Menu, X, LayoutDashboard, User, LogOut, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { logout } from "@/app/logout/actions";
 
 interface HeaderProps {
