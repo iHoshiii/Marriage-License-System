@@ -129,10 +129,18 @@ export async function uploadApplicationPhoto(formData: FormData) {
         return { success: false, error: "Not authenticated" };
     }
 
-    // Find application by code
+    // Find application by code with applicant details
     const { data: app, error: appError } = await adminSupabase
         .from("marriage_applications")
-        .select("id")
+        .select(`
+            id,
+            application_code,
+            applicants (
+                first_name,
+                last_name,
+                type
+            )
+        `)
         .eq("application_code", applicationCode.toUpperCase())
         .single();
 
@@ -187,6 +195,34 @@ export async function uploadApplicationPhoto(formData: FormData) {
         return { success: false, error: "Failed to save photo record" };
     }
 
+    // Update application status to approved
+    const { error: statusError } = await adminSupabase
+        .from("marriage_applications")
+        .update({
+            status: "approved",
+            updated_at: new Date().toISOString(),
+            processed_by: user.id
+        })
+        .eq("id", app.id);
+
+    if (statusError) {
+        console.error("Error updating application status:", statusError);
+        // Don't return error here as photo upload was successful
+        // Status update failure shouldn't block the photo upload success
+    }
+
+    // Get applicant names for success message
+    const applicants = Array.isArray(app.applicants) ? app.applicants : [];
+    const groom = applicants.find((a: { type: string; first_name: string; last_name: string }) => a.type === 'groom');
+    const bride = applicants.find((a: { type: string; first_name: string; last_name: string }) => a.type === 'bride');
+    const groomName = groom ? `${groom.first_name} ${groom.last_name}` : 'Unknown';
+    const brideName = bride ? `${bride.first_name} ${bride.last_name}` : 'Unknown';
+
     revalidatePath("/dashboard/admin/applications");
-    return { success: true };
+    return {
+        success: true,
+        applicationCode: app.application_code,
+        groomName,
+        brideName
+    };
 }
