@@ -36,11 +36,13 @@ function ActionDropdown({
     app,
     onView,
     onStatusChange,
+    onManualUpdate,
     isUpdating,
 }: {
     app: any;
     onView: () => void;
     onStatusChange: (id: string, status: string) => void;
+    onManualUpdate: (app: any) => void;
     isUpdating: boolean;
 }) {
     const [open, setOpen] = useState(false);
@@ -105,7 +107,11 @@ function ActionDropdown({
                         <button
                             key={value}
                             disabled={app.status === value}
-                            onClick={() => { onStatusChange(app.id, value); setOpen(false); }}
+                            onClick={() => {
+                                console.log("Table action clicked:", { appCode: app.application_code, newStatus: value });
+                                onStatusChange(app.application_code, value);
+                                setOpen(false);
+                            }}
                             className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${hover}`}
                         >
                             <div className={`h-2 w-2 rounded-full shrink-0 ${dot}`} />
@@ -115,6 +121,17 @@ function ActionDropdown({
                             )}
                         </button>
                     ))}
+                    <div className="border-t border-zinc-100 my-2"></div>
+                    <button
+                        onClick={() => {
+                            onManualUpdate(app);
+                            setOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-zinc-700 transition-colors hover:bg-purple-50"
+                    >
+                        <div className="h-2 w-2 rounded-full shrink-0 bg-purple-400" />
+                        Manual Update
+                    </button>
                 </div>
             )}
         </div>
@@ -128,17 +145,40 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
     const [search, setSearch] = useState("");
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-    async function handleStatusChange(appId: string, newStatus: string) {
-        console.log("UI: handleStatusChange called with:", { appId, newStatus });
-        setUpdatingId(appId);
+    // Manual status update form state
+    const [manualAppCode, setManualAppCode] = useState("");
+    const [manualStatus, setManualStatus] = useState("approved");
+    const [manualUpdating, setManualUpdating] = useState(false);
+    const [manualMessage, setManualMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
+    // Row-based manual update modal state
+    const [rowManualApp, setRowManualApp] = useState<any | null>(null);
+    const [rowManualStatus, setRowManualStatus] = useState("approved");
+    const [rowManualUpdating, setRowManualUpdating] = useState(false);
+    const [rowManualMessage, setRowManualMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
+    async function handleStatusChange(appCode: string, newStatus: string) {
+        console.log("UI: handleStatusChange called with:", { appCode, newStatus });
+
+        // Find the application by application_code (like the manual form)
+        const appToUpdate = apps.find(app => app.application_code?.toUpperCase() === appCode.toUpperCase());
+        if (!appToUpdate) {
+            console.error("Application not found with code:", appCode);
+            alert("Application not found");
+            return;
+        }
+
+        console.log("UI: Found application with id:", appToUpdate.id);
+        setUpdatingId(appToUpdate.id);
+
         try {
             console.log("UI: Calling updateApplicationStatus...");
-            const result = await updateApplicationStatus(appId, newStatus);
+            const result = await updateApplicationStatus(appToUpdate.id, newStatus);
             console.log("UI: updateApplicationStatus result:", result);
             if (result.success) {
                 console.log("UI: Update successful, updating local state");
-                setApps(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
-                if (selectedApp?.id === appId) setSelectedApp((prev: any) => ({ ...prev, status: newStatus }));
+                setApps(prev => prev.map(a => a.id === appToUpdate.id ? { ...a, status: newStatus } : a));
+                if (selectedApp?.id === appToUpdate.id) setSelectedApp((prev: any) => ({ ...prev, status: newStatus }));
             } else {
                 console.error("Failed to update status:", result.error);
                 alert(`Failed to update status: ${result.error}`);
@@ -148,6 +188,76 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
             alert("An error occurred while updating the status");
         }
         setUpdatingId(null);
+    }
+
+    async function handleManualStatusUpdate() {
+        if (!manualAppCode.trim()) return;
+
+        setManualUpdating(true);
+        setManualMessage(null);
+
+        try {
+            // Find the application by code
+            const appToUpdate = apps.find(app => app.application_code?.toUpperCase() === manualAppCode.toUpperCase());
+
+            if (!appToUpdate) {
+                setManualMessage({ type: 'error', text: `Application with code "${manualAppCode}" not found.` });
+                return;
+            }
+
+            console.log("Manual update: Found application", appToUpdate.id);
+
+            const result = await updateApplicationStatus(appToUpdate.id, manualStatus);
+            console.log("Manual update result:", result);
+
+            if (result.success) {
+                // Update local state
+                setApps(prev => prev.map(a => a.id === appToUpdate.id ? { ...a, status: manualStatus } : a));
+                if (selectedApp?.id === appToUpdate.id) {
+                    setSelectedApp((prev: any) => ({ ...prev, status: manualStatus }));
+                }
+
+                setManualMessage({ type: 'success', text: `Status updated to "${manualStatus}" for application ${manualAppCode}.` });
+                setManualAppCode(""); // Clear the input
+            } else {
+                setManualMessage({ type: 'error', text: `Failed to update status: ${result.error}` });
+            }
+        } catch (error) {
+            console.error("Manual update error:", error);
+            setManualMessage({ type: 'error', text: 'An error occurred while updating the status.' });
+        } finally {
+            setManualUpdating(false);
+        }
+    }
+
+    async function handleRowManualStatusUpdate() {
+        if (!rowManualApp) return;
+
+        setRowManualUpdating(true);
+        setRowManualMessage(null);
+
+        try {
+            const result = await updateApplicationStatus(rowManualApp.id, rowManualStatus);
+            console.log("Row manual update result:", result);
+
+            if (result.success) {
+                // Update local state
+                setApps(prev => prev.map(a => a.id === rowManualApp.id ? { ...a, status: rowManualStatus } : a));
+                if (selectedApp?.id === rowManualApp.id) {
+                    setSelectedApp((prev: any) => ({ ...prev, status: rowManualStatus }));
+                }
+
+                setRowManualMessage({ type: 'success', text: `Status updated to "${rowManualStatus}" for application ${rowManualApp.application_code}.` });
+                setRowManualApp(null); // Close modal
+            } else {
+                setRowManualMessage({ type: 'error', text: `Failed to update status: ${result.error}` });
+            }
+        } catch (error) {
+            console.error("Row manual update error:", error);
+            setRowManualMessage({ type: 'error', text: 'An error occurred while updating the status.' });
+        } finally {
+            setRowManualUpdating(false);
+        }
     }
 
     const filtered = apps.filter(app => {
@@ -269,6 +379,11 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
                                                     app={app}
                                                     onView={() => setSelectedApp(app)}
                                                     onStatusChange={handleStatusChange}
+                                                    onManualUpdate={(app) => {
+                                                        setRowManualApp(app);
+                                                        setRowManualStatus(app.status || "approved");
+                                                        setRowManualMessage(null);
+                                                    }}
                                                     isUpdating={updatingId === app.id}
                                                 />
                                             </td>
@@ -279,6 +394,63 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            {/* ── Manual Status Update Form ── */}
+            <div className="bg-white rounded-[2.5rem] border border-zinc-100 shadow-2xl shadow-zinc-200/50 p-8 mt-8">
+                <h3 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-6">Manual Status Update</h3>
+
+                <div className="flex flex-col sm:flex-row gap-4 items-end">
+                    <div className="flex-1">
+                        <label className="block text-sm font-bold text-zinc-700 mb-2">Application Code</label>
+                        <input
+                            type="text"
+                            placeholder="Enter application code (e.g., ABC123)"
+                            className="w-full h-12 bg-white border border-zinc-100 rounded-2xl px-4 text-sm font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
+                            value={manualAppCode}
+                            onChange={(e) => setManualAppCode(e.target.value.toUpperCase())}
+                        />
+                    </div>
+
+                    <div className="flex-1">
+                        <label className="block text-sm font-bold text-zinc-700 mb-2">Set Status</label>
+                        <select
+                            className="w-full h-12 bg-white border border-zinc-100 rounded-2xl px-4 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
+                            value={manualStatus}
+                            onChange={(e) => setManualStatus(e.target.value)}
+                        >
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <button
+                        onClick={handleManualStatusUpdate}
+                        disabled={manualUpdating || !manualAppCode.trim()}
+                        className="h-12 px-8 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-400 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20 disabled:cursor-not-allowed"
+                    >
+                        {manualUpdating ? (
+                            <div className="flex items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Updating...
+                            </div>
+                        ) : (
+                            'Update Status'
+                        )}
+                    </button>
+                </div>
+
+                {manualMessage && (
+                    <div className={`mt-4 p-4 rounded-2xl text-sm font-bold ${
+                        manualMessage.type === 'success'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-red-50 text-red-700 border border-red-200'
+                    }`}>
+                        {manualMessage.text}
+                    </div>
+                )}
             </div>
 
             {/* ── Detail Modal ── */}
@@ -385,6 +557,80 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
                             <div className="border-t pt-4 text-center">
                                 <p className="text-xs text-zinc-400 italic">This application record is encrypted and legally binding under RA 10173.</p>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Row Manual Update Modal ── */}
+            {rowManualApp && (
+                <div
+                    className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+                    onClick={() => setRowManualApp(null)}
+                >
+                    <div
+                        className="w-full max-w-md bg-white rounded-[2rem] shadow-2xl p-8"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-black text-zinc-900 uppercase tracking-tight">Manual Status Update</h3>
+                            <button
+                                onClick={() => setRowManualApp(null)}
+                                className="h-8 w-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition-all"
+                            >
+                                <X className="h-4 w-4 text-zinc-600" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-zinc-700 mb-2">Application Code</label>
+                                <input
+                                    type="text"
+                                    value={rowManualApp.application_code}
+                                    readOnly
+                                    className="w-full h-12 bg-zinc-50 border border-zinc-100 rounded-2xl px-4 text-sm font-bold text-zinc-500 cursor-not-allowed"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-zinc-700 mb-2">Set Status</label>
+                                <select
+                                    className="w-full h-12 bg-white border border-zinc-100 rounded-2xl px-4 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
+                                    value={rowManualStatus}
+                                    onChange={(e) => setRowManualStatus(e.target.value)}
+                                >
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+
+                            <button
+                                onClick={handleRowManualStatusUpdate}
+                                disabled={rowManualUpdating}
+                                className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-400 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20 disabled:cursor-not-allowed"
+                            >
+                                {rowManualUpdating ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Updating...
+                                    </div>
+                                ) : (
+                                    'Update Status'
+                                )}
+                            </button>
+
+                            {rowManualMessage && (
+                                <div className={`mt-4 p-4 rounded-2xl text-sm font-bold ${
+                                    rowManualMessage.type === 'success'
+                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                        : 'bg-red-50 text-red-700 border border-red-200'
+                                }`}>
+                                    {rowManualMessage.text}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
