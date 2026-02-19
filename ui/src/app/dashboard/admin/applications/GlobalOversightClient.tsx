@@ -694,11 +694,28 @@ export default function GlobalOversightClient({ apps: initialApps }: { apps: any
                                             const ctx = canvas.getContext('2d');
                                             if (!ctx) return;
 
-                                            canvas.width = video.videoWidth;
-                                            canvas.height = video.videoHeight;
-                                            ctx.drawImage(video, 0, 0);
+                                            // Compress by resizing to max 800px width/height while maintaining aspect ratio
+                                            const maxSize = 800;
+                                            let { videoWidth: width, videoHeight: height } = video;
 
-                                            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                                            if (width > height) {
+                                                if (width > maxSize) {
+                                                    height = (height * maxSize) / width;
+                                                    width = maxSize;
+                                                }
+                                            } else {
+                                                if (height > maxSize) {
+                                                    width = (width * maxSize) / height;
+                                                    height = maxSize;
+                                                }
+                                            }
+
+                                            canvas.width = width;
+                                            canvas.height = height;
+                                            ctx.drawImage(video, 0, 0, width, height);
+
+                                            // Use lower quality for better compression
+                                            const imageData = canvas.toDataURL('image/jpeg', 0.6);
                                             setCapturedImage(imageData);
                                         }}
                                         className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20"

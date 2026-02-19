@@ -116,13 +116,26 @@ export async function uploadApplicationPhoto(formData: FormData) {
         return { success: false, error: "Application not found" };
     }
 
-    // Upload file to storage
-    const fileName = `${app.id}/${Date.now()}.jpg`;
+    // Delete any existing photo records for this application (file will be overwritten)
+    const { error: deleteDbError } = await adminSupabase
+        .from("application_photos")
+        .delete()
+        .eq("application_id", app.id);
+
+    if (deleteDbError) {
+        console.error("Error deleting old photo records:", deleteDbError);
+        return { success: false, error: "Failed to delete old photo records" };
+    }
+
+    console.log("Old photo records deleted from database successfully");
+
+    // Upload new file to storage (use application code as filename for consistent replacement)
+    const fileName = `${applicationCode.toUpperCase()}.jpg`;
     const { data: uploadData, error: uploadError } = await supabase.storage
         .from("marriage-license-files")
         .upload(fileName, photoFile, {
             contentType: "image/jpeg",
-            upsert: false
+            upsert: true
         });
 
     if (uploadError) {
@@ -130,8 +143,8 @@ export async function uploadApplicationPhoto(formData: FormData) {
         return { success: false, error: "Failed to upload photo" };
     }
 
-    // Insert record
-    const { error: insertError } = await supabase
+    // Insert new record
+    const { error: insertError } = await adminSupabase
         .from("application_photos")
         .insert({
             application_id: app.id,
