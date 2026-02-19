@@ -11,9 +11,23 @@ export async function getAllApplications() {
         .select(`
             *,
             applicants (
+                id,
                 first_name,
+                middle_name,
                 last_name,
-                type
+                suffix,
+                type,
+                birth_date,
+                age,
+                citizenship,
+                religion,
+                father_name,
+                mother_name,
+                addresses (
+                    barangay,
+                    municipality,
+                    province
+                )
             ),
             profiles!created_by (
                 full_name
@@ -31,7 +45,6 @@ export async function getAllApplications() {
         const groom = applicants.find((a: any) => a.type === 'groom');
         const bride = applicants.find((a: any) => a.type === 'bride');
 
-        // Handle alias from join (can be single object or array depending on client version/join type)
         const profileData = (app as any).profiles;
         const profile = Array.isArray(profileData) ? profileData[0] : profileData;
 
@@ -39,7 +52,9 @@ export async function getAllApplications() {
             ...app,
             groom_name: groom ? `${groom.first_name} ${groom.last_name}` : 'Unknown',
             bride_name: bride ? `${bride.first_name} ${bride.last_name}` : 'Unknown',
-            submitted_by: profile?.full_name || 'Anonymous'
+            submitted_by: profile?.full_name || 'Anonymous',
+            groom: groom || null,
+            bride: bride || null,
         };
     });
 }
