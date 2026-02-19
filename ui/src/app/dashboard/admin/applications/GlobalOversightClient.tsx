@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
     FileText, Search, Calendar, User, Clock,
     CheckCircle2, XCircle, Eye, X, MoreHorizontal,
-    Loader2, ChevronLeft, ChevronRight
+    Loader2, ChevronLeft, ChevronRight, FileDown
 } from "lucide-react";
 import { updateApplicationStatus } from "./actions";
 import PhotoCaptureModal from "@/components/PhotoCaptureModal";
@@ -33,15 +33,17 @@ function DetailItem({ label, value }: { label: string; value?: string | number |
     );
 }
 
-// ── Per-row action buttons: Eye + Horizontal-dots manual update ────────────
+// ── Per-row action buttons: Eye + Document + Horizontal-dots manual update ────────────
 function ActionDropdown({
     app,
     onView,
+    onDownloadExcel,
     onManualUpdate,
     isUpdating,
 }: {
     app: any;
     onView: () => void;
+    onDownloadExcel: (app: any) => void;
     onManualUpdate: (app: any) => void;
     isUpdating: boolean;
 }) {
@@ -54,6 +56,15 @@ function ActionDropdown({
                 className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
             >
                 <Eye className="h-4 w-4" />
+            </button>
+
+            {/* Document — Download Excel */}
+            <button
+                title="Download Excel"
+                onClick={() => onDownloadExcel(app)}
+                className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
+            >
+                <FileDown className="h-4 w-4" />
             </button>
 
             {/* Horizontal dots — Manual Update (opens modal with code auto-detected) */}
@@ -208,6 +219,85 @@ export default function GlobalOversightClient({
             setRowManualUpdating(false);
         }
     }
+
+    const handleDownloadExcel = async (app: any) => {
+        try {
+            // Prepare data for Excel generation
+            const excelData = {
+                gFirst: app.groom?.first_name || '',
+                gMiddle: app.groom?.middle_name || '',
+                gLast: app.groom?.last_name || '',
+                gBday: app.groom?.birth_date ? new Date(app.groom.birth_date).toLocaleDateString('en-US') : '',
+                gAge: app.groom?.age || 0,
+                gTown: app.groom?.addresses?.municipality || '',
+                gProv: app.groom?.addresses?.province || 'Nueva Vizcaya',
+                gBrgy: app.groom?.addresses?.barangay || '',
+                gCountry: app.groom?.citizenship || 'Philippines',
+                gCitizen: app.groom?.citizenship || 'Filipino',
+                gReligion: app.groom?.religion || '',
+                gStatus: 'Single',
+                gFathF: app.groom?.father_name?.split(' ')[0] || '',
+                gFathM: app.groom?.father_name?.split(' ')[1] || '',
+                gFathL: app.groom?.father_name?.split(' ')[2] || '',
+                gMothF: app.groom?.mother_name?.split(' ')[0] || '',
+                gMothM: app.groom?.mother_name?.split(' ')[1] || '',
+                gMothL: app.groom?.mother_name?.split(' ')[2] || '',
+                gGiverF: '',
+                gGiverM: '',
+                gGiverL: '',
+                gGiverRelation: '',
+
+                bFirst: app.bride?.first_name || '',
+                bMiddle: app.bride?.middle_name || '',
+                bLast: app.bride?.last_name || '',
+                bBday: app.bride?.birth_date ? new Date(app.bride.birth_date).toLocaleDateString('en-US') : '',
+                bAge: app.bride?.age || 0,
+                bTown: app.bride?.addresses?.municipality || '',
+                bProv: app.bride?.addresses?.province || 'Nueva Vizcaya',
+                bBrgy: app.bride?.addresses?.barangay || '',
+                bCountry: app.bride?.citizenship || 'Philippines',
+                bCitizen: app.bride?.citizenship || 'Filipino',
+                bReligion: app.bride?.religion || '',
+                bStatus: 'Single',
+                bFathF: app.bride?.father_name?.split(' ')[0] || '',
+                bFathM: app.bride?.father_name?.split(' ')[1] || '',
+                bFathL: app.bride?.father_name?.split(' ')[2] || '',
+                bMothF: app.bride?.mother_name?.split(' ')[0] || '',
+                bMothM: app.bride?.mother_name?.split(' ')[1] || '',
+                bMothL: app.bride?.mother_name?.split(' ')[2] || '',
+                bGiverF: '',
+                bGiverM: '',
+                bGiverL: '',
+                bGiverRelation: '',
+            };
+
+            const response = await fetch('/api/generate-excel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(excelData),
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `MARRIAGE_APPLICATION_${app.application_code}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } else {
+                console.error('Failed to generate Excel file');
+                alert('Failed to download Excel file. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error downloading Excel:', error);
+            alert('An error occurred while downloading the Excel file.');
+        }
+    };
 
     const filtered = apps.filter(app => {
         const q = search.toLowerCase();
@@ -403,6 +493,7 @@ export default function GlobalOversightClient({
                                                 <ActionDropdown
                                                     app={app}
                                                     onView={() => setSelectedApp(app)}
+                                                    onDownloadExcel={handleDownloadExcel}
                                                     onManualUpdate={(app) => {
                                                         setRowManualApp(app);
                                                         setRowManualStatus(app.status || "approved");
