@@ -16,8 +16,7 @@ export async function getAllApplications() {
                 type
             ),
             profiles!created_by (
-                full_name,
-                email
+                full_name
             )
         `)
         .order("created_at", { ascending: false });
@@ -40,7 +39,7 @@ export async function getAllApplications() {
             ...app,
             groom_name: groom ? `${groom.first_name} ${groom.last_name}` : 'Unknown',
             bride_name: bride ? `${bride.first_name} ${bride.last_name}` : 'Unknown',
-            submitted_by: profile?.full_name || profile?.email || 'Anonymous'
+            submitted_by: profile?.full_name || 'Anonymous'
         };
     });
 }
