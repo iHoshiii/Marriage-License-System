@@ -51,14 +51,17 @@ def process_excel(data):
         b_full_addr = (f"Brgy. , {data.get('bBrgy', '')}, {b_town_prov}")
 
         # Image Logic
-        if os.path.exists(img_path) and "Notice" in wb.sheetnames:
+        if img_path and os.path.exists(img_path) and "Notice" in wb.sheetnames:
             try:
                 couple_img = Image(img_path)
                 couple_img.height = cm_to_pixels(3.75)
                 couple_img.width = cm_to_pixels(5.73)
                 wb["Notice"].add_image(couple_img, "T11")
+                sys.stderr.write(f"Successfully added image from: {img_path}\n")
             except Exception as e:
                 sys.stderr.write(f"Warning: Image overlay failed: {e}\n")
+        else:
+            sys.stderr.write(f"No image to add (img_path: {img_path})\n")
 
         # MAIN APPLICATION SHEET MAPPING
         if "APPLICATION" not in wb.sheetnames:
