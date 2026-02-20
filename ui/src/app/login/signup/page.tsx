@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { signup } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -5,9 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { NotificationHandler } from "@/components/ui/notification-handler";
 import { Mail, Lock, ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useEffect, use } from "react";
 
-export default async function SignupPage() {
+export default function SignupPage({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
+  const params = use(searchParams);
+  const applicationCode = params.code;
+
+  // If we have an application code, store it for later use after signup
+  useEffect(() => {
+    if (applicationCode) {
+      localStorage.setItem('pending_application_code', applicationCode);
+    }
+  }, [applicationCode]);
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       {/* Background patterns */}
@@ -29,6 +40,7 @@ export default async function SignupPage() {
           </p>
         </div>
 
+<<<<<<< HEAD
         <Card className="p-8 border-zinc-200/60 shadow-xl shadow-zinc-200/50 rounded-3xl bg-white/70 backdrop-blur-xl">
           <Suspense fallback={<div className="h-10 w-full animate-pulse bg-zinc-100 rounded-xl mb-6" />}>
             <NotificationHandler />
@@ -73,6 +85,56 @@ export default async function SignupPage() {
               <div className="flex items-center gap-1.5 ml-1 mt-1">
                 <CheckCircle2 className="h-3 w-3 text-zinc-300" />
                 <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">6+ characters required</p>
+=======
+        <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] p-4 bg-white/80 backdrop-blur-xl border border-white">
+          <div className="p-6">
+            <Suspense fallback={<div className="h-10 w-full animate-pulse bg-zinc-100 rounded-2xl mb-6" />}>
+              <NotificationHandler />
+            </Suspense>
+            <form action={signup} className="space-y-6">
+              <div className="space-y-2">
+                <label
+                  htmlFor="full_name"
+                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
+                >
+                  Full Name
+                </label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <Input
+                    id="full_name"
+                    name="full_name"
+                    type="text"
+                    placeholder="Juan Dela Cruz"
+                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
+                >
+                  Email Address
+                </label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
+                    <Mail className="h-4 w-4" />
+                  </div>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
+                    required
+                  />
+                </div>
+>>>>>>> dashboard
               </div>
             </div>
 
@@ -92,7 +154,7 @@ export default async function SignupPage() {
           </Link>
         </p>
       </main>
-    </div>
+    </div >
   );
 }
 

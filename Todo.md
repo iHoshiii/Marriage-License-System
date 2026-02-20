@@ -1,78 +1,58 @@
-# User Roles & Dashboard Design - Implementation Plan
+# Solano Marriage License System - Project Roadmap
 
-## Overview
-Implement role-based authentication and dashboard system for the LGU Solano Marriage License System with three user types: users (applicants), employees (processors), and admins (managers).
-
-## Authentication & Role Assignment Approach
-- **Users**: Self-register via public signup, automatically assigned `role = 'user'`
-- **Employees/Admins**: Manually created by admins in Supabase dashboard with explicit roles
-- **Role Detection**: Check `profiles.role` on sign-in and redirect to appropriate dashboard
-
-## Phase 1: Authentication & Role Infrastructure
+## Phase 1: Authentication & Role Infrastructure (Completed)
 - [x] Update profile creation trigger to assign 'user' role to new signups
 - [x] Create role detection utilities (`getUserRole()`, `getUserProfile()`)
 - [x] Implement role-based routing middleware
 - [x] Update signup flow to ensure only 'user' accounts are created publicly
 - [x] Add role validation and error handling
 
-## Phase 2: Manual Employee/Admin Setup Process
+## Phase 2: Manual Employee/Admin Setup (Completed)
 - [x] Document process for admins to create employee accounts in Supabase
 - [x] Create database functions for employee management
-- [x] Test role assignments and access control
 - [x] Verify RLS policies work with different roles
 
 ## Phase 3: User Dashboard (`/dashboard/user`)
-- [ ] Create `/dashboard/user` route and layout
-- [ ] Implement application status tracking with real-time updates
+- [x] Create basic user dashboard layout
+- [x] Move Profile/Notifications to shared routes
+- [ ] Implement live application status tracking
 - [ ] Build application history timeline component
 - [ ] Add office visit instructions display
-- [ ] Create document download section
-- [ ] Implement profile management interface
-- [ ] Add notification system for status changes
+- [ ] Create document download section (for finished licenses)
 
 ## Phase 4: Employee Dashboard (`/dashboard/employee`)
-- [ ] Create `/dashboard/employee` route and layout
-- [ ] Build application code entry form
-- [ ] Implement application processing interface (view/edit data)
-- [ ] Add real-time photo capture integration
-- [ ] Create document generation trigger
-- [ ] Build status update workflow controls
-- [ ] Add recent applications list and search/filter
+- [ ] Build application code entry form (to claim/process apps)
+- [ ] Implement application processing interface (view/edit submitted data)
+- [ ] Add real-time photo capture integration (for onsite verification)
+- [ ] Create document generation trigger (PDF generation)
+- [ ] Build status update workflow controls (Pending -> Processing -> Finished)
 
 ## Phase 5: Admin Dashboard (`/dashboard/admin`)
-- [ ] Create `/dashboard/admin` route and layout
-- [ ] Implement employee management interface (add/remove staff)
-- [ ] Build system analytics dashboard (metrics, volumes)
-- [ ] Create application oversight table (all applications)
-- [ ] Add audit trail viewer
-- [ ] Implement report generation and export tools
-- [ ] Add system health monitoring
+### 1. Staff & Employee Management
+- [ ] Build **Employee Directory** with status and workload metrics
+- [ ] Implement **Staff Onboarding** interface to create/revoke employee access
+- [ ] Add **Real-time Activity Tracker** for staff members
 
-## Phase 6: Integration & Testing
-- [ ] Update main `/dashboard` route to be role-aware and redirect appropriately
-- [ ] Implement real-time subscriptions for status updates
-- [ ] Add comprehensive error handling and role-based permissions
-- [ ] Test all role transitions and access control
-- [ ] Ensure mobile responsiveness for office workstations
-- [ ] Performance optimization and bundle size monitoring
+### 2. System Analytics & KPIs
+- [ ] Build **Application Funnel** chart (visualizing status distribution)
+- [ ] Implement **Average Processing Time** metric
+- [ ] Add **Submission Heatmap** (identifying peak office hours)
 
-## Technical Requirements
-- **Database**: Profiles table with role column, RLS policies
-- **Authentication**: Supabase Auth with role-based redirects
-- **UI Framework**: Next.js with Tailwind CSS and shadcn/ui
-- **Real-time**: Supabase subscriptions for live updates
-- **Security**: Role-based access control throughout
+### 3. Application Oversight
+- [ ] Create **Global Application Master Table** with advanced filtering
+- [ ] Build **Status Override** capability for priority cases
+- [ ] Implement **Global Search** for any application or user
 
-## Dependencies
-- Supabase database schema (completed)
-- RLS policies configured (completed)
-- Basic authentication flow (completed)
-- Storage bucket setup (completed)
+### 4. Security & Compliance
+- [ ] Build **Audit Trail Viewer** (searchable history of all sensitive actions)
+- [ ] Implement **Document Generation History** (legal record of every PDF issued)
 
-## Success Criteria
-- [ ] Users can sign up and access user dashboard
-- [ ] Employees can be created manually and access employee dashboard
-- [ ] Admins can manage employees and access admin dashboard
-- [ ] All dashboards show role-appropriate features and data
-- [ ] Real-time updates work across all user types
-- [ ] Security policies prevent unauthorized access
+### 5. Storage & Health
+- [ ] Add **Storage Usage Monitor** for photos and uploaded documents
+- [ ] Create **System Health Dashboard** (database/API connectivity status)
+
+## Phase 6: Polish & Integration
+- [ ] Implement real-time Supabase subscriptions for status updates
+- [ ] Ensure full mobile responsiveness for office workstations
+- [ ] Finalize PDF templates for official marriage licenses
+- [ ] End-to-end testing of the role-based workflow

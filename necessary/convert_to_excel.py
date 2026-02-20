@@ -17,7 +17,9 @@ def process_excel(data):
         # Load paths relative to script location
         script_dir = os.path.dirname(os.path.abspath(__file__))
         template_path = os.path.join(script_dir, "data", "APPLICATION-for-MARRIAGE-LICENSE.xlsx")
-        img_path = os.path.join(script_dir, "data", "couple_img.png")
+
+        # Use provided image path or skip image insertion
+        img_path = data.get("coupleImagePath")
         
         if not os.path.exists(template_path):
             sys.stderr.write(f"Error: Template not found at {template_path}\n")
@@ -49,14 +51,17 @@ def process_excel(data):
         b_full_addr = (f"Brgy. , {data.get('bBrgy', '')}, {b_town_prov}")
 
         # Image Logic
-        if os.path.exists(img_path) and "Notice" in wb.sheetnames:
+        if img_path and os.path.exists(img_path) and "Notice" in wb.sheetnames:
             try:
                 couple_img = Image(img_path)
                 couple_img.height = cm_to_pixels(3.75)
                 couple_img.width = cm_to_pixels(5.73)
                 wb["Notice"].add_image(couple_img, "T11")
+                sys.stderr.write(f"Successfully added image from: {img_path}\n")
             except Exception as e:
                 sys.stderr.write(f"Warning: Image overlay failed: {e}\n")
+        else:
+            sys.stderr.write(f"No image to add (img_path: {img_path})\n")
 
         # MAIN APPLICATION SHEET MAPPING
         if "APPLICATION" not in wb.sheetnames:

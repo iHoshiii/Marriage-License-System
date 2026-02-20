@@ -4,10 +4,10 @@ import { Avatar } from "@/components/ui/avatar";
 import { Bell, Search, Menu, X, LayoutDashboard, User, LogOut, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { logout } from "@/app/logout/actions";
 
 interface HeaderProps {
@@ -22,8 +22,8 @@ export function Header({ userInitials, userRole }: HeaderProps) {
 
     const navLinks = [
         { href: `/dashboard/${userRole}`, label: "Dashboard", icon: LayoutDashboard },
-        { href: `/dashboard/${userRole}/profile`, label: "Profile", icon: User },
-        { href: `/dashboard/${userRole}/notifications`, label: "Notifications", icon: Bell },
+        { href: "/dashboard/profile", label: "Profile", icon: User },
+        { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
     ];
 
     return (
@@ -38,14 +38,7 @@ export function Header({ userInitials, userRole }: HeaderProps) {
                         <Menu className="h-6 w-6" />
                     </button>
 
-                    <div className="hidden md:block flex-1 max-w-md">
-                        {userRole !== "user" && (
-                            <div className="relative">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500" />
-                                <Input placeholder="Search..." className="h-9 bg-zinc-50 border-none pl-9" />
-                            </div>
-                        )}
-                    </div>
+
 
                     {/* Mobile Logo Visibility */}
                     <div className="flex md:hidden items-center gap-2">
@@ -57,13 +50,13 @@ export function Header({ userInitials, userRole }: HeaderProps) {
                 </div>
 
                 <div className="flex items-center gap-2 md:gap-4">
-                    <Link href={`/dashboard/${userRole}/notifications`}>
+                    <Link href="/dashboard/notifications">
                         <button className="p-2 text-zinc-500 hover:bg-zinc-100 rounded-lg relative transition-colors">
                             <Bell className="h-5 w-5" />
                             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
                         </button>
                     </Link>
-                    <Link href={`/dashboard/${userRole}/profile`}>
+                    <Link href="/dashboard/profile">
                         <Avatar className="cursor-pointer hover:ring-2 ring-zinc-200 transition-all" fallback={userInitials} />
                     </Link>
                 </div>
