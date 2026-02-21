@@ -1,5 +1,4 @@
 import { Field } from "./FormComponents";
-
 interface BirthPlaceSectionProps {
     prefix: 'g' | 'b';
     sameAsAddress: boolean;

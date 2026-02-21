@@ -45,8 +45,8 @@ def process_excel(data):
         
         g_town_prov = (f"{data.get('gTown', '')}, {data.get('gProv', 'Nueva Vizcaya')}")
         b_town_prov = (f"{data.get('bTown', '')}, {data.get('bProv', 'Nueva Vizcaya')}")
-        g_full_addr = (f"Brgy. , {data.get('gBrgy', '')}, {g_town_prov}")
-        b_full_addr = (f"Brgy. , {data.get('bBrgy', '')}, {b_town_prov}")
+        g_full_addr = (f"Brgy., {data.get('gBrgy', '')}, {g_town_prov}")
+        b_full_addr = (f"Brgy., {data.get('bBrgy', '')}, {b_town_prov}")
 
         # Image Logic
         if os.path.exists(img_path) and "Notice" in wb.sheetnames:
@@ -74,10 +74,10 @@ def process_excel(data):
         app['B16'], app['B17'] =(data.get("gReligion")),(data.get("gStatus", "Single"))
         
         # Parents & Givers (Groom)
-        app['B22'], app['H22'], app['L22'] =(data.get("gFathF")),(data.get("gFathM")),(data.get("gFathL"))
-        app['B26'], app['G26'], app['K26'] =(data.get("gMothF")),(data.get("gMothM")),(data.get("gMothL"))
+        app['B22'], app['H22'], app['L22'] =(data.get("gFathF")).upper(),(data.get("gFathM")).upper(),(data.get("gFathL")).upper()
+        app['B26'], app['G26'], app['K26'] =(data.get("gMothF")).upper(),(data.get("gMothM")).upper(),(data.get("gMothL")).upper()
         if 18 <= g_age <= 24:
-            app['B30'], app['H30'], app['L30'] =(data.get("gGiverF")),(data.get("gGiverM")),(data.get("gGiverL"))
+            app['B30'], app['H30'], app['L30'] =(data.get("gGiverF")).upper(),(data.get("gGiverM")).upper(),(data.get("gGiverL")).upper()
             app['B31'], app['B32'] =(data.get("gGiverRelation")),(data.get("gCitizen", "Filipino"))
 
         # Bride
@@ -89,10 +89,10 @@ def process_excel(data):
         app['U16'], app['U17'] =(data.get("bReligion")),(data.get("bStatus", "Single"))
 
         # Parents & Givers (Bride)
-        app['U22'], app['Y22'], app['AC22'] =(data.get("bFathF")),(data.get("bFathM")),(data.get("bFathL"))
-        app['U26'], app['Y26'], app['AD26'] =(data.get("bMothF")),(data.get("bMothM")),(data.get("bMothL"))
+        app['U22'], app['Y22'], app['AC22'] =(data.get("bFathF")).upper(),(data.get("bFathM")).upper(),(data.get("bFathL")).upper()
+        app['U26'], app['Y26'], app['AD26'] =(data.get("bMothF")).upper(),(data.get("bMothM")).upper(),(data.get("bMothL")).upper()
         if 18 <= b_age <= 24:
-            app['U30'], app['Y30'], app['AD30'] =(data.get("bGiverF")),(data.get("bGiverM")),  (data.get("bGiverL"))
+            app['U30'], app['Y30'], app['AD30'] =(data.get("bGiverF")).upper(),(data.get("bGiverM")).upper(),  (data.get("bGiverL")).upper()
             app['U31'], app['U32'] = (data.get("bGiverRelation")),(data.get("bCitizen", "Filipino"))
 
         # Common Footer Info
