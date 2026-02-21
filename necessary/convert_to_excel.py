@@ -42,9 +42,23 @@ def process_excel(data):
         # DATA EXTRACTION
         g_age = get_int("gAge")
         b_age = get_int("bAge")
+
+# --- NEW HELPER FUNCTION ---
+        def clean_val(val, upper=False):
+            """Removes (Capital), handles None, and optionally uppercases."""
+            if val is None:
+                return ""
+            import re
+            # Remove "(Capital)" case-insensitive
+            text = re.sub(r'\(Capital\)', '', str(val), flags=re.IGNORECASE).strip()
+            return text.upper() if upper else text
+
+        # Clean the town names first
+        g_town_cleaned = clean_val(data.get('gTown', ''))
+        b_town_cleaned = clean_val(data.get('bTown', ''))
         
-        g_town_prov = (f"{data.get('gTown', '')}, {data.get('gProv', 'Nueva Vizcaya')}")
-        b_town_prov = (f"{data.get('bTown', '')}, {data.get('bProv', 'Nueva Vizcaya')}")
+        g_town_prov = f"{g_town_cleaned}, {data.get('gProv', 'Nueva Vizcaya')}"
+        b_town_prov = f"{b_town_cleaned}, {data.get('bProv', 'Nueva Vizcaya')}"
         g_full_addr = (f"Brgy., {data.get('gBrgy', '')}, {g_town_prov}")
         b_full_addr = (f"Brgy., {data.get('bBrgy', '')}, {b_town_prov}")
 
@@ -68,9 +82,9 @@ def process_excel(data):
         # Groom
         app['B8'], app['B9'], app['B10'] =(data.get("gFirst")).upper(),(data.get("gMiddle")).upper(),(data.get("gLast")).upper()
         app['B11'], app['N11'] =(data.get("gBday")), g_age
-        app['B12'], app['L12'] =g_town_prov,(data.get("gCountry", "Philippines"))
+        app['B12'], app['L12'] = g_town_prov,clean_val(data.get("gCountry", "Philippines"))
         app['B13'], app['H13'] = "Male",(data.get("gCitizen", "Filipino"))
-        app['B15'], app['M15'] = g_full_addr,(data.get("gCountry", "Philippines"))
+        app['B15'], app['M15'] = g_full_addr,(data.get("bCountry", "Philippines"))
         app['B16'], app['B17'] =(data.get("gReligion")),(data.get("gStatus", "Single"))
         
         # Parents & Givers (Groom)
@@ -83,7 +97,7 @@ def process_excel(data):
         # Bride
         app['U8'], app['U9'], app['U10'] =(data.get("bFirst")).upper(),(data.get("bMiddle")).upper(),(data.get("bLast")).upper()
         app['U11'], app['AF11'] =(data.get("bBday")), b_age
-        app['U12'], app['AE12'] =b_town_prov,(data.get("bCountry", "Philippines"))
+        app['U12'], app['AE12'] = b_town_prov,clean_val(data.get("gCountry", "Philippines"))
         app['U13'], app['Z13'] = "Female",(data.get("bCitizen", "Filipino"))
         app['U15'], app['AF15'] = b_full_addr,(data.get("bCountry", "Philippines"))
         app['U16'], app['U17'] =(data.get("bReligion")),(data.get("bStatus", "Single"))
