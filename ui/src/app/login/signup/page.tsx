@@ -19,6 +19,7 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
       localStorage.setItem('pending_application_code', applicationCode);
     }
   }, [applicationCode]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       {/* Background patterns */}
@@ -40,57 +41,12 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
           </p>
         </div>
 
-<<<<<<< HEAD
-        <Card className="p-8 border-zinc-200/60 shadow-xl shadow-zinc-200/50 rounded-3xl bg-white/70 backdrop-blur-xl">
-          <Suspense fallback={<div className="h-10 w-full animate-pulse bg-zinc-100 rounded-xl mb-6" />}>
-            <NotificationHandler />
-          </Suspense>
-
-          <form action={signup} className="space-y-6">
-            <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
-              >
-                Email Address
-              </label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="name@example.com"
-                icon={<Mail className="h-4 w-4" />}
-                className="h-12 bg-white/50 border-zinc-200 focus:border-black rounded-xl transition-all font-medium"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
-              >
-                Password
-              </label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                icon={<Lock className="h-4 w-4" />}
-                className="h-12 bg-white/50 border-zinc-200 focus:border-black rounded-xl transition-all font-medium"
-                minLength={6}
-                required
-              />
-              <div className="flex items-center gap-1.5 ml-1 mt-1">
-                <CheckCircle2 className="h-3 w-3 text-zinc-300" />
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">6+ characters required</p>
-=======
         <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] p-4 bg-white/80 backdrop-blur-xl border border-white">
           <div className="p-6">
             <Suspense fallback={<div className="h-10 w-full animate-pulse bg-zinc-100 rounded-2xl mb-6" />}>
               <NotificationHandler />
             </Suspense>
+
             <form action={signup} className="space-y-6">
               <div className="space-y-2">
                 <label
@@ -134,14 +90,40 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
                     required
                   />
                 </div>
->>>>>>> dashboard
               </div>
-            </div>
 
-            <Button type="submit" className="w-full h-12 rounded-xl mt-4 font-black uppercase tracking-widest text-xs shadow-lg shadow-zinc-200 transition-all hover:bg-zinc-800">
-              Get Started <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </form>
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
+                >
+                  Password
+                </label>
+                <div className="relative group">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="••••••••"
+                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
+                    minLength={6}
+                    required
+                  />
+                </div>
+                <div className="flex items-center gap-1.5 ml-1 mt-1">
+                  <CheckCircle2 className="h-3 w-3 text-zinc-300" />
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">6+ characters required</p>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full h-12 rounded-2xl mt-4 font-black uppercase tracking-widest text-xs shadow-lg shadow-zinc-200 transition-all hover:bg-zinc-800">
+                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </form>
+          </div>
         </Card>
 
         <p className="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">
@@ -154,7 +136,6 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
           </Link>
         </p>
       </main>
-    </div >
+    </div>
   );
 }
-
