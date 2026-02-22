@@ -7,6 +7,11 @@ export async function getStaffList() {
     const supabase = await createClient();
     const adminSupabase = await createAdminClient();
 
+    if (!supabase) {
+        console.error("Failed to create Supabase client");
+        return [];
+    }
+
     // 1. Fetch staff from profiles
     const { data: staff, error } = await supabase
         .from("profiles")
@@ -51,6 +56,11 @@ export async function getStaffList() {
 export async function onboardStaff(email: string, fullName: string, employeeId: string) {
     const supabase = await createClient();
 
+    if (!supabase) {
+        console.error("Failed to create Supabase client");
+        return { success: false, error: "Database connection failed" };
+    }
+
     // Call the promotion function
     const { data, error } = await supabase.rpc('make_employee', {
         target_email: email
@@ -86,6 +96,11 @@ export async function onboardStaff(email: string, fullName: string, employeeId: 
 export async function secureUpdateStaff(password: string, userId: string, newRole: 'employee' | 'admin') {
     const supabase = await createClient();
 
+    if (!supabase) {
+        console.error("Failed to create Supabase client");
+        return { success: false, error: "Database connection failed" };
+    }
+
     // 1. Verify admin password
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Not authenticated" };
@@ -118,6 +133,11 @@ export async function secureUpdateStaff(password: string, userId: string, newRol
 export async function secureDeleteStaff(password: string, userId: string) {
     const supabase = await createClient();
     const adminSupabase = await createAdminClient();
+
+    if (!supabase) {
+        console.error("Failed to create Supabase client");
+        return { success: false, error: "Database connection failed" };
+    }
 
     // 1. Verify admin password
     const { data: { user } } = await supabase.auth.getUser();

@@ -79,7 +79,7 @@ function PersonCard({ person, role, color }: { person: any; role: string; color:
 }
 
 export default async function ApplicationDetailPage({ params }: { params: { id: string } }) {
-    const apps = await getAllApplications();
+    const { apps } = await getAllApplications();
     const app = apps.find(a => a.id === params.id);
 
     if (!app) notFound();
