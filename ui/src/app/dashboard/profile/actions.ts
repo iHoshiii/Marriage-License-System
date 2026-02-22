@@ -4,7 +4,15 @@ import { createClient } from "@/utils/supabase/server-utils";
 import { revalidatePath } from "next/cache";
 
 export async function updateProfilePhoneNumber(formData: FormData) {
+    // IMPORTANT: Always check for null after createClient() - TypeScript requires this
+    // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
+
+    if (!supabase) {
+        console.error("Failed to create Supabase client");
+        return { error: "Database connection failed" };
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {

@@ -108,6 +108,8 @@ export async function updateApplicationStatus(applicationId: string, newStatus: 
 }
 
 export async function uploadApplicationPhoto(formData: FormData) {
+    // IMPORTANT: Always check for null after createClient() - TypeScript requires this
+    // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
     const adminSupabase = createAdminClient();
 

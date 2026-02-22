@@ -16,6 +16,8 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function ApplicationsPage() {
+    // IMPORTANT: Always check for null after createClient() - TypeScript requires this
+    // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
 
     if (!supabase) {

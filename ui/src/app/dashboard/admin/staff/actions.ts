@@ -4,6 +4,8 @@ import { createClient, createAdminClient } from "@/utils/supabase/server-utils";
 import { revalidatePath } from "next/cache";
 
 export async function getStaffList() {
+    // IMPORTANT: Always check for null after createClient() - TypeScript requires this
+    // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
     const adminSupabase = await createAdminClient();
 
@@ -54,6 +56,8 @@ export async function getStaffList() {
 }
 
 export async function onboardStaff(email: string, fullName: string, employeeId: string) {
+    // IMPORTANT: Always check for null after createClient() - TypeScript requires this
+    // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
 
     if (!supabase) {
@@ -94,6 +98,8 @@ export async function onboardStaff(email: string, fullName: string, employeeId: 
 }
 
 export async function secureUpdateStaff(password: string, userId: string, newRole: 'employee' | 'admin') {
+    // IMPORTANT: Always check for null after createClient() - TypeScript requires this
+    // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
 
     if (!supabase) {
@@ -131,6 +137,8 @@ export async function secureUpdateStaff(password: string, userId: string, newRol
 }
 
 export async function secureDeleteStaff(password: string, userId: string) {
+    // IMPORTANT: Always check for null after createClient() - TypeScript requires this
+    // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
     const adminSupabase = await createAdminClient();
 
