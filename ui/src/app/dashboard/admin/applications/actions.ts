@@ -89,6 +89,23 @@ export async function updateApplicationStatus(applicationId: string, newStatus: 
     const supabase = createAdminClient();
     console.log("Admin client created");
 
+    // Get application details before update
+    const { data: appData, error: fetchError } = await supabase
+        .from("marriage_applications")
+        .select(`
+            id,
+            application_code,
+            created_by,
+            status
+        `)
+        .eq("id", applicationId)
+        .single();
+
+    if (fetchError) {
+        console.error("Error fetching application:", fetchError);
+        return { success: false, error: fetchError.message };
+    }
+
     const { data, error } = await supabase
         .from("marriage_applications")
         .update({ status: newStatus, updated_at: new Date().toISOString() })
@@ -100,6 +117,28 @@ export async function updateApplicationStatus(applicationId: string, newStatus: 
     if (error) {
         console.error("Error updating status:", error);
         return { success: false, error: error.message };
+    }
+
+    // Create notification for the user who created the application
+    if (appData.created_by) {
+        try {
+            console.log("Creating notification for user:", appData.created_by, "application:", appData.application_code);
+            const { data: notificationResult, error: notificationError } = await supabase.rpc('create_notification', {
+                p_user_id: appData.created_by,
+                p_title: 'Application Status Updated',
+                p_message: `Your marriage license application (${appData.application_code}) status has been changed to ${newStatus}.`,
+                p_type: 'status_change',
+                p_related_application_id: applicationId
+            });
+
+            if (notificationError) {
+                console.error("Error creating notification:", notificationError);
+            } else {
+                console.log("Notification created successfully:", notificationResult);
+            }
+        } catch (err) {
+            console.error("Failed to create notification:", err);
+        }
     }
 
     revalidatePath("/dashboard/admin/applications");
@@ -197,6 +236,13 @@ export async function uploadApplicationPhoto(formData: FormData) {
         return { success: false, error: "Failed to save photo record" };
     }
 
+    // Get application details before status update
+    const { data: appDetails, error: appDetailsError } = await adminSupabase
+        .from("marriage_applications")
+        .select("created_by, application_code")
+        .eq("id", app.id)
+        .single();
+
     // Update application status to approved
     const { error: statusError } = await adminSupabase
         .from("marriage_applications")
@@ -211,6 +257,39 @@ export async function uploadApplicationPhoto(formData: FormData) {
         console.error("Error updating application status:", statusError);
         // Don't return error here as photo upload was successful
         // Status update failure shouldn't block the photo upload success
+    }
+
+    // Create notifications
+    if (appDetails && appDetails.created_by) {
+        try {
+            // Notification for the user whose application was processed
+            const { error: userNotificationError } = await adminSupabase.rpc('create_notification', {
+                p_user_id: appDetails.created_by,
+                p_title: 'Photo Captured - Application Approved',
+                p_message: `A photo has been captured for your marriage license application (${appDetails.application_code}). Your application has been approved and is ready for issuance.`,
+                p_type: 'photo_captured',
+                p_related_application_id: app.id
+            });
+
+            if (userNotificationError) {
+                console.error("Error creating user notification (table may not exist yet):", userNotificationError);
+            }
+
+            // Notification for the employee who captured the photo
+            const { error: employeeNotificationError } = await adminSupabase.rpc('create_notification', {
+                p_user_id: user.id,
+                p_title: 'Photo Capture Completed',
+                p_message: `You successfully captured a photo for application ${appDetails.application_code}. The application status has been updated to approved.`,
+                p_type: 'photo_captured',
+                p_related_application_id: app.id
+            });
+
+            if (employeeNotificationError) {
+                console.error("Error creating employee notification (table may not exist yet):", employeeNotificationError);
+            }
+        } catch (err) {
+            console.error("Failed to create notifications:", err);
+        }
     }
 
     // Get applicant names for success message

@@ -59,11 +59,16 @@ export async function onboardStaff(email: string, fullName: string, employeeId: 
     // IMPORTANT: Always check for null after createClient() - TypeScript requires this
     // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors
     const supabase = await createClient();
+    const adminSupabase = await createAdminClient();
 
     if (!supabase) {
         console.error("Failed to create Supabase client");
         return { success: false, error: "Database connection failed" };
     }
+
+    // Get current admin user
+    const { data: { user: adminUser } } = await supabase.auth.getUser();
+    if (!adminUser) return { success: false, error: "Not authenticated" };
 
     // Call the promotion function
     const { data, error } = await supabase.rpc('make_employee', {
@@ -81,7 +86,7 @@ export async function onboardStaff(email: string, fullName: string, employeeId: 
     // Usually rpc might return the user or id, but it depends on implementation.
 
     // Re-fetch or update via a guess (weak) or just trust the RPC did its job for role.
-    // For now, let's assume the user has a profile and we update by name for this demo, 
+    // For now, let's assume the user has a profile and we update by name for this demo,
     // but in production we'd want a more robust lookup.
 
     const { error: updateError } = await supabase
@@ -92,6 +97,22 @@ export async function onboardStaff(email: string, fullName: string, employeeId: 
         })
         .eq("role", "employee")
         .eq("full_name", fullName); // Still a guess, but better than nothing.
+
+    // Create notification for the admin who performed the action
+    try {
+        const { error: notificationError } = await adminSupabase.rpc('create_notification', {
+            p_user_id: adminUser.id,
+            p_title: 'New Employee Onboarded',
+            p_message: `Successfully onboarded ${fullName} (${email}) as an employee with ID: ${employeeId}.`,
+            p_type: 'staff_action'
+        });
+
+        if (notificationError) {
+            console.error("Error creating notification (table may not exist yet):", notificationError);
+        }
+    } catch (err) {
+        console.error("Failed to create notification:", err);
+    }
 
     revalidatePath("/dashboard/admin/staff");
     return { success: true };
@@ -122,6 +143,14 @@ export async function secureUpdateStaff(password: string, userId: string, newRol
 
     // 2. Perform the update using admin client to bypass RLS
     const adminSupabase = await createAdminClient();
+
+    // Get staff details before update
+    const { data: staffData, error: fetchError } = await adminSupabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userId)
+        .single();
+
     const { error } = await adminSupabase
         .from("profiles")
         .update({ role: newRole })
@@ -130,6 +159,24 @@ export async function secureUpdateStaff(password: string, userId: string, newRol
     if (error) {
         console.error("Update failed:", error.message);
         return { success: false, error: error.message };
+    }
+
+    // Create notification for the admin
+    if (staffData) {
+        try {
+            const { error: notificationError } = await adminSupabase.rpc('create_notification', {
+                p_user_id: user.id,
+                p_title: 'Staff Role Updated',
+                p_message: `Successfully updated ${staffData.full_name}'s role to ${newRole}.`,
+                p_type: 'staff_action'
+            });
+
+            if (notificationError) {
+                console.error("Error creating notification (table may not exist yet):", notificationError);
+            }
+        } catch (err) {
+            console.error("Failed to create notification:", err);
+        }
     }
 
     revalidatePath("/dashboard/admin/staff");
@@ -160,6 +207,13 @@ export async function secureDeleteStaff(password: string, userId: string) {
         return { success: false, error: "Incorrect password. Authorization failed." };
     }
 
+    // Get staff details before deletion
+    const { data: staffData, error: fetchError } = await adminSupabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userId)
+        .single();
+
     // 2. Perform deletion (handle foreign key dependencies)
     try {
         // Nullify references in related tables to avoid FK constraint errors
@@ -181,7 +235,7 @@ export async function secureDeleteStaff(password: string, userId: string) {
         const { error: apError } = await adminSupabase.from("application_photos").update({ uploaded_by: null }).eq("uploaded_by", userId);
         if (apError) { console.error("Error nullifying application_photos.uploaded_by:", apError.message); }
 
-        // 4. Explicitly delete from profiles table first 
+        // 4. Explicitly delete from profiles table first
         // (This helps if there's no ON DELETE CASCADE set up in the DB)
         const { error: profileError } = await adminSupabase
             .from("profiles")
@@ -190,7 +244,7 @@ export async function secureDeleteStaff(password: string, userId: string) {
 
         if (profileError) {
             console.error("Profile deletion failed:", profileError.message);
-            // We continue anyway as the main goal is the auth deletion, 
+            // We continue anyway as the main goal is the auth deletion,
             // but this log helps debug if FKs are still blocked.
         }
 
@@ -202,10 +256,29 @@ export async function secureDeleteStaff(password: string, userId: string) {
             return { success: false, error: `Auth deletion failed: ${deleteError.message}` };
         }
 
+        // Create notification for the admin
+        if (staffData) {
+            try {
+                const { error: notificationError } = await adminSupabase.rpc('create_notification', {
+                    p_user_id: user.id,
+                    p_title: 'Staff Member Removed',
+                    p_message: `Successfully removed ${staffData.full_name} from the system.`,
+                    p_type: 'staff_action'
+                });
+
+                if (notificationError) {
+                    console.error("Error creating notification (table may not exist yet):", notificationError);
+                }
+            } catch (err) {
+                console.error("Failed to create notification:", err);
+            }
+        }
+
         revalidatePath("/dashboard/admin/staff");
         return { success: true };
-    } catch (e: any) {
-        console.error("Unexpected error during deletion sequence:", e);
+    } catch (e: unknown) {
+        const error = e as Error;
+        console.error("Unexpected error during deletion sequence:", error);
         return { success: false, error: "System error during account removal sequence." };
     }
 }
