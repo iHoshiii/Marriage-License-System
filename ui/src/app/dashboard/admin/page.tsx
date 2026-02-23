@@ -32,5 +32,5 @@ export default async function AdminDashboard() {
 
     const metrics = await getAdminMetrics();
 
-    return <AdminDashboardClient metrics={metrics} />;
+    return <AdminDashboardClient initialMetrics={metrics} />;
 }

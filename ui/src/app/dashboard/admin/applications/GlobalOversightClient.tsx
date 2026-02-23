@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
     FileText, Search, Calendar, User, Clock,
     CheckCircle2, XCircle, Eye, X, MoreHorizontal,
-    Loader2, ChevronLeft, ChevronRight, FileDown
+    Loader2, ChevronLeft, ChevronRight, FileDown, RefreshCw
 } from "lucide-react";
 import { updateApplicationStatus } from "./actions";
 import PhotoCaptureModal from "@/components/PhotoCaptureModal";
+import { createClient } from "@/utils/supabase/client";
 
 const STATUS_CONFIG: Record<string, { color: string; icon: any; bg: string; border: string; dot: string }> = {
     pending: { color: "text-amber-700", icon: Clock, bg: "bg-amber-50", border: "border-amber-200", dot: "bg-amber-400" },
@@ -116,6 +117,13 @@ export default function GlobalOversightClient({
 
     // Photo capture modal state
     const [showPhotoModal, setShowPhotoModal] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const handleRefresh = () => {
+        window.location.reload();
+    };
+
+
 
     async function handleStatusChange(appCode: string, newStatus: string) {
         console.log("UI: handleStatusChange called with:", { appCode, newStatus });
@@ -417,7 +425,16 @@ export default function GlobalOversightClient({
                         </div>
                         <h2 className="text-xl font-black text-zinc-900 uppercase tracking-tight">Master Directory</h2>
                     </div>
-                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{filtered.length} records</span>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleRefresh}
+                            className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
+                            title="Refresh Applications"
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                        </button>
+                        <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{filtered.length} records</span>
+                    </div>
                 </div>
 
                 <div className="overflow-x-auto">

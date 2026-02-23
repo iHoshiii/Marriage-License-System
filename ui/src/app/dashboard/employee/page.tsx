@@ -14,5 +14,5 @@ export default async function EmployeeDashboard() {
 
     const metrics = await getEmployeeMetrics();
 
-    return <EmployeeDashboardClient metrics={metrics} />;
+    return <EmployeeDashboardClient initialMetrics={metrics} />;
 }

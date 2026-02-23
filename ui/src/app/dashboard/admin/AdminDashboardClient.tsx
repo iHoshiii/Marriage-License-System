@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -15,13 +15,15 @@ import {
     FileText,
     BarChart,
     ChevronRight,
-    Camera
+    Camera,
+    RefreshCw
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import AdminCameraModal from "./AdminCameraModal";
+import { createClient } from "@/utils/supabase/client";
 
 interface AdminDashboardClientProps {
-    metrics: {
+    initialMetrics: {
         totalUsers: number;
         totalStaff: number;
         applicationStats: {
@@ -33,8 +35,15 @@ interface AdminDashboardClientProps {
     };
 }
 
-export default function AdminDashboardClient({ metrics }: AdminDashboardClientProps) {
+export default function AdminDashboardClient({ initialMetrics }: AdminDashboardClientProps) {
     const [showCameraModal, setShowCameraModal] = useState(false);
+    const [metrics, setMetrics] = useState(initialMetrics);
+
+    const handleRefresh = () => {
+        window.location.reload();
+    };
+
+
 
     return (
         <>
@@ -46,6 +55,13 @@ export default function AdminDashboardClient({ metrics }: AdminDashboardClientPr
                         <p className="text-sm text-zinc-500 font-medium tracking-tight">System control and monitoring interface</p>
                     </div>
                     <div className="flex items-center gap-3">
+                        <Button
+                            onClick={handleRefresh}
+                            variant="outline"
+                            className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95"
+                        >
+                            <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+                        </Button>
                         <Link href="/dashboard/admin/staff">
                             <Button className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] bg-zinc-900 hover:bg-zinc-800 transition-all shadow-lg active:scale-95">
                                 <ShieldCheck className="mr-2 h-4 w-4" /> Manage Staff

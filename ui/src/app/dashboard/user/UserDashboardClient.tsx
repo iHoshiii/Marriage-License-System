@@ -202,9 +202,45 @@ export default function UserDashboard() {
 
             // Fetch applications
             await fetchApplications(supabase, authUser.id);
+
+            // Set up real-time subscriptions for user's applications
+            const applicationsSubscription = supabase
+                .channel('user_applications_changes')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'marriage_applications',
+                    filter: `created_by=eq.${authUser.id}`
+                }, () => {
+                    fetchApplications(supabase, authUser.id);
+                })
+                .subscribe();
+
+            // Also subscribe to applicants table changes (since applications include applicants data)
+            const applicantsSubscription = supabase
+                .channel('user_applicants_changes')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'applicants'
+                }, () => {
+                    fetchApplications(supabase, authUser.id);
+                })
+                .subscribe();
+
+            // Cleanup function
+            return () => {
+                applicationsSubscription.unsubscribe();
+                applicantsSubscription.unsubscribe();
+            };
         };
 
-        initializeDashboard();
+        const cleanup = initializeDashboard();
+
+        // Return cleanup function
+        return () => {
+            cleanup?.then(cleanupFn => cleanupFn?.());
+        };
     }, []);
 
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);

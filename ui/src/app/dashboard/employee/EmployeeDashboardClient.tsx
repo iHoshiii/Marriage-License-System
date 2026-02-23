@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -12,12 +12,14 @@ import {
     Search,
     FileText,
     ChevronRight,
-    Camera
+    Camera,
+    RefreshCw
 } from "lucide-react";
 import AdminCameraModal from "../admin/AdminCameraModal";
+import { createClient } from "@/utils/supabase/client";
 
 interface EmployeeDashboardClientProps {
-    metrics: {
+    initialMetrics: {
         applicationStats: {
             pending: number;
             processing: number;
@@ -27,8 +29,15 @@ interface EmployeeDashboardClientProps {
     };
 }
 
-export default function EmployeeDashboardClient({ metrics }: EmployeeDashboardClientProps) {
+export default function EmployeeDashboardClient({ initialMetrics }: EmployeeDashboardClientProps) {
     const [showCameraModal, setShowCameraModal] = useState(false);
+    const [metrics, setMetrics] = useState(initialMetrics);
+
+    const handleRefresh = () => {
+        window.location.reload();
+    };
+
+
 
     return (
         <>
@@ -40,6 +49,13 @@ export default function EmployeeDashboardClient({ metrics }: EmployeeDashboardCl
                         <p className="text-sm text-zinc-500 font-medium tracking-tight">Application processing and management interface</p>
                     </div>
                     <div className="flex items-center gap-3">
+                        <Button
+                            onClick={handleRefresh}
+                            variant="outline"
+                            className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95"
+                        >
+                            <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+                        </Button>
                         <Link href="/dashboard/admin/applications">
                             <Button variant="outline" className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95">
                                 <FileText className="mr-2 h-4 w-4" /> Applications
