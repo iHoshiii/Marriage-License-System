@@ -428,6 +428,42 @@
     ],
     "policies": [
       {
+        "name": "admin_employee_update",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[])))))",
+        "check": null
+      },
+      {
+        "name": "app_insert_authenticated",
+        "command": "INSERT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": null,
+        "check": "(created_by = auth.uid())"
+      },
+      {
+        "name": "users_view_own_applications",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(created_by = auth.uid())",
+        "check": null
+      },
+      {
+        "name": "allow_authenticated_view_unclaimed",
+        "command": "SELECT",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(created_by IS NULL)",
+        "check": null
+      },
+      {
         "name": "users_update_own_application_contact",
         "command": "UPDATE",
         "roles": [
@@ -437,21 +473,21 @@
         "check": "(created_by = auth.uid())"
       },
       {
-        "name": "staff_update_access",
-        "command": "UPDATE",
-        "roles": [
-          "public"
-        ],
-        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[])))))",
-        "check": null
-      },
-      {
         "name": "service_role_full_access",
         "command": "ALL",
         "roles": [
           "public"
         ],
         "using": "(auth.role() = 'service_role'::text)",
+        "check": null
+      },
+      {
+        "name": "staff_update_access",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[])))))",
         "check": null
       },
       {
@@ -473,24 +509,6 @@
         "check": null
       },
       {
-        "name": "admin_employee_update",
-        "command": "UPDATE",
-        "roles": [
-          "public"
-        ],
-        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[])))))",
-        "check": null
-      },
-      {
-        "name": "app_insert_authenticated",
-        "command": "INSERT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": null,
-        "check": "(created_by = auth.uid())"
-      },
-      {
         "name": "enforce_one_app_claim",
         "command": "UPDATE",
         "roles": [
@@ -498,24 +516,6 @@
         ],
         "using": "(created_by IS NULL)",
         "check": "((created_by = auth.uid()) AND (NOT (EXISTS ( SELECT 1\n   FROM marriage_applications marriage_applications_1\n  WHERE (marriage_applications_1.created_by = auth.uid())))))"
-      },
-      {
-        "name": "users_view_own_applications",
-        "command": "SELECT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "(created_by = auth.uid())",
-        "check": null
-      },
-      {
-        "name": "allow_authenticated_view_unclaimed",
-        "command": "SELECT",
-        "roles": [
-          "authenticated"
-        ],
-        "using": "(created_by IS NULL)",
-        "check": null
       }
     ],
     "foreign_keys": [
@@ -592,6 +592,15 @@
     ],
     "policies": [
       {
+        "name": "users_update_own_notifications",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "(auth.uid() = user_id)",
+        "check": null
+      },
+      {
         "name": "users_view_own_notifications",
         "command": "SELECT",
         "roles": [
@@ -617,15 +626,6 @@
         ],
         "using": null,
         "check": "(auth.uid() IS NOT NULL)"
-      },
-      {
-        "name": "users_update_own_notifications",
-        "command": "UPDATE",
-        "roles": [
-          "public"
-        ],
-        "using": "(auth.uid() = user_id)",
-        "check": null
       }
     ],
     "foreign_keys": [
@@ -677,6 +677,15 @@
     ],
     "policies": [
       {
+        "name": "profiles_insert_policy",
+        "command": "INSERT",
+        "roles": [
+          "public"
+        ],
+        "using": null,
+        "check": "(auth.uid() = id)"
+      },
+      {
         "name": "profiles_select_policy",
         "command": "SELECT",
         "roles": [
@@ -693,15 +702,6 @@
         ],
         "using": "((auth.uid() = id) OR is_admin_or_employee())",
         "check": null
-      },
-      {
-        "name": "profiles_insert_policy",
-        "command": "INSERT",
-        "roles": [
-          "public"
-        ],
-        "using": null,
-        "check": "(auth.uid() = id)"
       }
     ],
     "foreign_keys": []

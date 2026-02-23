@@ -64,9 +64,89 @@ export default async function NotificationsPage() {
                                 <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Bell className="h-8 w-8 text-zinc-400" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-zinc-900">Notifications System</h3>
+                                <h3 className="text-lg font-semibold text-zinc-900">Notifications Table Missing</h3>
                                 <p className="text-sm mb-4">The notifications table needs to be created first.</p>
-                                <p className="text-xs text-zinc-400">Please run the provided SQL migration in your Supabase SQL Editor.</p>
+                                <p className="text-xs text-zinc-400 mb-4">Please run the provided SQL migration in your Supabase SQL Editor.</p>
+                                <div className="text-left bg-zinc-50 p-4 rounded-lg text-xs font-mono">
+                                    <p className="font-bold mb-2">Copy and run this SQL:</p>
+                                    <pre className="whitespace-pre-wrap">
+{`-- Create notifications table
+create table if not exists public.notifications (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users not null,
+  title text not null,
+  message text not null,
+  type text not null check (type in ('status_change', 'photo_captured', 'staff_action', 'system')),
+  related_application_id uuid references marriage_applications(id),
+  related_user_id uuid references auth.users(id),
+  created_by uuid references auth.users(id),
+  created_at timestamp with time zone default now(),
+  read_at timestamp with time zone,
+  metadata jsonb default '{}'::jsonb
+);
+
+-- Enable RLS
+alter table public.notifications enable row level security;
+
+-- Recreate policies
+create policy "users_view_own_notifications" on public.notifications
+  for select using (auth.uid() = user_id);
+
+create policy "staff_view_created_notifications" on public.notifications
+  for select using (
+    exists (
+      select 1 from profiles
+      where id = auth.uid()
+      and role in ('admin', 'employee')
+    )
+  );
+
+create policy "authenticated_insert_notifications" on public.notifications
+  for insert with check (auth.uid() is not null);
+
+create policy "users_update_own_notifications" on public.notifications
+  for update using (auth.uid() = user_id);
+
+-- Function to create notification
+drop function if exists create_notification(uuid, text, text, text, uuid, uuid, jsonb);
+create or replace function create_notification(
+  p_user_id uuid,
+  p_title text,
+  p_message text,
+  p_type text,
+  p_related_application_id uuid default null,
+  p_related_user_id uuid default null,
+  p_metadata jsonb default '{}'::jsonb
+)
+returns uuid as $$
+declare
+  notification_id uuid;
+begin
+  insert into public.notifications (
+    user_id,
+    title,
+    message,
+    type,
+    related_application_id,
+    related_user_id,
+    created_by,
+    metadata
+  ) values (
+    p_user_id,
+    p_title,
+    p_message,
+    p_type,
+    p_related_application_id,
+    p_related_user_id,
+    auth.uid(),
+    p_metadata
+  ) returning id into notification_id;
+
+  return notification_id;
+end;
+$$ language plpgsql security definer;`}
+                                    </pre>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>

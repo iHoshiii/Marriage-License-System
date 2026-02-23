@@ -106,6 +106,8 @@ export async function updateApplicationStatus(applicationId: string, newStatus: 
         return { success: false, error: fetchError.message };
     }
 
+    console.log("Application data:", appData);
+
     const { data, error } = await supabase
         .from("marriage_applications")
         .update({ status: newStatus, updated_at: new Date().toISOString() })
