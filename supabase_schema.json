@@ -428,13 +428,13 @@
     ],
     "policies": [
       {
-        "name": "admin_employee_update",
-        "command": "UPDATE",
+        "name": "admin_employee_insert_office_applications",
+        "command": "INSERT",
         "roles": [
-          "public"
+          "authenticated"
         ],
-        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[])))))",
-        "check": null
+        "using": null,
+        "check": "((created_by IS NULL) AND (processed_by = auth.uid()) AND (EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[]))))))"
       },
       {
         "name": "app_insert_authenticated",
@@ -506,6 +506,15 @@
           "public"
         ],
         "using": "(auth.role() = 'service_role'::text)",
+        "check": null
+      },
+      {
+        "name": "admin_employee_update",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND ((profiles.role)::text = ANY ((ARRAY['admin'::character varying, 'employee'::character varying])::text[])))))",
         "check": null
       },
       {
@@ -592,15 +601,6 @@
     ],
     "policies": [
       {
-        "name": "users_update_own_notifications",
-        "command": "UPDATE",
-        "roles": [
-          "public"
-        ],
-        "using": "(auth.uid() = user_id)",
-        "check": null
-      },
-      {
         "name": "users_view_own_notifications",
         "command": "SELECT",
         "roles": [
@@ -626,6 +626,15 @@
         ],
         "using": null,
         "check": "(auth.uid() IS NOT NULL)"
+      },
+      {
+        "name": "users_update_own_notifications",
+        "command": "UPDATE",
+        "roles": [
+          "public"
+        ],
+        "using": "(auth.uid() = user_id)",
+        "check": null
       }
     ],
     "foreign_keys": [

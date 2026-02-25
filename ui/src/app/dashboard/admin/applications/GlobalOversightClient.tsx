@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { updateApplicationStatus } from "./actions";
 import PhotoCaptureModal from "@/components/PhotoCaptureModal";
+import AdminMarriageForm from "./AdminMarriageForm";
 import { createClient } from "@/utils/supabase/client";
 
 const STATUS_CONFIG: Record<string, { color: string; icon: any; bg: string; border: string; dot: string }> = {
@@ -124,6 +125,9 @@ export default function GlobalOversightClient({
     // Photo capture modal state
     const [showPhotoModal, setShowPhotoModal] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+
+    // Admin marriage form modal state
+    const [showAdminForm, setShowAdminForm] = useState(false);
 
     const handleRefresh = () => {
         window.location.reload();
@@ -329,10 +333,19 @@ export default function GlobalOversightClient({
     return (
         <>
             {/* ── Header ── */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Global Oversight</h1>
-                    <p className="text-zinc-500 font-medium mt-2">Monitoring all marriage license applications across the municipality.</p>
+            <div className="flex flex-col gap-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase leading-none">Global Oversight</h1>
+                        <p className="text-zinc-500 font-medium mt-2">Monitoring all marriage license applications across the municipality.</p>
+                    </div>
+                    <button
+                        onClick={() => setShowAdminForm(true)}
+                        className="h-12 px-6 bg-primary hover:bg-primary/90 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 md:w-auto w-full"
+                    >
+                        <FileText className="h-4 w-4" />
+                        Create Application
+                    </button>
                 </div>
                 <div className="relative group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" />
@@ -341,7 +354,7 @@ export default function GlobalOversightClient({
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         placeholder="Search by Code or Name..."
-                        className="h-12 w-[300px] bg-white border border-zinc-100 rounded-2xl pl-12 pr-4 text-sm font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
+                        className="h-12 w-full bg-white border border-zinc-100 rounded-2xl pl-12 pr-4 text-sm font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
                     />
                 </div>
             </div>
@@ -839,6 +852,16 @@ export default function GlobalOversightClient({
             <PhotoCaptureModal
                 isOpen={showPhotoModal}
                 onClose={() => setShowPhotoModal(false)}
+            />
+
+            {/* ── Admin Marriage Form Modal ── */}
+            <AdminMarriageForm
+                isOpen={showAdminForm}
+                onClose={() => setShowAdminForm(false)}
+                onSuccess={() => {
+                    setShowAdminForm(false);
+                    handleRefresh(); // Refresh the list after creating
+                }}
             />
 
         </>
