@@ -10,7 +10,7 @@ export const STATUS_CONFIG: Record<string, { color: string; icon: any; bg: strin
 };
 
 export const getStatusConfig = (status?: string) => {
-    const normalizedStatus = status?.toLowerCase();
+    const normalizedStatus = status?.toLowerCase() || 'pending';
     return STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG.pending;
 };
 
