@@ -23,6 +23,8 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
         .from("marriage_applications")
         .select(`
             *,
+            submitter:profiles!created_by(full_name),
+            processor:profiles!processed_by(full_name),
             applicants (
                 id,
                 first_name,
@@ -56,11 +58,14 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
         const groom = applicants.find((a: any) => a.type === 'groom');
         const bride = applicants.find((a: any) => a.type === 'bride');
 
+        // Use the submitter's name if available, otherwise use the processor's name (for walk-ins)
+        const submittedBy = (app as any).submitter?.full_name || (app as any).processor?.full_name || 'Walk-in / Anonymous';
+
         return {
             ...app,
             groom_name: groom ? `${groom.first_name} ${groom.last_name}` : 'Unknown',
             bride_name: bride ? `${bride.first_name} ${bride.last_name}` : 'Unknown',
-            submitted_by: 'Anonymous', // Since we removed profiles join
+            submitted_by: submittedBy,
             groom: groom || null,
             bride: bride || null,
         };

@@ -1,0 +1,59 @@
+"use client";
+
+import { Eye, FileDown, MoreHorizontal, Loader2 } from "lucide-react";
+
+interface ActionDropdownProps {
+    app: any;
+    onView: () => void;
+    onDownloadExcel: (app: any) => void;
+    onManualUpdate: (app: any) => void;
+    isUpdating: boolean;
+}
+
+export function ActionDropdown({
+    app,
+    onView,
+    onDownloadExcel,
+    onManualUpdate,
+    isUpdating,
+}: ActionDropdownProps) {
+    return (
+        <div className="flex items-center gap-2 justify-center">
+            <button
+                title="View Details"
+                onClick={onView}
+                className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
+            >
+                <Eye className="h-4 w-4" />
+            </button>
+
+            <button
+                title="Download Excel"
+                onClick={() => onDownloadExcel(app)}
+                className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
+            >
+                <FileDown className="h-4 w-4" />
+            </button>
+
+            <button
+                title="Manual Status Update"
+                onClick={() => onManualUpdate(app)}
+                className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
+            >
+                {isUpdating
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <MoreHorizontal className="h-4 w-4" />
+                }
+            </button>
+        </div>
+    );
+}
+
+export function DetailItem({ label, value }: { label: string; value?: string | number | null }) {
+    return (
+        <div>
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{label}</p>
+            <p className="text-sm font-semibold text-zinc-900">{value ?? <span className="italic text-zinc-300">N/A</span>}</p>
+        </div>
+    );
+}
