@@ -2,6 +2,7 @@
 
 import { createClient, createAdminClient } from "@/utils/supabase/server-utils";
 import { revalidatePath } from "next/cache";
+import { handleImageReplace } from "@/utils/supabase/storage-utils";
 
 export async function getAllApplications(page: number = 1, limit: number = 50) {
     const supabase = createAdminClient();
@@ -203,19 +204,19 @@ export async function uploadApplicationPhoto(formData: FormData) {
 
     console.log("Old photo records deleted from database successfully");
 
-    // Upload new file to storage (use application code as filename for consistent replacement)
-    const fileName = `${applicationCode.toUpperCase()}.jpg`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("marriage-license-files")
-        .upload(fileName, photoFile, {
-            contentType: "image/jpeg",
-            upsert: true
-        });
+    // Robustly handle image replacement in storage (using admin client to bypass RLS)
+    const storageResult = await handleImageReplace(
+        adminSupabase,
+        photoFile,
+        "marriage-license-files",
+        applicationCode.toUpperCase()
+    );
 
-    if (uploadError) {
-        console.error("Upload error:", uploadError);
-        return { success: false, error: "Failed to upload photo" };
+    if (!storageResult.success || !storageResult.path) {
+        return { success: false, error: storageResult.error || "Upload failed" };
     }
+
+    const filePath = storageResult.path;
 
     // Insert new record
     const { error: insertError } = await adminSupabase
@@ -223,7 +224,7 @@ export async function uploadApplicationPhoto(formData: FormData) {
         .insert({
             application_id: app.id,
             photo_type: photoType,
-            file_path: uploadData.path,
+            file_path: filePath,
             file_size: photoFile.size,
             uploaded_by: user.id
         });
@@ -233,7 +234,7 @@ export async function uploadApplicationPhoto(formData: FormData) {
         // Try to delete the uploaded file
         await supabase.storage
             .from("marriage-license-files")
-            .remove([uploadData.path]);
+            .remove([filePath]);
         return { success: false, error: "Failed to save photo record" };
     }
 
