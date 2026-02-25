@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Camera, X, Loader2 } from "lucide-react";
+import { Camera, X, Loader2, Upload, Paperclip } from "lucide-react";
 import { uploadApplicationPhoto } from "@/app/dashboard/admin/applications/actions";
 
 interface PhotoCaptureModalProps {
@@ -21,7 +21,8 @@ export default function PhotoCaptureModal({
     const [showCamera, setShowCamera] = useState(false);
     const [capturedImage, setCapturedImage] = useState<string | null>(null);
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
-    const [photoMessage, setPhotoMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+    const [photoMessage, setPhotoMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Camera refs
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -96,6 +97,17 @@ export default function PhotoCaptureModal({
         setCapturedImage(imageData);
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setCapturedImage(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleUpload = async () => {
         if (!capturedImage) return;
 
@@ -103,10 +115,14 @@ export default function PhotoCaptureModal({
         setPhotoMessage(null);
 
         try {
-            // Convert base64 to blob
+            // Convert base64 to blob/file
             const response = await fetch(capturedImage);
             const blob = await response.blob();
-            const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+
+            // Get proper extension from mime type
+            const mimeType = blob.type;
+            const extension = mimeType.split('/')[1] || 'jpg';
+            const file = new File([blob], `photo.${extension}`, { type: mimeType });
 
             const formData = new FormData();
             formData.append('applicationCode', applicationCode);
@@ -172,28 +188,46 @@ export default function PhotoCaptureModal({
                 </div>
 
                 <div className="space-y-6">
-                    {!showCamera ? (
+                    {capturedImage ? (
                         <>
-                            <div>
-                                <label className="block text-sm font-bold text-zinc-700 mb-2">Application Code</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter application code (e.g., ABC123)"
-                                    className="w-full h-12 bg-white border border-zinc-100 rounded-2xl px-4 text-sm font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
-                                    value={applicationCode}
-                                    onChange={(e) => setApplicationCode(e.target.value.toUpperCase())}
+                            <div className="relative">
+                                <img
+                                    src={capturedImage}
+                                    alt="Captured"
+                                    className="w-full h-64 bg-zinc-100 rounded-2xl object-cover"
                                 />
                             </div>
-                            <button
-                                onClick={() => setShowCamera(true)}
-                                disabled={!applicationCode.trim()}
-                                className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-400 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                            >
-                                <Camera className="h-4 w-4" />
-                                Open Camera
-                            </button>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => {
+                                        setCapturedImage(null);
+                                        // If we were in camera mode, stay there. 
+                                        // If we weren't (file upload), this takes us back to initial selection.
+                                    }}
+                                    className="flex-1 h-12 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 rounded-2xl font-bold text-sm transition-all"
+                                >
+                                    Retake / Clear
+                                </button>
+                                <button
+                                    onClick={handleUpload}
+                                    disabled={uploadingPhoto}
+                                    className="flex-1 h-12 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-400 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {uploadingPhoto ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Uploading...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload className="h-4 w-4" />
+                                            Upload Photo
+                                        </>
+                                    )}
+                                </button>
+                            </div>
                         </>
-                    ) : !capturedImage ? (
+                    ) : showCamera ? (
                         <>
                             <div className="relative">
                                 <video
@@ -214,47 +248,51 @@ export default function PhotoCaptureModal({
                         </>
                     ) : (
                         <>
-                            <div className="relative">
-                                <img
-                                    src={capturedImage}
-                                    alt="Captured"
-                                    className="w-full h-64 bg-zinc-100 rounded-2xl object-cover"
+                            <div>
+                                <label className="block text-sm font-bold text-zinc-700 mb-2">Application Code</label>
+                                <input
+                                    type="text"
+                                    placeholder="Enter application code (e.g., ABC123)"
+                                    className="w-full h-12 bg-white border border-zinc-100 rounded-2xl px-4 text-sm font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
+                                    value={applicationCode}
+                                    onChange={(e) => setApplicationCode(e.target.value.toUpperCase())}
                                 />
                             </div>
-                            <div className="flex gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <button
-                                    onClick={() => setCapturedImage(null)}
-                                    className="flex-1 h-12 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 rounded-2xl font-bold text-sm transition-all"
+                                    onClick={() => setShowCamera(true)}
+                                    disabled={!applicationCode.trim()}
+                                    className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-400 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
-                                    Retake
+                                    <Camera className="h-4 w-4" />
+                                    Open Camera
                                 </button>
-                                <button
-                                    onClick={handleUpload}
-                                    disabled={uploadingPhoto}
-                                    className="flex-1 h-12 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-400 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                >
-                                    {uploadingPhoto ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            Uploading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Camera className="h-4 w-4" />
-                                            Upload Photo
-                                        </>
-                                    )}
-                                </button>
+                                <div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                    />
+                                    <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={!applicationCode.trim()}
+                                        className="w-full h-12 bg-zinc-100 hover:bg-zinc-200 disabled:bg-zinc-50 disabled:text-zinc-400 text-zinc-900 rounded-2xl font-bold text-sm transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        <Paperclip className="h-4 w-4" />
+                                        Upload File
+                                    </button>
+                                </div>
                             </div>
                         </>
                     )}
 
                     {photoMessage && (
-                        <div className={`p-4 rounded-2xl text-sm font-bold ${
-                            photoMessage.type === 'success'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : 'bg-red-50 text-red-700 border border-red-200'
-                        }`}>
+                        <div className={`p-4 rounded-2xl text-sm font-bold ${photoMessage.type === 'success'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                            : 'bg-red-50 text-red-700 border border-red-200'
+                            }`}>
                             {photoMessage.text}
                         </div>
                     )}
