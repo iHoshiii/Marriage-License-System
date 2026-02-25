@@ -98,7 +98,62 @@ export function StaffTable({ initialStaff }: { initialStaff: any[] }) {
                 onClose={() => setSecurityConfig(prev => ({ ...prev, isOpen: false }))}
             />
 
-            <table className="w-full text-left border-collapse min-w-[600px]">
+            {/* Mobile Card View */}
+            <div className="block md:hidden space-y-4">
+                {staff.map((member) => (
+                    <div key={member.id} className="bg-white rounded-2xl border border-zinc-100 p-4 shadow-sm">
+                        <div className="flex items-start gap-4">
+                            <div className="h-12 w-12 shrink-0 rounded-2xl bg-zinc-900 text-white flex items-center justify-center font-black text-lg shadow-xl shadow-zinc-200/50">
+                                {member.full_name?.substring(0, 1) || 'S'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-black text-zinc-900 uppercase tracking-tight leading-tight text-base">{member.full_name || 'Unnamed Staff'}</p>
+                                <div className="flex items-center gap-1.5 text-zinc-400 mt-1">
+                                    <Mail className="h-3 w-3 shrink-0" />
+                                    <span className="text-xs font-bold tracking-tight truncate">{member.email}</span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <IdCard className="h-3.5 w-3.5 text-zinc-400" />
+                                    <span className="text-xs font-black text-zinc-600 tracking-tight">{member.employee_id || 'NOT-ASSIGNED'}</span>
+                                </div>
+                                <Badge className={`mt-2 ${member.role === 'admin' ? "bg-purple-50 text-purple-700 border-purple-100" : "bg-blue-50 text-blue-700 border-blue-100"} px-2 py-1 text-xs font-black uppercase tracking-wider`}>
+                                    {member.role}
+                                </Badge>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between mt-4">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                                    <FileCheck className="h-5 w-5 text-amber-600" />
+                                </div>
+                                <div>
+                                    <p className="text-xl font-black text-zinc-900 tabular-nums leading-none tracking-tight">{member.processed_applications}</p>
+                                    <p className="text-xs font-black text-zinc-400 uppercase tracking-widest">Processed</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => triggerUpdateRole(member)}
+                                    title={member.role === 'admin' ? 'Demote to Employee' : 'Promote to Admin'}
+                                    className="h-10 w-10 rounded-xl bg-zinc-50 hover:bg-zinc-900 hover:text-white text-zinc-400 flex items-center justify-center transition-all shadow-sm active:scale-90"
+                                >
+                                    {member.role === 'admin' ? <ArrowDownCircle className="h-5 w-5" /> : <ArrowUpCircle className="h-5 w-5" />}
+                                </button>
+                                <button
+                                    onClick={() => triggerDelete(member)}
+                                    title="Delete Employee"
+                                    className="h-10 w-10 rounded-xl bg-red-50 hover:bg-red-600 hover:text-white flex items-center justify-center text-red-500 transition-all shadow-sm active:scale-90"
+                                >
+                                    <Trash2 className="h-5 w-5" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <table className="hidden md:table w-full text-left border-collapse min-w-[600px]">
                 <thead>
                     <tr className="border-b border-zinc-100 bg-zinc-50/30">
                         <th className="px-4 sm:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Employee</th>

@@ -18,6 +18,12 @@ const STATUS_CONFIG: Record<string, { color: string; icon: any; bg: string; bord
     rejected: { color: "text-red-700", icon: XCircle, bg: "bg-red-50", border: "border-red-200", dot: "bg-red-400" },
 };
 
+// Safe status getter with fallback
+const getStatusConfig = (status?: string) => {
+    const normalizedStatus = status?.toLowerCase();
+    return STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG.pending;
+};
+
 const STATUS_ACTIONS = [
     { value: "pending", label: "Set as Pending", dot: "bg-amber-400", hover: "hover:bg-amber-50" },
     { value: "approved", label: "Set as Approved", dot: "bg-emerald-400", hover: "hover:bg-emerald-50" },
@@ -340,15 +346,31 @@ export default function GlobalOversightClient({
                 </div>
             </div>
 
-            {/* ── Manual Status Update and Photo Capture Forms ── */}
+            {/* ── Photo Capture and Manual Status Update Forms ── */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Photo Capture */}
+                <div className="bg-white rounded-[2.5rem] border border-zinc-100 shadow-2xl shadow-zinc-200/50 p-8">
+                    <h3 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-6">Photo Capture</h3>
+
+                    <p className="text-sm text-zinc-600 mb-6">
+                        Capture and upload photos for marriage license applications. The application status will be automatically set to "approved" upon successful photo upload.
+                    </p>
+
+                    <button
+                        onClick={() => setShowPhotoModal(true)}
+                        className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20"
+                    >
+                        Open Photo Capture
+                    </button>
+                </div>
+
                 {/* Manual Status Update Form */}
                 <div className="bg-white rounded-[2.5rem] border border-zinc-100 shadow-2xl shadow-zinc-200/50 p-8">
                     <h3 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-6">Manual Status Update</h3>
 
                     <div className="flex flex-col sm:flex-row gap-4 items-end">
                         <div className="flex-1">
-                            <label className="block text-sm font-bold text-zinc-700 mb-2">Application Code</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2 text-center">Application Code</label>
                             <input
                                 type="text"
                                 placeholder="Enter application code (e.g., ABC123)"
@@ -359,7 +381,7 @@ export default function GlobalOversightClient({
                         </div>
 
                         <div className="flex-1">
-                            <label className="block text-sm font-bold text-zinc-700 mb-2">Set Status</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2 text-center">Set Status</label>
                             <select
                                 className="w-full h-12 bg-white border border-zinc-100 rounded-2xl px-4 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
                                 value={manualStatus}
@@ -398,22 +420,6 @@ export default function GlobalOversightClient({
                         </div>
                     )}
                 </div>
-
-                {/* Photo Capture */}
-                <div className="bg-white rounded-[2.5rem] border border-zinc-100 shadow-2xl shadow-zinc-200/50 p-8">
-                    <h3 className="text-xl font-black text-zinc-900 uppercase tracking-tight mb-6">Photo Capture</h3>
-
-                    <p className="text-sm text-zinc-600 mb-6">
-                        Capture and upload photos for marriage license applications. The application status will be automatically set to "approved" upon successful photo upload.
-                    </p>
-
-                    <button
-                        onClick={() => setShowPhotoModal(true)}
-                        className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-200/20"
-                    >
-                        Open Photo Capture
-                    </button>
-                </div>
             </div>
 
             {/* ── Table ── */}
@@ -437,7 +443,73 @@ export default function GlobalOversightClient({
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* Mobile Card View */}
+                <div className="block md:hidden space-y-4 p-4">
+                    {filtered.length === 0 ? (
+                        <div className="py-24 text-center">
+                            <div className="w-20 h-20 bg-zinc-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                                <Search className="h-10 w-10 text-zinc-200" />
+                            </div>
+                            <p className="text-zinc-500 font-black uppercase tracking-widest text-xs">No records found</p>
+                        </div>
+                    ) : (
+                        filtered.map((app) => {
+                            const config = getStatusConfig(app.status);
+
+                            return (
+                                <div key={app.id} className="bg-white rounded-2xl border border-zinc-100 p-4 shadow-sm">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div>
+                                            <p className="text-xl font-black text-zinc-900 tracking-tighter leading-none">{app.application_code}</p>
+                                            <div className="flex items-center gap-1.5 text-zinc-400 mt-1">
+                                                <Calendar className="h-3 w-3" />
+                                                <span className="text-xs font-bold uppercase tracking-widest">
+                                                    {new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border shadow-sm ${config.bg} ${config.border}`}>
+                                            <div className={`h-1.5 w-1.5 rounded-full ${config.dot}`} />
+                                            <span className={`text-xs font-black uppercase tracking-widest ${config.color}`}>{app.status}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 mb-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-black text-blue-400 tracking-widest w-8">GRM</span>
+                                            <span className="text-sm font-bold text-zinc-800">{app.groom_name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-black text-pink-400 tracking-widest w-8">BRD</span>
+                                            <span className="text-sm font-bold text-zinc-800">{app.bride_name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <User className="h-4 w-4 text-zinc-400" />
+                                            <span className="text-xs font-black text-zinc-900 uppercase tracking-tight">{app.submitted_by}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-center gap-2">
+                                        <ActionDropdown
+                                            app={app}
+                                            onView={() => setSelectedApp(app)}
+                                            onDownloadExcel={handleDownloadExcel}
+                                            onManualUpdate={(app) => {
+                                                setRowManualApp(app);
+                                                setRowManualStatus(app.status || "approved");
+                                                setRowManualMessage(null);
+                                            }}
+                                            isUpdating={updatingId === app.id}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left border-collapse table-auto min-w-[900px]">
                         <thead>
                             <tr className="border-b border-zinc-100 bg-zinc-50/10">
@@ -460,7 +532,7 @@ export default function GlobalOversightClient({
                                 </tr>
                             ) : (
                                 filtered.map((app) => {
-                                    const config = STATUS_CONFIG[app.status?.toLowerCase()] || STATUS_CONFIG.pending;
+                                    const config = getStatusConfig(app.status);
                                     const StatusIcon = config.icon;
 
                                     return (
@@ -612,7 +684,7 @@ export default function GlobalOversightClient({
                             {/* Status + Submitter */}
                             <div className="flex items-center gap-3 flex-wrap">
                                 {(() => {
-                                    const cfg = STATUS_CONFIG[selectedApp.status?.toLowerCase()] || STATUS_CONFIG.pending;
+                                    const cfg = getStatusConfig(selectedApp.status);
                                     return (
                                         <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border font-black text-xs uppercase tracking-widest ${cfg.bg} ${cfg.color} ${cfg.border}`}>
                                             <div className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
