@@ -4,17 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/logout/actions";
 import { Button } from "@/components/ui/button";
-import {
-    LayoutDashboard,
-    User,
-    LogOut,
-    ShieldCheck,
-    Bell,
-    Users,
-    FileText,
-    BarChart
-} from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getNavigationLinks } from "./NavigationConfig";
 
 interface SidebarProps {
     userRole?: string;
@@ -35,79 +27,17 @@ export function Sidebar({ userRole = "user" }: SidebarProps) {
             </div>
 
             <nav className="flex-1 space-y-1">
-                <Link href={`/dashboard/${userRole}`}>
-                    <Button
-                        variant={isActive(`/dashboard/${userRole}`) ? "secondary" : "ghost"}
-                        className={cn("w-full justify-start gap-3 h-11 px-3", isActive(`/dashboard/${userRole}`) ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
-                    >
-                        <LayoutDashboard className="h-4 w-4" />
-                        Dashboard
-                    </Button>
-                </Link>
-
-                {userRole === "admin" && (
-                    <>
-                        <Link href="/dashboard/admin/staff">
-                            <Button
-                                variant={isActive("/dashboard/admin/staff") ? "secondary" : "ghost"}
-                                className={cn("w-full justify-start gap-3 h-11 px-3", isActive("/dashboard/admin/staff") ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
-                            >
-                                <Users className="h-4 w-4" />
-                                Staff Management
-                            </Button>
-                        </Link>
-                        <Link href="/dashboard/admin/applications">
-                            <Button
-                                variant={isActive("/dashboard/admin/applications") ? "secondary" : "ghost"}
-                                className={cn("w-full justify-start gap-3 h-11 px-3", isActive("/dashboard/admin/applications") ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
-                            >
-                                <FileText className="h-4 w-4" />
-                                Global Applications
-                            </Button>
-                        </Link>
-                        <Link href="/dashboard/admin/reports">
-                            <Button
-                                variant={isActive("/dashboard/admin/reports") ? "secondary" : "ghost"}
-                                className={cn("w-full justify-start gap-3 h-11 px-3", isActive("/dashboard/admin/reports") ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
-                            >
-                                <BarChart className="h-4 w-4" />
-                                Reports & Analytics
-                            </Button>
-                        </Link>
-                    </>
-                )}
-
-                {userRole === "employee" && (
-                    <Link href="/dashboard/admin/applications">
+                {getNavigationLinks(userRole).map((link) => (
+                    <Link key={link.href} href={link.href}>
                         <Button
-                            variant={isActive("/dashboard/admin/applications") ? "secondary" : "ghost"}
-                            className={cn("w-full justify-start gap-3 h-11 px-3", isActive("/dashboard/admin/applications") ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
+                            variant={isActive(link.href) ? "secondary" : "ghost"}
+                            className={cn("w-full justify-start gap-3 h-11 px-3", isActive(link.href) ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
                         >
-                            <FileText className="h-4 w-4" />
-                            Applications
+                            <link.icon className="h-4 w-4" />
+                            {link.label}
                         </Button>
                     </Link>
-                )}
-
-                <Link href="/dashboard/profile">
-                    <Button
-                        variant={isActive("/dashboard/profile") ? "secondary" : "ghost"}
-                        className={cn("w-full justify-start gap-3 h-11 px-3", isActive("/dashboard/profile") ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
-                    >
-                        <User className="h-4 w-4" />
-                        Profile
-                    </Button>
-                </Link>
-
-                <Link href="/dashboard/notifications">
-                    <Button
-                        variant={isActive("/dashboard/notifications") ? "secondary" : "ghost"}
-                        className={cn("w-full justify-start gap-3 h-11 px-3", isActive("/dashboard/notifications") ? "bg-zinc-100 font-medium" : "text-zinc-500 hover:text-black")}
-                    >
-                        <Bell className="h-4 w-4" />
-                        Notifications
-                    </Button>
-                </Link>
+                ))}
             </nav>
 
             <div className="mt-auto pt-6 border-t border-zinc-200">

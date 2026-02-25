@@ -41,9 +41,6 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
                     municipality,
                     province
                 )
-            ),
-            profiles!created_by (
-                full_name
             )
         `)
         .order("created_at", { ascending: false })
@@ -59,14 +56,11 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
         const groom = applicants.find((a: any) => a.type === 'groom');
         const bride = applicants.find((a: any) => a.type === 'bride');
 
-        const profileData = (app as any).profiles;
-        const profile = Array.isArray(profileData) ? profileData[0] : profileData;
-
         return {
             ...app,
             groom_name: groom ? `${groom.first_name} ${groom.last_name}` : 'Unknown',
             bride_name: bride ? `${bride.first_name} ${bride.last_name}` : 'Unknown',
-            submitted_by: profile?.full_name || 'Anonymous',
+            submitted_by: 'Anonymous', // Since we removed profiles join
             groom: groom || null,
             bride: bride || null,
         };

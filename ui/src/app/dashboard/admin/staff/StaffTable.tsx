@@ -98,33 +98,33 @@ export function StaffTable({ initialStaff }: { initialStaff: any[] }) {
                 onClose={() => setSecurityConfig(prev => ({ ...prev, isOpen: false }))}
             />
 
-            <table className="w-full text-left border-collapse table-fixed">
+            <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                     <tr className="border-b border-zinc-100 bg-zinc-50/30">
-                        <th className="w-[40%] px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Employee</th>
-                        <th className="w-[20%] px-6 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">ID / Role</th>
-                        <th className="w-[20%] px-6 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Performance</th>
-                        <th className="w-[20%] px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-center">Actions</th>
+                        <th className="px-4 sm:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Employee</th>
+                        <th className="px-4 sm:px-6 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">ID / Role</th>
+                        <th className="px-4 sm:px-6 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400">Performance</th>
+                        <th className="px-4 sm:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
                     {staff.map((member) => (
                         <tr key={member.id} className="group hover:bg-zinc-50/50 transition-colors">
-                            <td className="px-8 py-6 truncate">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 shrink-0 rounded-2xl bg-zinc-900 text-white flex items-center justify-center font-black text-lg shadow-xl shadow-zinc-200/50 transition-transform group-hover:scale-105">
+                            <td className="px-4 sm:px-8 py-6">
+                                <div className="flex items-center gap-3 sm:gap-4">
+                                    <div className="h-10 sm:h-12 w-10 sm:w-12 shrink-0 rounded-2xl bg-zinc-900 text-white flex items-center justify-center font-black text-base sm:text-lg shadow-xl shadow-zinc-200/50 transition-transform group-hover:scale-105">
                                         {member.full_name?.substring(0, 1) || 'S'}
                                     </div>
-                                    <div className="truncate">
-                                        <p className="font-black text-zinc-900 uppercase tracking-tight leading-tight truncate">{member.full_name || 'Unnamed Staff'}</p>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-black text-zinc-900 uppercase tracking-tight leading-tight truncate text-sm sm:text-base">{member.full_name || 'Unnamed Staff'}</p>
                                         <div className="flex items-center gap-1.5 text-zinc-400 mt-1">
                                             <Mail className="h-3 w-3 shrink-0" />
-                                            <span className="text-[11px] font-bold tracking-tight truncate">{member.email}</span>
+                                            <span className="text-[10px] sm:text-[11px] font-bold tracking-tight truncate">{member.email}</span>
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td className="px-6 py-6 truncate">
+                            <td className="px-4 sm:px-6 py-6">
                                 <div className="space-y-1.5">
                                     <div className="flex items-center gap-2">
                                         <IdCard className="h-3.5 w-3.5 text-zinc-400" />
@@ -135,32 +135,32 @@ export function StaffTable({ initialStaff }: { initialStaff: any[] }) {
                                     </Badge>
                                 </div>
                             </td>
-                            <td className="px-6 py-6 truncate">
+                            <td className="px-4 sm:px-6 py-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                                        <FileCheck className="h-5 w-5 text-amber-600" />
+                                    <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                                        <FileCheck className="h-4 sm:h-5 w-4 sm:w-5 text-amber-600" />
                                     </div>
                                     <div>
-                                        <p className="text-xl font-black text-zinc-900 tabular-nums leading-none tracking-tight">{member.processed_applications}</p>
+                                        <p className="text-lg sm:text-xl font-black text-zinc-900 tabular-nums leading-none tracking-tight">{member.processed_applications}</p>
                                         <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-0.5">Processed</p>
                                     </div>
                                 </div>
                             </td>
-                            <td className="px-8 py-6 text-center">
-                                <div className="flex justify-center items-center gap-3">
+                            <td className="px-4 sm:px-8 py-6 text-center">
+                                <div className="flex justify-center items-center gap-2 sm:gap-3">
                                     <button
                                         onClick={() => triggerUpdateRole(member)}
                                         title={member.role === 'admin' ? 'Demote to Employee' : 'Promote to Admin'}
-                                        className="h-10 w-10 rounded-xl bg-zinc-50 hover:bg-zinc-900 hover:text-white flex items-center justify-center text-zinc-400 transition-all shadow-sm active:scale-90"
+                                        className="h-8 sm:h-10 w-8 sm:w-10 rounded-xl bg-zinc-50 hover:bg-zinc-900 hover:text-white text-zinc-400 flex items-center justify-center transition-all shadow-sm active:scale-90"
                                     >
-                                        {member.role === 'admin' ? <ArrowDownCircle className="h-5 w-5" /> : <ArrowUpCircle className="h-5 w-5" />}
+                                        {member.role === 'admin' ? <ArrowDownCircle className="h-4 sm:h-5 w-4 sm:w-5" /> : <ArrowUpCircle className="h-4 sm:h-5 w-4 sm:w-5" />}
                                     </button>
                                     <button
                                         onClick={() => triggerDelete(member)}
                                         title="Delete Employee"
-                                        className="h-10 w-10 rounded-xl bg-red-50 hover:bg-red-600 hover:text-white flex items-center justify-center text-red-500 transition-all shadow-sm active:scale-90"
+                                        className="h-8 sm:h-10 w-8 sm:w-10 rounded-xl bg-red-50 hover:bg-red-600 hover:text-white flex items-center justify-center text-red-500 transition-all shadow-sm active:scale-90"
                                     >
-                                        <Trash2 className="h-5 w-5" />
+                                        <Trash2 className="h-4 sm:h-5 w-4 sm:w-5" />
                                     </button>
                                 </div>
                             </td>

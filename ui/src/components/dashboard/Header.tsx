@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar } from "@/components/ui/avatar";
-import { Bell, Search, Menu, X, LayoutDashboard, User, LogOut, ShieldCheck } from "lucide-react";
+import { Bell, Search, Menu, X, LogOut, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { logout } from "@/app/logout/actions";
+import { getNavigationLinks } from "./NavigationConfig";
 
 interface HeaderProps {
     userInitials: string;
@@ -20,11 +21,7 @@ export function Header({ userInitials, userRole }: HeaderProps) {
     const pathname = usePathname();
     const isActive = (path: string) => pathname === path;
 
-    const navLinks = [
-        { href: `/dashboard/${userRole}`, label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/profile", label: "Profile", icon: User },
-        { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
-    ];
+    const navLinks = getNavigationLinks(userRole);
 
     return (
         <>

@@ -38,13 +38,14 @@ export default async function StaffManagementPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase">Staff Management</h1>
+                    <h1 className="text-2xl md:text-4xl font-black text-zinc-900 tracking-tighter uppercase">Staff Management</h1>
                     <p className="text-zinc-500 font-medium">Manage employees, roles, and monitor office activity.</p>
                 </div>
                 <OnboardStaffDialog>
-                    <Button className="h-12 px-6 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-black/10 flex gap-2">
+                    <Button className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-black/10 flex gap-2 w-full sm:w-auto justify-center">
                         <Plus className="h-4 w-4" />
-                        Onboard New Staff
+                        <span className="hidden sm:inline">Onboard New Staff</span>
+                        <span className="sm:hidden">Add Staff</span>
                     </Button>
                 </OnboardStaffDialog>
             </div>

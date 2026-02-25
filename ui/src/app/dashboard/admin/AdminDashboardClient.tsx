@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import AdminCameraModal from "./AdminCameraModal";
 import { createClient } from "@/utils/supabase/client";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 
 interface AdminDashboardClientProps {
     initialMetrics: {
@@ -48,37 +49,44 @@ export default function AdminDashboardClient({ initialMetrics }: AdminDashboardC
     return (
         <>
             <div className="space-y-8 animate-in fade-in duration-700">
-                {/* Header - Matching Theme from 7773a9cc */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-black text-zinc-900 uppercase tracking-tight">Admin Dashboard</h1>
-                        <p className="text-sm text-zinc-500 font-medium tracking-tight">System control and monitoring interface</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <Button
-                            onClick={handleRefresh}
-                            variant="outline"
-                            className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95"
-                        >
-                            <RefreshCw className="mr-2 h-4 w-4" /> Refresh
-                        </Button>
-                        <Link href="/dashboard/admin/staff">
-                            <Button className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] bg-zinc-900 hover:bg-zinc-800 transition-all shadow-lg active:scale-95">
-                                <ShieldCheck className="mr-2 h-4 w-4" /> Manage Staff
+                <DashboardHeader
+                    title="Admin Dashboard"
+                    subtitle="System control and monitoring interface"
+                    actions={
+                        <>
+                            <Button
+                                onClick={handleRefresh}
+                                variant="outline"
+                                className="rounded-xl h-11 px-4 sm:px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95 flex-1 sm:flex-none"
+                            >
+                                <RefreshCw className="mr-2 h-4 w-4" /> Refresh
                             </Button>
-                        </Link>
-                        <Link href="/dashboard/admin/applications">
-                            <Button variant="outline" className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95">
-                                <FileText className="mr-2 h-4 w-4" /> Applications
-                            </Button>
-                        </Link>
-                        <Link href="/dashboard/admin/reports">
-                            <Button variant="outline" className="rounded-xl h-11 px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95">
-                                <BarChart className="mr-2 h-4 w-4" /> Reports
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
+                            <div className="flex gap-2 sm:gap-3 flex-1 sm:flex-none">
+                                <Link href="/dashboard/admin/staff" className="flex-1 sm:flex-none">
+                                    <Button className="rounded-xl h-11 px-4 sm:px-6 font-bold uppercase tracking-widest text-[10px] bg-zinc-900 hover:bg-zinc-800 transition-all shadow-lg active:scale-95 w-full">
+                                        <ShieldCheck className="mr-2 h-4 w-4" />
+                                        <span className="hidden sm:inline">Manage Staff</span>
+                                        <span className="sm:hidden">Staff</span>
+                                    </Button>
+                                </Link>
+                                <Link href="/dashboard/admin/applications" className="flex-1 sm:flex-none">
+                                    <Button variant="outline" className="rounded-xl h-11 px-4 sm:px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95 w-full">
+                                        <FileText className="mr-2 h-4 w-4" />
+                                        <span className="hidden sm:inline">Applications</span>
+                                        <span className="sm:hidden">Apps</span>
+                                    </Button>
+                                </Link>
+                                <Link href="/dashboard/admin/reports" className="flex-1 sm:flex-none">
+                                    <Button variant="outline" className="rounded-xl h-11 px-4 sm:px-6 font-bold uppercase tracking-widest text-[10px] border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95 w-full">
+                                        <BarChart className="mr-2 h-4 w-4" />
+                                        <span className="hidden sm:inline">Reports</span>
+                                        <span className="sm:hidden">Reports</span>
+                                    </Button>
+                                </Link>
+                            </div>
+                        </>
+                    }
+                />
 
                 {/* Metrics Grid - Layout from 7773a9cc with Real Data */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

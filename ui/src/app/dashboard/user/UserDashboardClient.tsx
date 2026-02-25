@@ -16,6 +16,7 @@ import {
     PenSquare
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 
 interface Application {
     id: string;
@@ -247,20 +248,19 @@ export default function UserDashboard() {
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
-            {/* Welcome Section */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">My Applications</h1>
-                    <p className="text-zinc-500 mt-1">Track the status of your marriage license application.</p>
-                </div>
-                {(!applications || applications.length === 0) && (
-                    <Link href="/marriage">
-                        <Button size="lg" className="rounded-xl shadow-lg shadow-primary/20">
-                            <PenSquare className="mr-2 h-5 w-5" /> New Application
-                        </Button>
-                    </Link>
-                )}
-            </div>
+            <DashboardHeader
+                title="My Applications"
+                subtitle="Track the status of your marriage license application"
+                actions={
+                    (!applications || applications.length === 0) ? (
+                        <Link href="/marriage" className="w-full sm:w-auto">
+                            <Button size="lg" className="rounded-xl shadow-lg shadow-primary/20 w-full sm:w-auto">
+                                <PenSquare className="mr-2 h-5 w-5" /> New Application
+                            </Button>
+                        </Link>
+                    ) : undefined
+                }
+            />
 
             {/* Grid Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
