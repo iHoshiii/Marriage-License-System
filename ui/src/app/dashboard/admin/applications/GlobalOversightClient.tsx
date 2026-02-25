@@ -312,8 +312,8 @@ export default function GlobalOversightClient({
                                         key={pageNum}
                                         onClick={() => router.push(`/dashboard/admin/applications?page=${pageNum}&limit=${limit}`)}
                                         className={`h-10 w-10 rounded-2xl font-bold text-sm transition-all ${pageNum === currentPage
-                                                ? 'bg-zinc-900 text-white'
-                                                : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-900'
+                                            ? 'bg-zinc-900 text-white'
+                                            : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-900'
                                             }`}
                                     >
                                         {pageNum}
@@ -354,6 +354,7 @@ export default function GlobalOversightClient({
                 <PhotoCaptureModal
                     isOpen={showPhotoModal}
                     onClose={() => setShowPhotoModal(false)}
+                    onSuccess={handleRefresh}
                 />
             )}
 
@@ -361,6 +362,7 @@ export default function GlobalOversightClient({
                 <AdminMarriageForm
                     isOpen={showAdminForm}
                     onClose={() => setShowAdminForm(false)}
+                    onSuccess={handleRefresh}
                 />
             )}
         </div>
