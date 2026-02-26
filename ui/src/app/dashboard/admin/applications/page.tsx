@@ -15,15 +15,11 @@ export default async function GlobalApplicationsPage({
     // Next.js 15+ REQUIRES searchParams to be awaited
     const sParams = await searchParams;
 
-    // Log for server-side debugging
-    console.log("GlobalApplicationsPage loading with params:", sParams);
-
     const page = typeof sParams.page === 'string' ? Math.max(1, parseInt(sParams.page) || 1) : 1;
     const limit = typeof sParams.limit === 'string' ? Math.max(1, parseInt(sParams.limit) || 50) : 50;
 
     try {
         const result = await getAllApplications(page, limit);
-        console.log(`Fetched ${result.apps?.length || 0} applications on server.`);
 
         return (
             <div className="space-y-8 animate-in fade-in duration-700">
@@ -39,8 +35,14 @@ export default async function GlobalApplicationsPage({
     } catch (error) {
         console.error("Failed to load applications page:", error);
         return (
-            <div className="p-8 text-center bg-red-50 text-red-800 rounded-3xl border border-red-100 italic font-bold">
-                Error loading applications. Please refresh or try again later.
+            <div className="p-12 text-center bg-zinc-50 rounded-[3rem] border-2 border-dashed border-zinc-200">
+                <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">Error loading applications</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="mt-4 px-6 py-2 bg-zinc-900 text-white rounded-xl font-bold text-sm"
+                >
+                    Retry Connection
+                </button>
             </div>
         );
     }

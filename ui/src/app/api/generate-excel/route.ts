@@ -109,10 +109,12 @@ export async function POST(req: NextRequest) {
             });
 
             pythonProcess.stderr.on("data", (data) => {
+                console.error(`Python Stderr: ${data}`);
                 errorData += data.toString();
             });
 
             pythonProcess.on("close", (code) => {
+                console.log(`Python process closed with code ${code}`);
                 // Clean up temporary image file
                 if (tempImagePath && fs.existsSync(tempImagePath)) {
                     try {

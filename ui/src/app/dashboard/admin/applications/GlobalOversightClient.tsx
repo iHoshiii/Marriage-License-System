@@ -33,12 +33,9 @@ export default function GlobalOversightClient({
     const router = useRouter();
     const [apps, setApps] = useState<any[]>(initialApps || []);
 
-    // Debugging: Log when apps change or initialApps are received
+    // Sync state with props when server data refreshes
     useEffect(() => {
-        console.log("GlobalOversightClient received initialApps:", initialApps?.length || 0);
-        if (initialApps && initialApps.length > 0) {
-            setApps(initialApps);
-        }
+        setApps(initialApps || []);
     }, [initialApps]);
 
     const [selectedApp, setSelectedApp] = useState<any | null>(null);
