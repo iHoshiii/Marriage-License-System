@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { spawn } from "child_process";
 import path from "path";
-import { createClient } from "@/utils/supabase/server-utils";
+import { createAdminClient } from "@/utils/supabase/server-utils";
 import fs from "fs";
 import os from "os";
 
@@ -16,15 +16,39 @@ export async function POST(req: NextRequest) {
         if (body.applicationCode) {
             console.log("Attempting to download image for application code:", body.applicationCode);
             try {
-                const supabase = await createClient();
-                if (!supabase) {
-                    console.error("Failed to create Supabase client");
-                    throw new Error("Failed to create Supabase client");
+                // Use Admin client to bypass RLS and ensure we can access storage
+                const supabase = createAdminClient();
+
+                // 1. Get the application ID first
+                const { data: appData, error: appError } = await supabase
+                    .from("marriage_applications")
+                    .select("id")
+                    .eq("application_code", body.applicationCode.toUpperCase())
+                    .single();
+
+                let imagePath = null;
+
+                if (appData?.id) {
+                    // 2. Get the actual file path from application_photos table
+                    const { data: photoData, error: photoError } = await supabase
+                        .from("application_photos")
+                        .select("file_path")
+                        .eq("application_id", appData.id)
+                        .single();
+
+                    if (photoData?.file_path) {
+                        imagePath = photoData.file_path;
+                        console.log("Found photo record in DB:", imagePath);
+                    }
                 }
 
-                // Construct the image path: marriage-license-files/{application_code}.jpg
-                const imagePath = `${body.applicationCode.toUpperCase()}.jpg`;
-                console.log("Constructed image path:", imagePath);
+                // 3. If not found in DB, fallback to the default naming convention
+                if (!imagePath) {
+                    console.log("No photo record found in DB, falling back to default convention (CODE.jpg)");
+                    imagePath = `${body.applicationCode.toUpperCase()}.jpg`;
+                }
+
+                console.log("Downloading image from storage path:", imagePath);
 
                 // Download the image from Supabase storage
                 const { data, error } = await supabase.storage
@@ -33,30 +57,42 @@ export async function POST(req: NextRequest) {
 
                 if (error) {
                     console.error("Error downloading image from Supabase:", error);
-                    console.error("Error details:", error.message, error.statusCode);
-                    // Continue without image - will use placeholder
-                } else {
+                    // Try another fallback with .png if we were using fallback or if the DB path failed
+                    if (imagePath.endsWith(".jpg") || !imagePath.includes(".")) {
+                        const altPath = imagePath.includes(".") ? imagePath.replace(".jpg", ".png") : `${imagePath}.png`;
+                        console.log("Retrying with alternative fallback:", altPath);
+                        const { data: altData, error: altError } = await supabase.storage
+                            .from("marriage-license-files")
+                            .download(altPath);
+
+                        if (!altError && altData) {
+                            await saveTempImage(altData);
+                        } else if (altError) {
+                            console.error("Alternative download also failed:", altError);
+                        }
+                    }
+                } else if (data) {
+                    await saveTempImage(data);
+                }
+
+                async function saveTempImage(data: Blob) {
                     console.log("Successfully downloaded image from Supabase");
-                    // Save to temporary file in system temp directory
                     const tempDir = path.join(os.tmpdir(), "solano-mls");
                     if (!fs.existsSync(tempDir)) {
                         fs.mkdirSync(tempDir, { recursive: true });
                     }
 
+                    // Always save as PNG locally for the Python script to handle easily
+                    // we use .png as a generic container for Pillow to load
                     tempImagePath = path.join(tempDir, `couple_${Date.now()}.png`);
                     const buffer = Buffer.from(await data.arrayBuffer());
                     fs.writeFileSync(tempImagePath, buffer);
                     console.log("Saved image to temporary file:", tempImagePath);
-
-                    // Update the body to use the temporary image path
                     body.coupleImagePath = tempImagePath;
                 }
             } catch (imageError) {
                 console.error("Error handling image download:", imageError);
-                // Continue without image
             }
-        } else {
-            console.log("No application code provided, skipping image download");
         }
 
         return new Promise<NextResponse>((resolve) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
     FileText, Search, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, Loader2, X
@@ -31,7 +31,16 @@ export default function GlobalOversightClient({
     limit: number;
 }) {
     const router = useRouter();
-    const [apps, setApps] = useState<any[]>(initialApps);
+    const [apps, setApps] = useState<any[]>(initialApps || []);
+
+    // Debugging: Log when apps change or initialApps are received
+    useEffect(() => {
+        console.log("GlobalOversightClient received initialApps:", initialApps?.length || 0);
+        if (initialApps && initialApps.length > 0) {
+            setApps(initialApps);
+        }
+    }, [initialApps]);
+
     const [selectedApp, setSelectedApp] = useState<any | null>(null);
     const [search, setSearch] = useState("");
     const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -222,15 +231,19 @@ export default function GlobalOversightClient({
         }
     };
 
-    const filtered = apps.filter(app => {
-        const q = search.toLowerCase();
-        return (
-            app.application_code?.toLowerCase().includes(q) ||
-            app.groom_name?.toLowerCase().includes(q) ||
-            app.bride_name?.toLowerCase().includes(q) ||
-            app.submitted_by?.toLowerCase().includes(q)
-        );
-    });
+    const filtered = useMemo(() => {
+        const q = search.toLowerCase().trim();
+        if (!q) return apps;
+
+        return apps.filter(app => {
+            return (
+                (app.application_code?.toLowerCase() || "").includes(q) ||
+                (app.groom_name?.toLowerCase() || "").includes(q) ||
+                (app.bride_name?.toLowerCase() || "").includes(q) ||
+                (app.submitted_by?.toLowerCase() || "").includes(q)
+            );
+        });
+    }, [apps, search]);
 
     return (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">

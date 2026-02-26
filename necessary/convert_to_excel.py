@@ -85,34 +85,34 @@ def process_excel(data):
         app = wb["APPLICATION"]
         
         # Groom
-        app['B8'], app['B9'], app['B10'] =(data.get("gFirst")).upper(),(data.get("gMiddle")).upper(),(data.get("gLast")).upper()
-        app['B11'], app['N11'] =(data.get("gBday")), g_age
+        app['B8'], app['B9'], app['B10'] =(data.get("gFirst", "")).upper(),(data.get("gMiddle", "")).upper(),(data.get("gLast", "")).upper()
+        app['B11'], app['N11'] =(data.get("gBday", "")), g_age
         app['B12'], app['L12'] =g_town_prov,(data.get("gCountry", "Philippines"))
         app['B13'], app['H13'] = "Male",(data.get("gCitizen", "Filipino"))
         app['B15'], app['M15'] = g_full_addr,(data.get("gCountry", "Philippines"))
-        app['B16'], app['B17'] =(data.get("gReligion")),(data.get("gStatus", "Single"))
+        app['B16'], app['B17'] =(data.get("gReligion", "")),(data.get("gStatus", "Single"))
         
         # Parents & Givers (Groom)
-        app['B22'], app['H22'], app['L22'] =(data.get("gFathF")),(data.get("gFathM")),(data.get("gFathL"))
-        app['B26'], app['G26'], app['K26'] =(data.get("gMothF")),(data.get("gMothM")),(data.get("gMothL"))
+        app['B22'], app['H22'], app['L22'] =(data.get("gFathF", "")),(data.get("gFathM", "")),(data.get("gFathL", ""))
+        app['B26'], app['G26'], app['K26'] =(data.get("gMothF", "")),(data.get("gMothM", "")),(data.get("gMothL", ""))
         if 18 <= g_age <= 24:
-            app['B30'], app['H30'], app['L30'] =(data.get("gGiverF")),(data.get("gGiverM")),(data.get("gGiverL"))
-            app['B31'], app['B32'] =(data.get("gGiverRelation")),(data.get("gCitizen", "Filipino"))
+            app['B30'], app['H30'], app['L30'] =(data.get("gGiverF", "")),(data.get("gGiverM", "")),(data.get("gGiverL", ""))
+            app['B31'], app['B32'] =(data.get("gGiverRelation", "")),(data.get("gCitizen", "Filipino"))
 
         # Bride
-        app['U8'], app['U9'], app['U10'] =(data.get("bFirst")).upper(),(data.get("bMiddle")).upper(),(data.get("bLast")).upper()
-        app['U11'], app['AF11'] =(data.get("bBday")), b_age
+        app['U8'], app['U9'], app['U10'] =(data.get("bFirst", "")).upper(),(data.get("bMiddle", "")).upper(),(data.get("bLast", "")).upper()
+        app['U11'], app['AF11'] =(data.get("bBday", "")), b_age
         app['U12'], app['AE12'] =b_town_prov,(data.get("bCountry", "Philippines"))
         app['U13'], app['Z13'] = "Female",(data.get("bCitizen", "Filipino"))
         app['U15'], app['AF15'] = b_full_addr,(data.get("bCountry", "Philippines"))
-        app['U16'], app['U17'] =(data.get("bReligion")),(data.get("bStatus", "Single"))
-
+        app['U16'], app['U17'] =(data.get("bReligion", "")),(data.get("bStatus", "Single"))
+ 
         # Parents & Givers (Bride)
-        app['U22'], app['Y22'], app['AC22'] =(data.get("bFathF")),(data.get("bFathM")),(data.get("bFathL"))
-        app['U26'], app['Y26'], app['AD26'] =(data.get("bMothF")),(data.get("bMothM")),(data.get("bMothL"))
+        app['U22'], app['Y22'], app['AC22'] =(data.get("bFathF", "")),(data.get("bFathM", "")),(data.get("bFathL", ""))
+        app['U26'], app['Y26'], app['AD26'] =(data.get("bMothF", "")),(data.get("bMothM", "")),(data.get("bMothL", ""))
         if 18 <= b_age <= 24:
-            app['U30'], app['Y30'], app['AD30'] =(data.get("bGiverF")),(data.get("bGiverM")),  (data.get("bGiverL"))
-            app['U31'], app['U32'] = (data.get("bGiverRelation")),(data.get("bCitizen", "Filipino"))
+            app['U30'], app['Y30'], app['AD30'] =(data.get("bGiverF", "")),(data.get("bGiverM", "")),  (data.get("bGiverL", ""))
+            app['U31'], app['U32'] = (data.get("bGiverRelation", "")),(data.get("bCitizen", "Filipino"))
 
         # Common Footer Info
         app['B37'], app['U37'], app['E37'], app['W37'], app['L37'], app['AD37'] = day_now, day_now, month_now, month_now, year_now, year_now
