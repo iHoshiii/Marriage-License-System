@@ -1,0 +1,53 @@
+export interface ExcelData {
+    // Groom
+    gFirst: string;
+    gMiddle: string;
+    gLast: string;
+    gBday: string;
+    gAge: number;
+    gTown: string;
+    gProv: string;
+    gBrgy: string;
+    gCountry: string;
+    gCitizen: string;
+    gReligion: string;
+    gStatus: string;
+    gFathF: string;
+    gFathM: string;
+    gFathL: string;
+    gMothF: string;
+    gMothM: string;
+    gMothL: string;
+    gGiverF: string;
+    gGiverM: string;
+    gGiverL: string;
+    gGiverRelation: string;
+
+    // Bride
+    bFirst: string;
+    bMiddle: string;
+    bLast: string;
+    bBday: string;
+    bAge: number;
+    bTown: string;
+    bProv: string;
+    bBrgy: string;
+    bCountry: string;
+    bCitizen: string;
+    bReligion: string;
+    bStatus: string;
+    bFathF: string;
+    bFathM: string;
+    bFathL: string;
+    bMothF: string;
+    bMothM: string;
+    bMothL: string;
+    bGiverF: string;
+    bGiverM: string;
+    bGiverL: string;
+    bGiverRelation: string;
+
+    // Metadata
+    applicationCode: string;
+    coupleImagePath?: string;
+}

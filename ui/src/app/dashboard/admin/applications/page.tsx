@@ -12,7 +12,7 @@ export default async function GlobalApplicationsPage({
 }: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-    // Next.js 15+ REQUIRES searchParams to be awaited
+    // Next.js 15+ REQUIRES searchParams to be awaited (MUST BE PROMISE)
     const sParams = await searchParams;
 
     const page = typeof sParams.page === 'string' ? Math.max(1, parseInt(sParams.page) || 1) : 1;
