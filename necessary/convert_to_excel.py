@@ -52,19 +52,29 @@ def process_excel(data):
         b_full_addr = (f"Brgy. , {data.get('bBrgy', '')}, {b_town_prov}")
 
         # Image Logic
-        if img_path and os.path.exists(img_path) and "Notice" in wb.sheetnames:
-            try:
-                couple_img = Image(img_path)
-                couple_img.height = cm_to_pixels(3.75)
-                couple_img.width = cm_to_pixels(5.73)
-                wb["Notice"].add_image(couple_img, "T11")
-                sys.stderr.write(f"Successfully added image from: {img_path}\n")
-                sys.stderr.flush()
-            except Exception as e:
-                sys.stderr.write(f"Warning: Image overlay failed: {e}\n")
+        if img_path and "Notice" in wb.sheetnames:
+            if os.path.exists(img_path):
+                try:
+                    couple_img = Image(img_path)
+                    couple_img.height = cm_to_pixels(3.75)
+                    couple_img.width = cm_to_pixels(5.73)
+                    wb["Notice"].add_image(couple_img, "T11")
+                    sys.stderr.write(f"Successfully added image from: {img_path}\n")
+                    sys.stderr.flush()
+                except Exception as e:
+                    sys.stderr.write(f"Warning: Image overlay failed: {e}\n")
+                    sys.stderr.flush()
+            else:
+                sys.stderr.write(f"Error: Image path does not exist: {img_path}\n")
                 sys.stderr.flush()
         else:
-            sys.stderr.write(f"Notice: No image to add (img_path: {img_path})\n")
+            sys.stderr.write(f"Notice: Image processing skipped (img_path: {img_path}, sheet: {'Notice' in wb.sheetnames})\n")
+            sys.stderr.flush()
+
+        # Set Notice as active sheet if it exists
+        if "Notice" in wb.sheetnames:
+            wb.active = wb.sheetnames.index("Notice")
+            sys.stderr.write("Set 'Notice' as active sheet\n")
             sys.stderr.flush()
 
         # MAIN APPLICATION SHEET MAPPING
