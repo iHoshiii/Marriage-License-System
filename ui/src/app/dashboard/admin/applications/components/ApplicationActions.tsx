@@ -8,6 +8,7 @@ interface ActionDropdownProps {
     onDownloadExcel: (app: any) => void;
     onManualUpdate: (app: any) => void;
     isUpdating: boolean;
+    isDownloading: boolean;
 }
 
 export function ActionDropdown({
@@ -16,6 +17,7 @@ export function ActionDropdown({
     onDownloadExcel,
     onManualUpdate,
     isUpdating,
+    isDownloading,
 }: ActionDropdownProps) {
     return (
         <div className="flex items-center gap-2 justify-center">
@@ -30,9 +32,13 @@ export function ActionDropdown({
             <button
                 title="Download Excel"
                 onClick={() => onDownloadExcel(app)}
-                className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
+                disabled={isDownloading}
+                className="h-9 w-9 rounded-xl bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-500 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <FileDown className="h-4 w-4" />
+                {isDownloading
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <FileDown className="h-4 w-4" />
+                }
             </button>
 
             <button

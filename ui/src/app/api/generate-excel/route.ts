@@ -3,6 +3,7 @@ import { spawn } from "child_process";
 import path from "path";
 import { createClient } from "@/utils/supabase/server-utils";
 import fs from "fs";
+import os from "os";
 
 export async function POST(req: NextRequest) {
     let tempImagePath: string | null = null;
@@ -36,8 +37,8 @@ export async function POST(req: NextRequest) {
                     // Continue without image - will use placeholder
                 } else {
                     console.log("Successfully downloaded image from Supabase");
-                    // Save to temporary file
-                    const tempDir = path.join(process.cwd(), "temp");
+                    // Save to temporary file in system temp directory
+                    const tempDir = path.join(os.tmpdir(), "solano-mls");
                     if (!fs.existsSync(tempDir)) {
                         fs.mkdirSync(tempDir, { recursive: true });
                     }
@@ -87,14 +88,26 @@ export async function POST(req: NextRequest) {
 
                 if (code !== 0) {
                     console.error("Python error:", errorData);
-                    resolve(NextResponse.json({ error: "Failed to generate Excel", details: errorData }, { status: 500 }));
+                    const errorMessage = errorData || "Python process exited with non-zero code";
+                    resolve(NextResponse.json({
+                        error: "Excel Generation Failed",
+                        details: errorMessage,
+                        code: code
+                    }, { status: 500 }));
                 } else {
                     const resultBuffer = Buffer.concat(buffers);
+                    if (resultBuffer.length === 0) {
+                        resolve(NextResponse.json({
+                            error: "Excel Generation Failed",
+                            details: "Generated file is empty. Check Python stderr for warnings."
+                        }, { status: 500 }));
+                        return;
+                    }
                     resolve(new NextResponse(resultBuffer, {
                         status: 200,
                         headers: {
                             "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            "Content-Disposition": `attachment; filename="MARRIAGE_APPLICATION.xlsx"`,
+                            "Content-Disposition": `attachment; filename="MARRIAGE_APPLICATION_${body.applicationCode || 'DRAFT'}.xlsx"`,
                         },
                     }));
                 }

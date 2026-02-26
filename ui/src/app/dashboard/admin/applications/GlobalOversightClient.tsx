@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-    FileText, Search, ChevronLeft, ChevronRight
+    FileText, Search, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, Loader2, X
 } from "lucide-react";
+import { Alert } from "@/components/ui/alert";
 import { updateApplicationStatus } from "./actions";
 import PhotoCaptureModal from "@/components/PhotoCaptureModal";
 import AdminMarriageForm from "./AdminMarriageForm";
@@ -34,6 +35,8 @@ export default function GlobalOversightClient({
     const [selectedApp, setSelectedApp] = useState<any | null>(null);
     const [search, setSearch] = useState("");
     const [updatingId, setUpdatingId] = useState<string | null>(null);
+    const [downloadingId, setDownloadingId] = useState<string | null>(null);
+    const [downloadMessage, setDownloadMessage] = useState<{ type: 'success' | 'error' | 'info', text: string } | null>(null);
 
     // Manual status update form state
     const [manualAppCode, setManualAppCode] = useState("");
@@ -124,6 +127,11 @@ export default function GlobalOversightClient({
     }
 
     const handleDownloadExcel = async (app: any) => {
+        if (downloadingId) return;
+
+        setDownloadingId(app.id);
+        setDownloadMessage({ type: 'info', text: `Preparing Excel for ${app.application_code}...` });
+
         try {
             // Prepare data for Excel generation
             const excelData = {
@@ -195,13 +203,22 @@ export default function GlobalOversightClient({
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
+                setDownloadMessage({ type: 'success', text: `Successfully downloaded Excel for ${app.application_code}.` });
+                // Clear success message after 3 seconds
+                setTimeout(() => setDownloadMessage(null), 3000);
             } else {
-                console.error('Failed to generate Excel file');
-                alert('Failed to download Excel file. Please try again.');
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Failed to generate Excel file:', errorData);
+                setDownloadMessage({
+                    type: 'error',
+                    text: `Download failed: ${errorData.details || errorData.error || 'Server error'}`
+                });
             }
         } catch (error) {
             console.error('Error downloading Excel:', error);
-            alert('An error occurred while downloading the Excel file.');
+            setDownloadMessage({ type: 'error', text: 'An unexpected error occurred while downloading the Excel file.' });
+        } finally {
+            setDownloadingId(null);
         }
     };
 
@@ -242,6 +259,18 @@ export default function GlobalOversightClient({
                         className="h-14 w-full bg-white border border-zinc-100 rounded-2xl pl-12 pr-4 text-sm font-bold placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all shadow-xl shadow-zinc-200/20"
                     />
                 </div>
+
+                {/* Download Status Toast */}
+                {downloadMessage && (
+                    <div className="fixed bottom-8 right-8 z-[60] max-w-md w-full animate-in slide-in-from-right duration-300">
+                        <Alert
+                            type={downloadMessage.type === 'info' ? 'info' : downloadMessage.type}
+                            message={downloadMessage.text}
+                            onClose={() => setDownloadMessage(null)}
+                            className="shadow-2xl border-zinc-200/50 backdrop-blur-md bg-white/90"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* ── Photo Capture and Manual Status Update Forms ── */}
@@ -283,6 +312,7 @@ export default function GlobalOversightClient({
                     setRowManualMessage(null);
                 }}
                 updatingId={updatingId}
+                downloadingId={downloadingId}
                 onRefresh={handleRefresh}
             />
 

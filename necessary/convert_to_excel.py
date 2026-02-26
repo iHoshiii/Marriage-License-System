@@ -23,6 +23,7 @@ def process_excel(data):
         
         if not os.path.exists(template_path):
             sys.stderr.write(f"Error: Template not found at {template_path}\n")
+            sys.stderr.flush()
             os._exit(1)
 
         wb = openpyxl.load_workbook(template_path)
@@ -58,10 +59,13 @@ def process_excel(data):
                 couple_img.width = cm_to_pixels(5.73)
                 wb["Notice"].add_image(couple_img, "T11")
                 sys.stderr.write(f"Successfully added image from: {img_path}\n")
+                sys.stderr.flush()
             except Exception as e:
                 sys.stderr.write(f"Warning: Image overlay failed: {e}\n")
+                sys.stderr.flush()
         else:
-            sys.stderr.write(f"No image to add (img_path: {img_path})\n")
+            sys.stderr.write(f"Notice: No image to add (img_path: {img_path})\n")
+            sys.stderr.flush()
 
         # MAIN APPLICATION SHEET MAPPING
         if "APPLICATION" not in wb.sheetnames:

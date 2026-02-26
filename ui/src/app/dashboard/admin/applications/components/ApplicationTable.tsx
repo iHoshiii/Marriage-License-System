@@ -10,6 +10,7 @@ interface ApplicationTableProps {
     onDownloadExcel: (app: any) => void;
     onManualUpdate: (app: any) => void;
     updatingId: string | null;
+    downloadingId: string | null;
     onRefresh: () => void;
 }
 
@@ -19,6 +20,7 @@ export default function ApplicationTable({
     onDownloadExcel,
     onManualUpdate,
     updatingId,
+    downloadingId,
     onRefresh
 }: ApplicationTableProps) {
     return (
@@ -89,6 +91,7 @@ export default function ApplicationTable({
                                     onDownloadExcel={onDownloadExcel}
                                     onManualUpdate={onManualUpdate}
                                     isUpdating={updatingId === app.id}
+                                    isDownloading={downloadingId === app.id}
                                 />
                             </div>
                         </div>
@@ -164,6 +167,7 @@ export default function ApplicationTable({
                                             onDownloadExcel={onDownloadExcel}
                                             onManualUpdate={onManualUpdate}
                                             isUpdating={updatingId === app.id}
+                                            isDownloading={downloadingId === app.id}
                                         />
                                     </td>
                                 </tr>

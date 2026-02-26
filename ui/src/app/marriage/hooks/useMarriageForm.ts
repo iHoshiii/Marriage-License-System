@@ -146,16 +146,22 @@ export function useMarriageForm() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `MARRIAGE_APPLICATION_${applicationCode}.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `MARRIAGE_APPLICATION_${applicationCode || 'download'}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                alert(`Error generating excel: ${errorData.details || errorData.error || 'Server error'}`);
+            }
         } catch (e) {
-            alert("Error generating excel.");
+            console.error("Excel generation error:", e);
+            alert("Error generating excel. Please check your connection.");
         } finally {
             setLoading(false);
         }
