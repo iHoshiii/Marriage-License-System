@@ -1,0 +1,36 @@
+Cell A6: formula=+U8, value={"formula":"+U8","result":"AYANNA MAE"}
+Cell F6: formula=+U9, value={"formula":"+U9","result":"CUISON"}
+Cell H6: formula=+U10, value={"formula":"+U10","result":"ABIERA"}
+Cell R6: formula=+B8, value={"formula":"+B8","result":"RAYMARK"}
+Cell V6: formula=+B9, value={"formula":"+B9","result":"LEAL"}
+Cell Y6: formula=+B10, value={"formula":"+B10","result":"RAMOS"}
+Cell M15: formula=+L12, value={"formula":"+L12","result":"Philippines"}
+Cell L22: formula=+B10, value={"formula":"+B10","result":"RAMOS"}
+Cell AC22: formula=+U10, value={"formula":"+U10","result":"ABIERA"}
+Cell B23: formula=+H13, value={"formula":"+H13","result":null}
+Cell U23: formula=+Z13, value={"formula":"+Z13","result":null}
+Cell B25: formula=+B15, value={"formula":"+B15","result":null}
+Cell M25: formula=+M15, value={"formula":"+M15","result":null}
+Cell U25: formula=+U15, value={"formula":"+U15","result":"Brgy. Pob. South, Solano, Nueva Vizcaya"}
+Cell AF25: formula=+AF15, value={"formula":"+AF15","result":"Philippines"}
+Cell K26: formula=+B9, value={"formula":"+B9","result":"LEAL"}
+Cell AD26: formula=+U9, value={"formula":"+U9","result":"CUISON"}
+Cell B27: formula=+H13, value={"formula":"+H13","result":null}
+Cell B29: formula=+B15, value={"formula":"+B15","result":null}
+Cell M29: formula=+M15, value={"formula":"+M15","result":null}
+Cell U29: formula=+U25, value={"formula":"+U25","result":"Brgy. Pob. South, Solano, Nueva Vizcaya"}
+Cell AF29: formula=+AF25, value={"formula":"+AF25","result":"Philippines"}
+Cell B30: formula=+B26, value={"formula":"+B26","result":null}
+Cell H30: formula=+K26, value={"formula":"+K26","result":"LEAL"}
+Cell L30: formula=+L22, value={"formula":"+L22","result":"RAMOS"}
+Cell U30: formula=+U26, value={"formula":"+U26","result":"ANNA LIZA"}
+Cell Y30: formula=+AD26, value={"formula":"+AD26","result":"CUISON"}
+Cell AD30: formula=+AC22, value={"formula":"+AC22","result":"ABIERA"}
+Cell B34: formula=+B29, value={"formula":"+B29","result":null}
+Cell M34: formula=+M29, value={"formula":"+M29","result":null}
+Cell U34: formula=+U29, value={"formula":"+U29","result":"Brgy. Pob. South, Solano, Nueva Vizcaya"}
+Cell AF34: formula=+AF29, value={"formula":"+AF29","result":"Philippines"}
+Cell L37: formula=+L5, value={"formula":"+L5","result":2026}
+Cell U37: formula=+B37, value={"formula":"+B37","result":4}
+Cell W37: formula=+E37, value={"formula":"+E37","result":null}
+Cell AD37: formula=+L37, value={"formula":"+L37","result":2026}
