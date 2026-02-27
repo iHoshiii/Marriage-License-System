@@ -10,20 +10,21 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json();
+        const appCode = (body.applicationCode || '').toUpperCase();
 
         // 1. Handle Image Download (keep existing logic)
-        if (body.applicationCode) {
-            console.log("Attempting to download image for application code:", body.applicationCode);
+        if (appCode) {
+            console.log("Attempting to download image for application code:", appCode);
             try {
                 const supabase = createAdminClient();
 
                 const { data: appData } = await supabase
                     .from("marriage_applications")
                     .select("id")
-                    .eq("application_code", body.applicationCode.toUpperCase())
+                    .eq("application_code", appCode)
                     .single();
 
-                let imagePath = null;
+                let imagePath: string | null = null;
 
                 if (appData?.id) {
                     const { data: photoData } = await supabase
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
                 }
 
                 if (!imagePath) {
-                    imagePath = `${body.applicationCode.toUpperCase()}.jpg`;
+                    imagePath = `${appCode}.jpg`;
                 }
 
                 const { data, error } = await supabase.storage
@@ -48,23 +49,26 @@ export async function POST(req: NextRequest) {
                 if (error) {
                     console.error("Error downloading image:", error);
                     // Try PNG fallback
-                    const altPath = imagePath.replace(".jpg", ".png");
+                    const altPath = imagePath!.replace(".jpg", ".png");
                     const { data: altData } = await supabase.storage
                         .from("marriage-license-files")
                         .download(altPath);
-                    if (altData) await saveTempImage(altData);
+                    if (altData) await saveTempImage(altData, altPath); // Use altPath here
                 } else if (data) {
-                    await saveTempImage(data);
+                    await saveTempImage(data, imagePath!);
                 }
 
-                async function saveTempImage(data: Blob) {
+                async function saveTempImage(data: Blob, imgPath: string) {
                     const tempDir = path.join(os.tmpdir(), "solano-mls");
                     if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
-                    tempImagePath = path.join(tempDir, `couple_${Date.now()}.png`);
+                    // Preserve original extension or default to png
+                    const ext = imgPath.split('.').pop() || 'png';
+                    tempImagePath = path.join(tempDir, `couple_${Date.now()}.${ext}`);
                     const buffer = Buffer.from(await data.arrayBuffer());
                     fs.writeFileSync(tempImagePath, buffer);
                     body.coupleImagePath = tempImagePath;
+                    body.imageExtension = ext;
                 }
             } catch (imageError) {
                 console.error("Error handling image download:", imageError);
@@ -85,9 +89,11 @@ export async function POST(req: NextRequest) {
 
     } catch (error: any) {
         console.error("Excel Generation Error:", error);
+        console.error("Full Error Stack:", error.stack);
         return NextResponse.json({
             error: "Excel Generation Failed",
-            details: error.message
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         }, { status: 500 });
     } finally {
         // Cleanup temp image

@@ -39,6 +39,8 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
                 religion,
                 father_name,
                 mother_name,
+                giver_name,
+                giver_relationship,
                 addresses (
                     barangay,
                     municipality,

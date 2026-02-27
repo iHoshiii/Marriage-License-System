@@ -114,6 +114,8 @@ export async function submitApplication(formData: any, generatedCode: string, us
         religion: formData.gReligion || null,
         father_name: [formData.gFathF, formData.gFathM, formData.gFathL].filter(Boolean).join(' ') || null,
         mother_name: [formData.gMothF, formData.gMothM, formData.gMothL].filter(Boolean).join(' ') || null,
+        giver_name: [formData.gGiverF, formData.gGiverM, formData.gGiverL].filter(Boolean).join(' ') || null,
+        giver_relationship: formData.gGiverOtherTitle || formData.gGiverRelation || null,
     };
 
     console.log('Inserting groom applicant...');
@@ -141,6 +143,8 @@ export async function submitApplication(formData: any, generatedCode: string, us
         religion: formData.bReligion || null,
         father_name: [formData.bFathF, formData.bFathM, formData.bFathL].filter(Boolean).join(' ') || null,
         mother_name: [formData.bMothF, formData.bMothM, formData.bMothL].filter(Boolean).join(' ') || null,
+        giver_name: [formData.bGiverF, formData.bGiverM, formData.bGiverL].filter(Boolean).join(' ') || null,
+        giver_relationship: formData.bGiverOtherTitle || formData.bGiverRelation || null,
     };
 
     console.log('Inserting bride applicant...');

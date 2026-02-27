@@ -10,6 +10,8 @@ import { updateApplicationStatus } from "./actions";
 import PhotoCaptureModal from "@/components/PhotoCaptureModal";
 import AdminMarriageForm from "./AdminMarriageForm";
 
+import { toTitleCase, calculateAge, splitName } from "../../../marriage/utils";
+
 // Extracted Components
 import ApplicationTable from "./components/ApplicationTable";
 import ApplicationDetailModal from "./components/ApplicationDetailModal";
@@ -140,6 +142,23 @@ export default function GlobalOversightClient({
 
         try {
             // Prepare data for Excel generation
+            console.log("Preparing Excel for application:", app);
+
+            const groomFather = splitName(app.groom?.father_name);
+            const groomMother = splitName(app.groom?.mother_name);
+            const groomGiver = splitName(app.groom?.giver_name);
+
+            console.log("Groom Giver Info:", {
+                fullName: app.groom?.giver_name,
+                split: groomGiver,
+                age: app.groom?.age,
+                relationship: app.groom?.giver_relationship
+            });
+
+            const brideFather = splitName(app.bride?.father_name);
+            const brideMother = splitName(app.bride?.mother_name);
+            const brideGiver = splitName(app.bride?.giver_name);
+
             const excelData = {
                 gFirst: app.groom?.first_name || '',
                 gMiddle: app.groom?.middle_name || '',
@@ -153,16 +172,16 @@ export default function GlobalOversightClient({
                 gCitizen: app.groom?.citizenship || 'Filipino',
                 gReligion: app.groom?.religion || '',
                 gStatus: 'Single',
-                gFathF: app.groom?.father_name?.split(' ')[0] || '',
-                gFathM: app.groom?.father_name?.split(' ')[1] || '',
-                gFathL: app.groom?.father_name?.split(' ')[2] || '',
-                gMothF: app.groom?.mother_name?.split(' ')[0] || '',
-                gMothM: app.groom?.mother_name?.split(' ')[1] || '',
-                gMothL: app.groom?.mother_name?.split(' ')[2] || '',
-                gGiverF: '',
-                gGiverM: '',
-                gGiverL: '',
-                gGiverRelation: '',
+                gFathF: groomFather.first,
+                gFathM: groomFather.middle,
+                gFathL: groomFather.last,
+                gMothF: groomMother.first,
+                gMothM: groomMother.middle,
+                gMothL: groomMother.last,
+                gGiverF: groomGiver.first,
+                gGiverM: groomGiver.middle,
+                gGiverL: groomGiver.last,
+                gGiverRelation: app.groom?.giver_relationship || '',
 
                 bFirst: app.bride?.first_name || '',
                 bMiddle: app.bride?.middle_name || '',
@@ -176,16 +195,16 @@ export default function GlobalOversightClient({
                 bCitizen: app.bride?.citizenship || 'Filipino',
                 bReligion: app.bride?.religion || '',
                 bStatus: 'Single',
-                bFathF: app.bride?.father_name?.split(' ')[0] || '',
-                bFathM: app.bride?.father_name?.split(' ')[1] || '',
-                bFathL: app.bride?.father_name?.split(' ')[2] || '',
-                bMothF: app.bride?.mother_name?.split(' ')[0] || '',
-                bMothM: app.bride?.mother_name?.split(' ')[1] || '',
-                bMothL: app.bride?.mother_name?.split(' ')[2] || '',
-                bGiverF: '',
-                bGiverM: '',
-                bGiverL: '',
-                bGiverRelation: '',
+                bFathF: brideFather.first,
+                bFathM: brideFather.middle,
+                bFathL: brideFather.last,
+                bMothF: brideMother.first,
+                bMothM: brideMother.middle,
+                bMothL: brideMother.last,
+                bGiverF: brideGiver.first,
+                bGiverM: brideGiver.middle,
+                bGiverL: brideGiver.last,
+                bGiverRelation: app.bride?.giver_relationship || '',
             };
 
             const response = await fetch('/api/generate-excel', {

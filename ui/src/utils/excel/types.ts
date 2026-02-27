@@ -50,4 +50,5 @@ export interface ExcelData {
     // Metadata
     applicationCode: string;
     coupleImagePath?: string;
+    imageExtension?: string;
 }

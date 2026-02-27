@@ -14,3 +14,20 @@ export const calculateAge = (birthDateString: string): number => {
     }
     return age >= 0 ? age : 0;
 };
+
+/**
+ * Splits a full name into First, Middle and Last components.
+ * Returns empty strings for missing parts.
+ */
+export const splitName = (fullName: string | null | undefined) => {
+    if (!fullName) return { first: "", middle: "", last: "" };
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length === 0) return { first: "", middle: "", last: "" };
+    if (parts.length === 1) return { first: parts[0], middle: "", last: "" };
+    if (parts.length === 2) return { first: parts[0], middle: "", last: parts[1] };
+    return {
+        first: parts[0],
+        middle: parts.slice(1, -1).join(" "),
+        last: parts[parts.length - 1]
+    };
+};
