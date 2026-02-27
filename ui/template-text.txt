@@ -1,0 +1,509 @@
+G2: Nueva Vizcaya
+H2: Nueva Vizcaya
+I2: Nueva Vizcaya
+J2: Nueva Vizcaya
+K2: Nueva Vizcaya
+L2: Nueva Vizcaya
+M2: Nueva Vizcaya
+N2: Nueva Vizcaya
+O2: Nueva Vizcaya
+P2: Nueva Vizcaya
+Q2: Nueva Vizcaya
+R2: Nueva Vizcaya
+S2: Nueva Vizcaya
+T2: Nueva Vizcaya
+U2: Nueva Vizcaya
+V2: Nueva Vizcaya
+W2: Nueva Vizcaya
+G3: Solano
+H3: Solano
+I3: Solano
+J3: Solano
+K3: Solano
+L3: Solano
+M3: Solano
+N3: Solano
+O3: Solano
+P3: Solano
+Q3: Solano
+R3: Solano
+S3: Solano
+T3: Solano
+U3: Solano
+V3: Solano
+W3: Solano
+AC3: -
+F4: BERNADETTE T. SAMANDRE
+G4: BERNADETTE T. SAMANDRE
+H4: BERNADETTE T. SAMANDRE
+I4: BERNADETTE T. SAMANDRE
+J4: BERNADETTE T. SAMANDRE
+K4: BERNADETTE T. SAMANDRE
+L4: BERNADETTE T. SAMANDRE
+M4: BERNADETTE T. SAMANDRE
+N4: BERNADETTE T. SAMANDRE
+O4: BERNADETTE T. SAMANDRE
+P4: BERNADETTE T. SAMANDRE
+Q4: BERNADETTE T. SAMANDRE
+R4: BERNADETTE T. SAMANDRE
+S4: BERNADETTE T. SAMANDRE
+T4: BERNADETTE T. SAMANDRE
+G5: February
+H5: February
+I5: February
+J5: February
+K5: February
+B8: RAYMARK
+C8: RAYMARK
+D8: RAYMARK
+E8: RAYMARK
+F8: RAYMARK
+G8: RAYMARK
+H8: RAYMARK
+I8: RAYMARK
+J8: RAYMARK
+K8: RAYMARK
+L8: RAYMARK
+M8: RAYMARK
+N8: RAYMARK
+O8: RAYMARK
+P8: RAYMARK
+U8: AYANNA MAE
+V8: AYANNA MAE
+W8: AYANNA MAE
+X8: AYANNA MAE
+Y8: AYANNA MAE
+Z8: AYANNA MAE
+AA8: AYANNA MAE
+AB8: AYANNA MAE
+AC8: AYANNA MAE
+AD8: AYANNA MAE
+AE8: AYANNA MAE
+AF8: AYANNA MAE
+AG8: AYANNA MAE
+AH8: AYANNA MAE
+B9: LEAL
+C9: LEAL
+D9: LEAL
+E9: LEAL
+F9: LEAL
+G9: LEAL
+H9: LEAL
+I9: LEAL
+J9: LEAL
+K9: LEAL
+L9: LEAL
+M9: LEAL
+N9: LEAL
+O9: LEAL
+P9: LEAL
+U9: CUISON
+V9: CUISON
+W9: CUISON
+X9: CUISON
+Y9: CUISON
+Z9: CUISON
+AA9: CUISON
+AB9: CUISON
+AC9: CUISON
+AD9: CUISON
+AE9: CUISON
+AF9: CUISON
+AG9: CUISON
+AH9: CUISON
+B10: RAMOS
+C10: RAMOS
+D10: RAMOS
+E10: RAMOS
+F10: RAMOS
+G10: RAMOS
+H10: RAMOS
+I10: RAMOS
+J10: RAMOS
+K10: RAMOS
+L10: RAMOS
+M10: RAMOS
+N10: RAMOS
+O10: RAMOS
+P10: RAMOS
+U10: ABIERA
+V10: ABIERA
+W10: ABIERA
+X10: ABIERA
+Y10: ABIERA
+Z10: ABIERA
+AA10: ABIERA
+AB10: ABIERA
+AC10: ABIERA
+AD10: ABIERA
+AE10: ABIERA
+AF10: ABIERA
+AG10: ABIERA
+AH10: ABIERA
+B12: Solano, Nueva Vizcaya
+C12: Solano, Nueva Vizcaya
+D12: Solano, Nueva Vizcaya
+E12: Solano, Nueva Vizcaya
+F12: Solano, Nueva Vizcaya
+G12: Solano, Nueva Vizcaya
+H12: Solano, Nueva Vizcaya
+I12: Solano, Nueva Vizcaya
+J12: Solano, Nueva Vizcaya
+K12: Solano, Nueva Vizcaya
+L12: Philippines
+M12: Philippines
+N12: Philippines
+O12: Philippines
+U12: Bayombong, Nueva Vizcaya
+V12: Bayombong, Nueva Vizcaya
+W12: Bayombong, Nueva Vizcaya
+X12: Bayombong, Nueva Vizcaya
+Y12: Bayombong, Nueva Vizcaya
+Z12: Bayombong, Nueva Vizcaya
+AA12: Bayombong, Nueva Vizcaya
+AB12: Bayombong, Nueva Vizcaya
+AC12: Bayombong, Nueva Vizcaya
+AD12: Bayombong, Nueva Vizcaya
+AE12: Philippines
+AF12: Philippines
+AG12: Philippines
+AH12: Philippines
+B13: Male
+C13: Male
+D13: Male
+E13: Male
+F13: Male
+G13: Male
+H13: Filipino
+I13: Filipino
+J13: Filipino
+K13: Filipino
+L13: Filipino
+M13: Filipino
+N13: Filipino
+O13: Filipino
+P13: Filipino
+U13: Female
+V13: Female
+W13: Female
+X13: Female
+Y13: Female
+Z13: Filipino
+AA13: Filipino
+AB13: Filipino
+AC13: Filipino
+AD13: Filipino
+AE13: Filipino
+AF13: Filipino
+AG13: Filipino
+AH13: Filipino
+B15: Brgy. Osmeña, Solano, Nueva Vizcaya
+C15: Brgy. Osmeña, Solano, Nueva Vizcaya
+D15: Brgy. Osmeña, Solano, Nueva Vizcaya
+E15: Brgy. Osmeña, Solano, Nueva Vizcaya
+F15: Brgy. Osmeña, Solano, Nueva Vizcaya
+G15: Brgy. Osmeña, Solano, Nueva Vizcaya
+H15: Brgy. Osmeña, Solano, Nueva Vizcaya
+I15: Brgy. Osmeña, Solano, Nueva Vizcaya
+J15: Brgy. Osmeña, Solano, Nueva Vizcaya
+K15: Brgy. Osmeña, Solano, Nueva Vizcaya
+L15: Brgy. Osmeña, Solano, Nueva Vizcaya
+U15: Brgy. Pob. South, Solano, Nueva Vizcaya
+V15: Brgy. Pob. South, Solano, Nueva Vizcaya
+W15: Brgy. Pob. South, Solano, Nueva Vizcaya
+X15: Brgy. Pob. South, Solano, Nueva Vizcaya
+Y15: Brgy. Pob. South, Solano, Nueva Vizcaya
+Z15: Brgy. Pob. South, Solano, Nueva Vizcaya
+AA15: Brgy. Pob. South, Solano, Nueva Vizcaya
+AB15: Brgy. Pob. South, Solano, Nueva Vizcaya
+AC15: Brgy. Pob. South, Solano, Nueva Vizcaya
+AD15: Brgy. Pob. South, Solano, Nueva Vizcaya
+AE15: Brgy. Pob. South, Solano, Nueva Vizcaya
+AF15: Philippines
+AG15: Philippines
+AH15: Philippines
+B16: Roman Catholic
+C16: Roman Catholic
+D16: Roman Catholic
+E16: Roman Catholic
+F16: Roman Catholic
+G16: Roman Catholic
+H16: Roman Catholic
+I16: Roman Catholic
+J16: Roman Catholic
+K16: Roman Catholic
+L16: Roman Catholic
+M16: Roman Catholic
+N16: Roman Catholic
+O16: Roman Catholic
+P16: Roman Catholic
+U16: Roman Catholic
+V16: Roman Catholic
+W16: Roman Catholic
+X16: Roman Catholic
+Y16: Roman Catholic
+Z16: Roman Catholic
+AA16: Roman Catholic
+AB16: Roman Catholic
+AC16: Roman Catholic
+AD16: Roman Catholic
+AE16: Roman Catholic
+AF16: Roman Catholic
+AG16: Roman Catholic
+AH16: Roman Catholic
+B17: Single
+C17: Single
+D17: Single
+E17: Single
+F17: Single
+G17: Single
+H17: Single
+I17: Single
+J17: Single
+K17: Single
+L17: Single
+M17: Single
+N17: Single
+O17: Single
+P17: Single
+U17: Single
+V17: Single
+W17: Single
+X17: Single
+Y17: Single
+Z17: Single
+AA17: Single
+AB17: Single
+AC17: Single
+AD17: Single
+AE17: Single
+AF17: Single
+AG17: Single
+AH17: Single
+B18: N/A
+C18: N/A
+D18: N/A
+E18: N/A
+F18: N/A
+G18: N/A
+H18: N/A
+I18: N/A
+J18: N/A
+K18: N/A
+L18: N/A
+M18: N/A
+N18: N/A
+O18: N/A
+P18: N/A
+U18: N/A
+V18: N/A
+W18: N/A
+X18: N/A
+Y18: N/A
+Z18: N/A
+AA18: N/A
+AB18: N/A
+AC18: N/A
+AD18: N/A
+AE18: N/A
+AF18: N/A
+AG18: N/A
+AH18: N/A
+B21: None
+C21: None
+D21: None
+E21: None
+F21: None
+G21: None
+H21: None
+I21: None
+J21: None
+K21: None
+L21: None
+M21: None
+N21: None
+O21: None
+P21: None
+U21: None
+V21: None
+W21: None
+X21: None
+Y21: None
+Z21: None
+AA21: None
+AB21: None
+AC21: None
+AD21: None
+AE21: None
+AF21: None
+AG21: None
+AH21: None
+B22: RAYMUNDO JR.
+C22: RAYMUNDO JR.
+D22: RAYMUNDO JR.
+E22: RAYMUNDO JR.
+F22: RAYMUNDO JR.
+G22: RAYMUNDO JR.
+H22: ACOSTA
+I22: ACOSTA
+J22: ACOSTA
+K22: ACOSTA
+U22: NOEL JOHN
+V22: NOEL JOHN
+W22: NOEL JOHN
+X22: NOEL JOHN
+Y22: MARQUEZ
+Z22: MARQUEZ
+AA22: MARQUEZ
+AB22: MARQUEZ
+B26: MARICEL
+C26: MARICEL
+D26: MARICEL
+E26: MARICEL
+F26: MARICEL
+G26: SALAZAR
+H26: SALAZAR
+I26: SALAZAR
+J26: SALAZAR
+U26: ANNA LIZA
+V26: ANNA LIZA
+W26: ANNA LIZA
+X26: ANNA LIZA
+Y26: MANALLO
+Z26: MANALLO
+AA26: MANALLO
+AB26: MANALLO
+AC26: MANALLO
+U27: Filipino
+V27: Filipino
+W27: Filipino
+X27: Filipino
+Y27: Filipino
+Z27: Filipino
+AA27: Filipino
+AB27: Filipino
+AC27: Filipino
+AD27: Filipino
+AE27: Filipino
+AF27: Filipino
+AG27: Filipino
+AH27: Filipino
+B31: Mother
+C31: Mother
+D31: Mother
+E31: Mother
+F31: Mother
+G31: Mother
+H31: Mother
+I31: Mother
+J31: Mother
+K31: Mother
+L31: Mother
+M31: Mother
+N31: Mother
+O31: Mother
+P31: Mother
+U31: Mother
+V31: Mother
+W31: Mother
+X31: Mother
+Y31: Mother
+Z31: Mother
+AA31: Mother
+AB31: Mother
+AC31: Mother
+AD31: Mother
+AE31: Mother
+AF31: Mother
+AG31: Mother
+AH31: Mother
+B32: Filipino
+C32: Filipino
+D32: Filipino
+E32: Filipino
+F32: Filipino
+G32: Filipino
+H32: Filipino
+I32: Filipino
+J32: Filipino
+K32: Filipino
+L32: Filipino
+M32: Filipino
+N32: Filipino
+O32: Filipino
+P32: Filipino
+U32: Filipino
+V32: Filipino
+W32: Filipino
+X32: Filipino
+Y32: Filipino
+Z32: Filipino
+AA32: Filipino
+AB32: Filipino
+AC32: Filipino
+AD32: Filipino
+AE32: Filipino
+AF32: Filipino
+AG32: Filipino
+AH32: Filipino
+E37: February
+F37: February
+G37: February
+H37: February
+I37: February
+J37: February
+K37: February
+B38: Solano, Nueva Vizcaya
+C38: Solano, Nueva Vizcaya
+D38: Solano, Nueva Vizcaya
+E38: Solano, Nueva Vizcaya
+F38: Solano, Nueva Vizcaya
+G38: Solano, Nueva Vizcaya
+H38: Solano, Nueva Vizcaya
+I38: Solano, Nueva Vizcaya
+J38: Solano, Nueva Vizcaya
+K38: Solano, Nueva Vizcaya
+L38: Solano, Nueva Vizcaya
+M38: Solano, Nueva Vizcaya
+N38: Solano, Nueva Vizcaya
+O38: Solano, Nueva Vizcaya
+U38: Solano, Nueva Vizcaya
+V38: Solano, Nueva Vizcaya
+W38: Solano, Nueva Vizcaya
+X38: Solano, Nueva Vizcaya
+Y38: Solano, Nueva Vizcaya
+Z38: Solano, Nueva Vizcaya
+AA38: Solano, Nueva Vizcaya
+AB38: Solano, Nueva Vizcaya
+AC38: Solano, Nueva Vizcaya
+AD38: Solano, Nueva Vizcaya
+AE38: Solano, Nueva Vizcaya
+AF38: Solano, Nueva Vizcaya
+AG38: Solano, Nueva Vizcaya
+AH38: Solano, Nueva Vizcaya
+D39: National ID 4091-6805-3082-4958
+E39: National ID 4091-6805-3082-4958
+F39: National ID 4091-6805-3082-4958
+G39: National ID 4091-6805-3082-4958
+H39: National ID 4091-6805-3082-4958
+I39: National ID 4091-6805-3082-4958
+J39: National ID 4091-6805-3082-4958
+K39: National ID 4091-6805-3082-4958
+L39: National ID 4091-6805-3082-4958
+M39: National ID 4091-6805-3082-4958
+N39: National ID 4091-6805-3082-4958
+O39: National ID 4091-6805-3082-4958
+P39: National ID 4091-6805-3082-4958
+V39: National ID 4618-6358-2391-7683
+W39: National ID 4618-6358-2391-7683
+X39: National ID 4618-6358-2391-7683
+Y39: National ID 4618-6358-2391-7683
+Z39: National ID 4618-6358-2391-7683
+AA39: National ID 4618-6358-2391-7683
+AB39: National ID 4618-6358-2391-7683
+AC39: National ID 4618-6358-2391-7683
+AD39: National ID 4618-6358-2391-7683
+AE39: National ID 4618-6358-2391-7683
+AF39: National ID 4618-6358-2391-7683
+AG39: National ID 4618-6358-2391-7683
+AH39: National ID 4618-6358-2391-7683
