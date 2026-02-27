@@ -55,9 +55,12 @@ export class ExcelGenerator {
             sheetsToKeep.push("AddressBACKnotice", "EnvelopeAddress");
         }
 
-        // --- 1. HANDLE SHEET VISIBILITY ---
-        // Ensure APPLICATION is visible and active
+        // --- 1. HANDLE SHEET VISIBILITY & ACTIVE TAB POINTER ---
         const appSheet = workbook.getWorksheet('APPLICATION') || workbook.getWorksheet(1);
+
+        // APPLICATION is sheetId 1, index 0 in the template
+        const appSheetIndex = workbook.worksheets.findIndex(s => s.name === 'APPLICATION');
+
         workbook.eachSheet((sheet) => {
             if (sheetsToKeep.includes(sheet.name)) {
                 sheet.state = 'visible';
@@ -66,129 +69,132 @@ export class ExcelGenerator {
             }
         });
 
-        // Set the active sheet to ensure Excel doesn't try to open a hidden sheet first
         if (appSheet) {
             appSheet.state = 'visible';
-            workbook.views = [{
-                x: 0, y: 0, width: 10000, height: 20000,
-                firstSheet: 0, activeTab: appSheet.id - 1, visibility: 'visible'
+            const workbookViews: any[] = [{
+                x: 0,
+                y: 0,
+                width: 29040,
+                height: 15720,
+                firstSheet: 0,
+                activeTab: appSheetIndex >= 0 ? appSheetIndex : 0,
+                visibility: 'visible'
             }];
+            workbook.views = workbookViews;
         }
+
+        const safeVal = (val: any): string => (val === null || val === undefined) ? "" : val.toString();
 
         // --- 2. FILL APPLICATION SHEET ---
         if (appSheet) {
             // Groom
-            appSheet.getCell('B8').value = (data.gFirst || '').toUpperCase();
-            appSheet.getCell('B9').value = (data.gMiddle || '').toUpperCase();
-            appSheet.getCell('B10').value = (data.gLast || '').toUpperCase();
-            appSheet.getCell('B11').value = data.gBday || '';
+            appSheet.getCell('B8').value = safeVal(data.gFirst).toUpperCase();
+            appSheet.getCell('B9').value = safeVal(data.gMiddle).toUpperCase();
+            appSheet.getCell('B10').value = safeVal(data.gLast).toUpperCase();
+            appSheet.getCell('B11').value = safeVal(data.gBday);
             appSheet.getCell('N11').value = data.gAge || 0;
-            appSheet.getCell('B12').value = gTownProv;
-            appSheet.getCell('L12').value = data.gCountry || 'Philippines';
+            appSheet.getCell('B12').value = safeVal(gTownProv);
+
+            const gCountryVal = safeVal(data.gCountry) || 'Philippines';
+            appSheet.getCell('L12').value = gCountryVal;
+            appSheet.getCell('M15').value = gCountryVal;
+
             appSheet.getCell('B13').value = "Male";
-            appSheet.getCell('H13').value = data.gCitizen || 'Filipino';
-            appSheet.getCell('B15').value = gFullAddr;
-            appSheet.getCell('M15').value = data.gCountry || 'Philippines';
-            appSheet.getCell('B16').value = data.gReligion || '';
-            appSheet.getCell('B17').value = data.gStatus || 'Single';
+            appSheet.getCell('H13').value = safeVal(data.gCitizen) || 'Filipino';
+            appSheet.getCell('B15').value = safeVal(gFullAddr);
+            appSheet.getCell('B16').value = safeVal(data.gReligion);
+            appSheet.getCell('B17').value = safeVal(data.gStatus) || 'Single';
 
-            // Father: B22, H22, L22
-            appSheet.getCell('B22').value = data.gFathF || '';
-            appSheet.getCell('H22').value = data.gFathM || '';
-            appSheet.getCell('L22').value = data.gFathL || '';
+            appSheet.getCell('B22').value = safeVal(data.gFathF);
+            appSheet.getCell('H22').value = safeVal(data.gFathM);
+            appSheet.getCell('L22').value = safeVal(data.gFathL);
 
-            // Mother: B26, H26, L26
-            appSheet.getCell('B26').value = data.gMothF || '';
-            appSheet.getCell('H26').value = data.gMothM || '';
-            appSheet.getCell('L26').value = data.gMothL || '';
+            appSheet.getCell('B26').value = safeVal(data.gMothF);
+            appSheet.getCell('H26').value = safeVal(data.gMothM);
+            appSheet.getCell('L26').value = safeVal(data.gMothL);
 
-            // Giver display (Advice/Consent)
-            // If data exists, show it, otherwise check age
             const hasGroomGiver = !!(data.gGiverF || data.gGiverL);
             if (hasGroomGiver || (gAge >= 18 && gAge <= 24)) {
-                appSheet.getCell('B30').value = data.gGiverF || '';
-                appSheet.getCell('H30').value = data.gGiverM || '';
-                appSheet.getCell('L30').value = data.gGiverL || '';
-                appSheet.getCell('B31').value = data.gGiverRelation || '';
-                appSheet.getCell('B32').value = data.gCitizen || 'Filipino';
+                appSheet.getCell('B30').value = safeVal(data.gGiverF);
+                appSheet.getCell('H30').value = safeVal(data.gGiverM);
+                appSheet.getCell('L30').value = safeVal(data.gGiverL);
+                appSheet.getCell('B31').value = safeVal(data.gGiverRelation);
+                appSheet.getCell('B32').value = safeVal(data.gCitizen) || 'Filipino';
             }
 
             // Bride
-            appSheet.getCell('U8').value = (data.bFirst || '').toUpperCase();
-            appSheet.getCell('U9').value = (data.bMiddle || '').toUpperCase();
-            appSheet.getCell('U10').value = (data.bLast || '').toUpperCase();
-            appSheet.getCell('U11').value = data.bBday || '';
+            appSheet.getCell('U8').value = safeVal(data.bFirst).toUpperCase();
+            appSheet.getCell('U9').value = safeVal(data.bMiddle).toUpperCase();
+            appSheet.getCell('U10').value = safeVal(data.bLast).toUpperCase();
+            appSheet.getCell('U11').value = safeVal(data.bBday);
             appSheet.getCell('AF11').value = data.bAge || 0;
-            appSheet.getCell('U12').value = bTownProv;
-            appSheet.getCell('AE12').value = data.bCountry || 'Philippines';
+            appSheet.getCell('U12').value = safeVal(bTownProv);
+
+            const bCountryVal = safeVal(data.bCountry) || 'Philippines';
+            appSheet.getCell('AE12').value = bCountryVal;
+            appSheet.getCell('AF15').value = bCountryVal;
+
             appSheet.getCell('U13').value = "Female";
-            appSheet.getCell('Z13').value = data.bCitizen || 'Filipino';
-            appSheet.getCell('U15').value = bFullAddr;
-            appSheet.getCell('AF15').value = data.bCountry || 'Philippines';
-            appSheet.getCell('U16').value = data.bReligion || '';
-            appSheet.getCell('U17').value = data.bStatus || 'Single';
+            appSheet.getCell('Z13').value = safeVal(data.bCitizen) || 'Filipino';
+            appSheet.getCell('U15').value = safeVal(bFullAddr);
+            appSheet.getCell('U16').value = safeVal(data.bReligion);
+            appSheet.getCell('U17').value = safeVal(data.bStatus) || 'Single';
 
-            // Father: U22, Y22, AC22
-            appSheet.getCell('U22').value = data.bFathF || '';
-            appSheet.getCell('Y22').value = data.bFathM || '';
-            appSheet.getCell('AC22').value = data.bFathL || '';
+            appSheet.getCell('U22').value = safeVal(data.bFathF);
+            appSheet.getCell('Y22').value = safeVal(data.bFathM);
+            appSheet.getCell('AC22').value = safeVal(data.bFathL);
 
-            // Mother: U26, Y26, AD26
-            appSheet.getCell('U26').value = data.bMothF || '';
-            appSheet.getCell('Y26').value = data.bMothM || '';
-            appSheet.getCell('AD26').value = data.bMothL || '';
+            appSheet.getCell('U26').value = safeVal(data.bMothF);
+            appSheet.getCell('Y26').value = safeVal(data.bMothM);
+            appSheet.getCell('AD26').value = safeVal(data.bMothL);
 
             const hasBrideGiver = !!(data.bGiverF || data.bGiverL);
             if (hasBrideGiver || (bAge >= 18 && bAge <= 24)) {
-                appSheet.getCell('U30').value = data.bGiverF || '';
-                appSheet.getCell('Y30').value = data.bGiverM || '';
-                appSheet.getCell('AD30').value = data.bGiverL || '';
-                appSheet.getCell('U31').value = data.bGiverRelation || '';
-                appSheet.getCell('U32').value = data.bCitizen || 'Filipino';
+                appSheet.getCell('U30').value = safeVal(data.bGiverF);
+                appSheet.getCell('Y30').value = safeVal(data.bGiverM);
+                appSheet.getCell('AD30').value = safeVal(data.bGiverL);
+                appSheet.getCell('U31').value = safeVal(data.bGiverRelation);
+                appSheet.getCell('U32').value = safeVal(data.bCitizen) || 'Filipino';
             }
 
-            // Footer
-            appSheet.getCell('B37').value = dayNow;
-            appSheet.getCell('U37').value = dayNow;
-            appSheet.getCell('E37').value = monthNow;
-            appSheet.getCell('W37').value = monthNow;
-            appSheet.getCell('L37').value = yearNow;
-            appSheet.getCell('AD37').value = yearNow;
+            appSheet.getCell('B37').value = safeVal(dayNow);
+            appSheet.getCell('U37').value = safeVal(dayNow);
+            appSheet.getCell('E37').value = safeVal(monthNow);
+            appSheet.getCell('W37').value = safeVal(monthNow);
+            appSheet.getCell('L37').value = safeVal(yearNow);
+            appSheet.getCell('AD37').value = safeVal(yearNow);
             appSheet.getCell('B38').value = "Solano, Nueva Vizcaya";
             appSheet.getCell('U38').value = "Solano, Nueva Vizcaya";
         }
 
-        // --- 4. HANDLE IMAGE (LAST TO PRESERVE RELATIONSHIPS) ---
+        // --- 4. HANDLE IMAGE REPLACEMENT ---
         if (data.coupleImagePath && fs.existsSync(data.coupleImagePath)) {
             const noticeSheet = workbook.getWorksheet('Notice');
             if (noticeSheet) {
                 try {
                     let ext = (data.imageExtension || 'png').toLowerCase();
                     if (ext === 'jpg') ext = 'jpeg';
-                    if (ext === 'jpeg' || ext === 'png' || ext === 'gif') {
+
+                    if (['jpeg', 'png', 'gif'].includes(ext)) {
                         const imageId = workbook.addImage({
                             filename: data.coupleImagePath,
                             extension: ext as any,
                         });
 
+                        // Standard template coordinates for Picture 3 in 'Notice'
                         noticeSheet.addImage(imageId, {
                             tl: { col: 19, row: 10 } as any,
-                            br: { col: 21, row: 14 } as any,
+                            ext: { cx: 2057400, cy: 1343025 } as any,
                             editAs: 'oneCell'
                         });
                     }
                 } catch (error) {
-                    console.error("Warning: Image overlay failed:", error);
+                    console.error("Warning: Photo insertion failed:", error);
                 }
             }
         }
 
         // --- 5. FINALIZE ---
-        // Ensure at least one workbook view exists
-        if (!workbook.views || workbook.views.length === 0) {
-            workbook.views = [{ x: 0, y: 0, width: 10000, height: 20000, firstSheet: 0, activeTab: 0, visibility: 'visible' }];
-        }
-
         const buffer = await workbook.xlsx.writeBuffer();
         return Buffer.from(buffer);
     }
