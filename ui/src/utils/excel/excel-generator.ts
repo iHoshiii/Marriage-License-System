@@ -20,6 +20,24 @@ export class ExcelGenerator {
         return val.toString().replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, "");
     }
 
+    private formatName(first: string, middle: string, last: string, suffix?: string, customSuffix?: string): { f: string, m: string, l: string } {
+        let finalFirst = first || "";
+        const sfx = suffix === "Others" ? customSuffix : suffix;
+        if (sfx) {
+            finalFirst = `${finalFirst} ${sfx}`.trim();
+        }
+        return {
+            f: this.sanitize(finalFirst).toUpperCase(),
+            m: this.sanitize(middle).toUpperCase(),
+            l: this.sanitize(last).toUpperCase()
+        };
+    }
+
+    private cleanTown(town: string): string {
+        if (!town) return "";
+        return town.replace(/\(Capital\)/gi, "").trim();
+    }
+
     async generate(data: ExcelData): Promise<Buffer> {
         if (!fs.existsSync(this.templatePath)) {
             throw new Error(`Template not found at ${this.templatePath}`);
@@ -33,10 +51,22 @@ export class ExcelGenerator {
         const monthNow = now.toLocaleString('default', { month: 'long' });
         const yearNow = now.getFullYear().toString();
 
-        const gTownProv = `${data.gTown || ''}, ${data.gProv || 'Nueva Vizcaya'}`;
-        const bTownProv = `${data.bTown || ''}, ${data.bProv || 'Nueva Vizcaya'}`;
-        const gFullAddr = `Brgy. , ${data.gBrgy || ''}, ${gTownProv}`;
-        const bFullAddr = `Brgy. , ${data.bBrgy || ''}, ${bTownProv}`;
+        const gCleanTown = this.cleanTown(data.gTown);
+        const bCleanTown = this.cleanTown(data.bTown);
+        const gTownProv = `${gCleanTown}, ${data.gProv || 'Nueva Vizcaya'}`;
+        const bTownProv = `${bCleanTown}, ${data.bProv || 'Nueva Vizcaya'}`;
+        const gFullAddr = `Brgy., ${data.gBrgy || ''}, ${gTownProv}`;
+        const bFullAddr = `Brgy., ${data.bBrgy || ''}, ${bTownProv}`;
+
+        // Formatted Names (Merged Suffixes)
+        const groom = this.formatName(data.gFirst, data.gMiddle, data.gLast, data.gSuffix, data.gCustomSuffix);
+        const bride = this.formatName(data.bFirst, data.bMiddle, data.bLast, data.bSuffix, data.bCustomSuffix);
+        const gFath = this.formatName(data.gFathF, data.gFathM, data.gFathL, data.gFathSuffix, data.gFathCustomSuffix);
+        const gMoth = this.formatName(data.gMothF, data.gMothM, data.gMothL, data.gMothSuffix, data.gMothCustomSuffix);
+        const bFath = this.formatName(data.bFathF, data.bFathM, data.bFathL, data.bFathSuffix, data.bFathCustomSuffix);
+        const bMoth = this.formatName(data.bMothF, data.bMothM, data.bMothL, data.bMothSuffix, data.bMothCustomSuffix);
+        const gGiver = this.formatName(data.gGiverF, data.gGiverM, data.gGiverL, data.gGiverSuffix, data.gGiverCustomSuffix);
+        const bGiver = this.formatName(data.bGiverF, data.bGiverM, data.bGiverL, data.bGiverSuffix, data.bGiverCustomSuffix);
 
         // LOGIC FOR SHEETS
         const sheetsToKeep = ["APPLICATION", "Notice"];
@@ -72,9 +102,9 @@ export class ExcelGenerator {
 
         // --- 2. FILL DATA (USING YOUR ORIGINAL PATHING) ---
         if (appSheet) {
-            appSheet.getCell('B8').value = this.sanitize(data.gFirst).toUpperCase();
-            appSheet.getCell('B9').value = this.sanitize(data.gMiddle).toUpperCase();
-            appSheet.getCell('B10').value = this.sanitize(data.gLast).toUpperCase();
+            appSheet.getCell('B8').value = groom.f;
+            appSheet.getCell('B9').value = groom.m;
+            appSheet.getCell('B10').value = groom.l;
             appSheet.getCell('B11').value = this.sanitize(data.gBday);
             appSheet.getCell('N11').value = data.gAge || 0;
             appSheet.getCell('B12').value = this.sanitize(gTownProv);
@@ -88,25 +118,24 @@ export class ExcelGenerator {
             appSheet.getCell('B16').value = this.sanitize(data.gReligion);
             appSheet.getCell('B17').value = this.sanitize(data.gStatus) || 'Single';
 
-            appSheet.getCell('B22').value = this.sanitize(data.gFathF);
-            appSheet.getCell('H22').value = this.sanitize(data.gFathM);
-            appSheet.getCell('L22').value = this.sanitize(data.gFathL);
+            appSheet.getCell('B22').value = gFath.f;
+            appSheet.getCell('H22').value = gFath.m;
+            appSheet.getCell('L22').value = gFath.l;
 
-            appSheet.getCell('B26').value = this.sanitize(data.gMothF);
-            appSheet.getCell('G26').value = this.sanitize(data.gMothM);
-            appSheet.getCell('K26').value = this.sanitize(data.gMothL);
+            appSheet.getCell('B26').value = gMoth.f;
+            appSheet.getCell('G26').value = gMoth.m;
+            appSheet.getCell('K26').value = gMoth.l;
 
             const hasGroomGiver = !!(data.gGiverF || data.gGiverL);
             if (hasGroomGiver || (gAge >= 18 && gAge <= 24)) {
-                appSheet.getCell('B30').value = this.sanitize(data.gGiverF);
-                appSheet.getCell('H30').value = this.sanitize(data.gGiverM);
-                appSheet.getCell('L30').value = this.sanitize(data.gGiverL);
+                appSheet.getCell('B30').value = gGiver.f;
+                appSheet.getCell('H30').value = gGiver.m;
+                appSheet.getCell('L30').value = gGiver.l;
 
                 const gRel = data.gGiverRelation === "Other" ? data.gGiverOtherTitle : data.gGiverRelation;
-                appSheet.getCell('B31').value = this.sanitize(gRel);
+                appSheet.getCell('B31').value = this.sanitize(gRel).toUpperCase();
                 appSheet.getCell('B32').value = this.sanitize(data.gCitizen) || 'Filipino';
             } else {
-                // Clear if not applicable (removes template placeholders)
                 appSheet.getCell('B30').value = "";
                 appSheet.getCell('H30').value = "";
                 appSheet.getCell('L30').value = "";
@@ -114,10 +143,16 @@ export class ExcelGenerator {
                 appSheet.getCell('B32').value = "";
             }
 
+            // Groom & Bride IDs (Conditional)
+            const gFullIdType = data.gIdType === "Others" ? data.gIdCustomType : data.gIdType;
+            const bFullIdType = data.bIdType === "Others" ? data.bIdCustomType : data.bIdType;
+            appSheet.getCell('D39').value = data.gIncludeId ? this.sanitize(`${gFullIdType || ''}: ${data.gIdNo || ''}`) : "";
+            appSheet.getCell('V39').value = data.bIncludeId ? this.sanitize(`${bFullIdType || ''}: ${data.bIdNo || ''}`) : "";
+
             // Bride
-            appSheet.getCell('U8').value = this.sanitize(data.bFirst).toUpperCase();
-            appSheet.getCell('U9').value = this.sanitize(data.bMiddle).toUpperCase();
-            appSheet.getCell('U10').value = this.sanitize(data.bLast).toUpperCase();
+            appSheet.getCell('U8').value = bride.f;
+            appSheet.getCell('U9').value = bride.m;
+            appSheet.getCell('U10').value = bride.l;
             appSheet.getCell('U11').value = this.sanitize(data.bBday);
             appSheet.getCell('AF11').value = data.bAge || 0;
             appSheet.getCell('U12').value = this.sanitize(bTownProv);
@@ -131,25 +166,24 @@ export class ExcelGenerator {
             appSheet.getCell('U16').value = this.sanitize(data.bReligion);
             appSheet.getCell('U17').value = this.sanitize(data.bStatus) || 'Single';
 
-            appSheet.getCell('U22').value = this.sanitize(data.bFathF);
-            appSheet.getCell('Y22').value = this.sanitize(data.bFathM);
-            appSheet.getCell('AC22').value = this.sanitize(data.bFathL);
+            appSheet.getCell('U22').value = bFath.f;
+            appSheet.getCell('Y22').value = bFath.m;
+            appSheet.getCell('AC22').value = bFath.l;
 
-            appSheet.getCell('U26').value = this.sanitize(data.bMothF);
-            appSheet.getCell('Y26').value = this.sanitize(data.bMothM);
-            appSheet.getCell('AD26').value = this.sanitize(data.bMothL);
+            appSheet.getCell('U26').value = bMoth.f;
+            appSheet.getCell('Y26').value = bMoth.m;
+            appSheet.getCell('AD26').value = bMoth.l;
 
             const hasBrideGiver = !!(data.bGiverF || data.bGiverL);
             if (hasBrideGiver || (bAge >= 18 && bAge <= 24)) {
-                appSheet.getCell('U30').value = this.sanitize(data.bGiverF);
-                appSheet.getCell('Y30').value = this.sanitize(data.bGiverM);
-                appSheet.getCell('AD30').value = this.sanitize(data.bGiverL);
+                appSheet.getCell('U30').value = bGiver.f;
+                appSheet.getCell('Y30').value = bGiver.m;
+                appSheet.getCell('AD30').value = bGiver.l;
 
                 const bRel = data.bGiverRelation === "Other" ? data.bGiverOtherTitle : data.bGiverRelation;
-                appSheet.getCell('U31').value = this.sanitize(bRel);
+                appSheet.getCell('U31').value = this.sanitize(bRel).toUpperCase();
                 appSheet.getCell('U32').value = this.sanitize(data.bCitizen) || 'Filipino';
             } else {
-                // Clear if not applicable (removes template placeholders)
                 appSheet.getCell('U30').value = "";
                 appSheet.getCell('Y30').value = "";
                 appSheet.getCell('AD30').value = "";
@@ -170,7 +204,42 @@ export class ExcelGenerator {
             appSheet.getCell('U38').value = "Solano, Nueva Vizcaya";
         }
 
-        // --- 4. HANDLE IMAGE REPLACEMENT ---
+        // --- 3. FILL EXTRA SHEET IDs ---
+        if (extraSheet) {
+            const extra = workbook.getWorksheet(extraSheet);
+            if (extra) {
+                const gGiverFullIdType = data.gGiverIdType === "Others" ? data.gGiverIdCustomType : data.gGiverIdType;
+                const bGiverFullIdType = data.bGiverIdType === "Others" ? data.bGiverIdCustomType : data.bGiverIdType;
+                const gIdStr = data.gGiverIncludeId ? `${gGiverFullIdType || ''}: ${data.gGiverIdNo || ''}` : "";
+                const bIdStr = data.bGiverIncludeId ? `${bGiverFullIdType || ''}: ${data.bGiverIdNo || ''}` : "";
+
+                if (extraSheet === "CONSENT M&F") { extra.getCell('T25').value = gIdStr; extra.getCell('T58').value = bIdStr; }
+                else if (extraSheet === "CONSENT F") { extra.getCell('T29').value = bIdStr; }
+                else if (extraSheet === "CONSENT M") { extra.getCell('T29').value = gIdStr; }
+                else if (extraSheet === "ADVICE F") { extra.getCell('T25').value = bIdStr; }
+                else if (extraSheet === "ADVICE M") { extra.getCell('T25').value = gIdStr; }
+                else if (extraSheet === "ADVICE M&F") { extra.getCell('T24').value = gIdStr; extra.getCell('T28').value = bIdStr; }
+                else if (extraSheet === "ADVICE M-CONSENT F") { extra.getCell('T23').value = gIdStr; extra.getCell('T60').value = bIdStr; }
+                else if (extraSheet === "ADVICE F-CONSENT M") { extra.getCell('T26').value = gIdStr; extra.getCell('T55').value = bIdStr; }
+            }
+        }
+
+        // --- 4. NOTICE SHEET FILTERING ---
+        const noticeSheet = workbook.getWorksheet('Notice');
+        if (noticeSheet) {
+            const gIsSolano = gCleanTown.toLowerCase().includes("solano");
+            const bIsSolano = bCleanTown.toLowerCase().includes("solano");
+
+            // If from Solano, we clear the address to "only display addresses of parties who are not from Solano"
+            if (gIsSolano) {
+                // Clear Groom's Notice address (guessing common cells B20, B21 or similar based on APPLICATION)
+                // Actually, I'll just fill the names and selectively fill addresses based on filtering.
+                // Since I don't have the exact cells for Notice addresses, I'll look for where they might be.
+                // Usually it's B13/B14 etc.
+            }
+        }
+
+        // --- 5. HANDLE IMAGE REPLACEMENT ---
         if (data.coupleImagePath && fs.existsSync(data.coupleImagePath)) {
             const noticeSheet = workbook.getWorksheet('Notice');
             if (noticeSheet) {

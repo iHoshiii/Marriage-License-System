@@ -167,6 +167,62 @@ export function useMarriageForm() {
         }
     };
 
+    const isFormValid = () => {
+        const check = (prefix: 'g' | 'b') => {
+            const age = formData[`${prefix}Age`];
+            const isGiverNeeded = age && age >= 18 && age <= 24;
+
+            // Main fields (Middle Name & Suffixes are optional)
+            const mainFields = [
+                formData[`${prefix}First`],
+                formData[`${prefix}Last`],
+                formData[`${prefix}Bday`],
+                formData[`${prefix}Brgy`],
+                formData[`${prefix}Town`],
+                formData[`${prefix}Prov`],
+                formData[`${prefix}Religion`],
+            ];
+
+            if (mainFields.some(f => !f || f.toString().trim() === "")) return false;
+
+            // Parents (First and Last are required)
+            const parentFields = [
+                formData[`${prefix}FathF`],
+                formData[`${prefix}FathL`],
+                formData[`${prefix}MothF`],
+                formData[`${prefix}MothL`],
+            ];
+            if (parentFields.some(f => !f || f.trim() === "")) return false;
+
+            // Giver
+            if (isGiverNeeded) {
+                const relation = formData[`${prefix}GiverRelation`];
+                if (!relation) return false;
+                if (relation === "Other" && !formData[`${prefix}GiverOtherTitle`]) return false;
+                if (!formData[`${prefix}GiverF`] || !formData[`${prefix}GiverL`]) return false;
+
+                // Giver ID if included
+                if (formData[`${prefix}GiverIncludeId`]) {
+                    if (!formData[`${prefix}GiverIdType`] || !formData[`${prefix}GiverIdNo`]) return false;
+                    if (formData[`${prefix}GiverIdType`] === "Others" && !formData[`${prefix}GiverIdCustomType`]) return false;
+                }
+            }
+
+            // Main ID if included
+            if (formData[`${prefix}IncludeId`]) {
+                if (!formData[`${prefix}IdType`] || !formData[`${prefix}IdNo`]) return false;
+                if (formData[`${prefix}IdType`] === "Others" && !formData[`${prefix}IdCustomType`]) return false;
+            }
+
+            return true;
+        };
+
+        // Groom and Bride checks
+        if (!check('g') || !check('b')) return false;
+
+        return true;
+    };
+
     return {
         formData,
         setFormData,
@@ -199,5 +255,6 @@ export function useMarriageForm() {
         handleReset,
         generateExcel,
         calculateAge,
+        isFormValid: isFormValid(),
     };
 }

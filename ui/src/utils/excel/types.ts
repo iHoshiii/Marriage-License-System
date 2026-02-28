@@ -3,6 +3,8 @@ export interface ExcelData {
     gFirst: string;
     gMiddle: string;
     gLast: string;
+    gSuffix?: string;
+    gCustomSuffix?: string;
     gBday: string;
     gAge: number;
     gTown: string;
@@ -15,19 +17,37 @@ export interface ExcelData {
     gFathF: string;
     gFathM: string;
     gFathL: string;
+    gFathSuffix?: string;
+    gFathCustomSuffix?: string;
     gMothF: string;
     gMothM: string;
     gMothL: string;
+    gMothSuffix?: string;
+    gMothCustomSuffix?: string;
     gGiverF: string;
     gGiverM: string;
     gGiverL: string;
+    gGiverSuffix?: string;
+    gGiverCustomSuffix?: string;
     gGiverRelation: string;
     gGiverOtherTitle?: string;
+
+    // Groom ID
+    gIdType?: string;
+    gIdNo?: string;
+    gIdCustomType?: string;
+    gIncludeId?: boolean;
+    gGiverIdType?: string;
+    gGiverIdNo?: string;
+    gGiverIdCustomType?: string;
+    gGiverIncludeId?: boolean;
 
     // Bride
     bFirst: string;
     bMiddle: string;
     bLast: string;
+    bSuffix?: string;
+    bCustomSuffix?: string;
     bBday: string;
     bAge: number;
     bTown: string;
@@ -40,17 +60,34 @@ export interface ExcelData {
     bFathF: string;
     bFathM: string;
     bFathL: string;
+    bFathSuffix?: string;
+    bFathCustomSuffix?: string;
     bMothF: string;
     bMothM: string;
     bMothL: string;
+    bMothSuffix?: string;
+    bMothCustomSuffix?: string;
     bGiverF: string;
     bGiverM: string;
     bGiverL: string;
+    bGiverSuffix?: string;
+    bGiverCustomSuffix?: string;
     bGiverRelation: string;
     bGiverOtherTitle?: string;
+
+    // Bride ID
+    bIdType?: string;
+    bIdNo?: string;
+    bIdCustomType?: string;
+    bIncludeId?: boolean;
+    bGiverIdType?: string;
+    bGiverIdNo?: string;
+    bGiverIdCustomType?: string;
+    bGiverIncludeId?: boolean;
 
     // Metadata
     applicationCode: string;
     coupleImagePath?: string;
     imageExtension?: string;
+    contactNumber?: string;
 }

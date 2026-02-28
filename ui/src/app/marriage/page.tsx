@@ -66,6 +66,7 @@ export default function MarriageForm() {
         handleReset,
         generateExcel,
         calculateAge,
+        isFormValid,
     } = useMarriageForm();
 
     if (authChecking) {
@@ -397,7 +398,7 @@ export default function MarriageForm() {
                                     <div className="mt-12">
                                         <SectionCard title="Contact Information" color="blue">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                                                <Field label="Primary Contact Number">
+                                                <Field label="Primary Contact Number (Optional)">
                                                     <div className="relative">
                                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-blue-600 border-r border-blue-200 pr-3">
                                                             <span className="text-xs font-black tracking-tighter font-mono">+63</span>
@@ -422,9 +423,22 @@ export default function MarriageForm() {
                                     </div>
 
                                     <div className="flex flex-col items-center gap-6 pt-8">
-                                        <Button type="submit" size="lg" className="h-16 px-12 text-lg font-bold group rounded-2xl shadow-xl shadow-primary/20">
-                                            Review Application <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                        <Button
+                                            type="submit"
+                                            size="lg"
+                                            disabled={!isFormValid}
+                                            className={`h-16 px-12 text-lg font-bold group rounded-2xl shadow-xl transition-all duration-300 ${!isFormValid
+                                                ? 'bg-slate-300 text-slate-500 shadow-none cursor-not-allowed opacity-70'
+                                                : 'bg-primary text-white shadow-primary/20 hover:scale-105 active:scale-95'
+                                                }`}
+                                        >
+                                            Review Application <ArrowRight className={`ml-2 w-5 h-5 transition-transform ${isFormValid ? 'group-hover:translate-x-1' : ''}`} />
                                         </Button>
+                                        {!isFormValid && (
+                                            <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest animate-pulse">
+                                                Please complete all mandatory fields to proceed
+                                            </p>
+                                        )}
                                         <button type="button" onClick={() => setShowClearAlert(true)} className="flex items-center gap-2 text-slate-400 hover:text-red-500 transition-colors text-sm font-bold uppercase tracking-widest">
                                             <Trash2 className="w-4 h-4" /> Clear Form
                                         </button>
