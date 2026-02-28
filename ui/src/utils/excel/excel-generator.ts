@@ -259,25 +259,27 @@ export class ExcelGenerator {
             const noticeSheet = workbook.getWorksheet('Notice');
             if (noticeSheet) {
                 try {
-                    let ext = (data.imageExtension || 'png').toLowerCase();
-                    if (ext === 'jpg') ext = 'jpeg';
-                    if (['jpeg', 'png', 'gif'].includes(ext)) {
-                        const imageId = workbook.addImage({
-                            filename: data.coupleImagePath,
-                            extension: ext as any,
-                        });
-                        noticeSheet.addImage(imageId, {
-                            tl: { col: 20, row: 10 } as any,
-                            ext: { cx: 2057400, cy: 1343025 } as any,
-                            editAs: 'oneCell'
-                        });
-                    }
+                    const imageId = workbook.addImage({
+                        filename: data.coupleImagePath,
+                        extension: 'png', // Assuming PNG as handled in the route
+                    });
+
+                    // Positioning like Python: Cell T11
+                    // 3.75cm height, 5.73cm width
+                    // exceljs uses pixels or points depending on method. 
+                    // Let's use extents (96 dpi based pixels)
+                    noticeSheet.addImage(imageId, {
+                        tl: { col: 19, row: 10 }, // T is column 20 (0-indexed is 19), 11 is row 11 (0-indexed is 10)
+                        ext: {
+                            width: (5.73 / 2.54) * 96,
+                            height: (3.75 / 2.54) * 96
+                        }
+                    });
                 } catch (error) {
-                    console.error("Photo error:", error);
+                    console.error("Warning: Image overlay failed:", error);
                 }
             }
         }
-
         // --- 5. CRITICAL WORKBOOK METADATA RESET ---
         // This clears the "broken" view data that often causes the recovery log error
         workbook.views = [
