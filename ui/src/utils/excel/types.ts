@@ -22,6 +22,7 @@ export interface ExcelData {
     gGiverM: string;
     gGiverL: string;
     gGiverRelation: string;
+    gGiverOtherTitle?: string;
 
     // Bride
     bFirst: string;
@@ -46,6 +47,7 @@ export interface ExcelData {
     bGiverM: string;
     bGiverL: string;
     bGiverRelation: string;
+    bGiverOtherTitle?: string;
 
     // Metadata
     applicationCode: string;
