@@ -232,12 +232,25 @@ export class ExcelGenerator {
             const gIsSolano = gCleanTown.toLowerCase().includes("solano");
             const bIsSolano = bCleanTown.toLowerCase().includes("solano");
 
-            // If from Solano, we clear the address to "only display addresses of parties who are not from Solano"
-            if (gIsSolano) {
-                // Clear Groom's Notice address (guessing common cells B20, B21 or similar based on APPLICATION)
-                // Actually, I'll just fill the names and selectively fill addresses based on filtering.
-                // Since I don't have the exact cells for Notice addresses, I'll look for where they might be.
-                // Usually it's B13/B14 etc.
+            const gNonSolano = !gIsSolano;
+            const bNonSolano = !bIsSolano;
+
+            if (bNonSolano && gNonSolano) {
+                // Both NOT from Solano
+                noticeSheet.getCell('E44').value = this.sanitize(`${bCleanTown}, ${data.bProv || 'Nueva Vizcaya'}`);
+                noticeSheet.getCell('E45').value = this.sanitize(`${gCleanTown}, ${data.gProv || 'Nueva Vizcaya'}`);
+            } else if (bNonSolano) {
+                // Only Bride NOT from Solano
+                noticeSheet.getCell('E44').value = this.sanitize(`${bCleanTown}, ${data.bProv || 'Nueva Vizcaya'}`);
+                noticeSheet.getCell('E45').value = "";
+            } else if (gNonSolano) {
+                // Only Groom NOT from Solano
+                noticeSheet.getCell('E44').value = this.sanitize(`${gCleanTown}, ${data.gProv || 'Nueva Vizcaya'}`);
+                noticeSheet.getCell('E45').value = "";
+            } else {
+                // Both ARE from Solano
+                noticeSheet.getCell('E44').value = "";
+                noticeSheet.getCell('E45').value = "";
             }
         }
 
