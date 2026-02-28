@@ -7,13 +7,11 @@ export class ExcelGenerator {
     private templatePath: string;
 
     constructor() {
-        // Path relative to execution context (usually ui/ from process.cwd() in API routes)
-        // Moving it inside src/assets to ensure it's included in builds
         this.templatePath = path.join(process.cwd(), "src", "assets", "excel", "template.xlsx");
     }
 
     private cmToPoints(cm: number): number {
-        return (cm / 2.54) * 72;
+        return (cm / 2.54) * 96;
     }
 
     async generate(data: ExcelData): Promise<Buffer> {
@@ -55,21 +53,20 @@ export class ExcelGenerator {
             sheetsToKeep.push("AddressBACKnotice", "EnvelopeAddress");
         }
 
-        // --- 1. HANDLE SHEET VISIBILITY & ACTIVE TAB POINTER ---
-        const appSheet = workbook.getWorksheet('APPLICATION') || workbook.getWorksheet(1);
+        // --- 1. PHYSICAL DELETION LOGIC ---
+        // We iterate backwards through the sheets to avoid index shifting issues during deletion
+        for (let i = workbook.worksheets.length - 1; i >= 0; i--) {
+            const sheet = workbook.worksheets[i];
+            if (!sheetsToKeep.includes(sheet.name)) {
+                workbook.removeWorksheet(sheet.id);
+            }
+        }
 
-        // APPLICATION is sheetId 1, index 0 in the template
+        const appSheet = workbook.getWorksheet('APPLICATION') || workbook.getWorksheet(1);
         const appSheetIndex = workbook.worksheets.findIndex(s => s.name === 'APPLICATION');
 
-        workbook.eachSheet((sheet) => {
-            if (sheetsToKeep.includes(sheet.name)) {
-                sheet.state = 'visible';
-            } else {
-                sheet.state = 'hidden';
-            }
-        });
-
         if (appSheet) {
+            // Set the remaining sheets to visible (though they should be by default)
             appSheet.state = 'visible';
             const workbookViews: any[] = [{
                 x: 0,
@@ -80,7 +77,6 @@ export class ExcelGenerator {
                 activeTab: appSheetIndex >= 0 ? appSheetIndex : 0,
                 visibility: 'visible'
             }];
-            workbook.views = workbookViews;
         }
 
         const safeVal = (val: any): string => (val === null || val === undefined) ? "" : val.toString();
@@ -97,11 +93,11 @@ export class ExcelGenerator {
 
             const gCountryVal = safeVal(data.gCountry) || 'Philippines';
             appSheet.getCell('L12').value = gCountryVal;
-            appSheet.getCell('M15').value = gCountryVal;
 
             appSheet.getCell('B13').value = "Male";
             appSheet.getCell('H13').value = safeVal(data.gCitizen) || 'Filipino';
             appSheet.getCell('B15').value = safeVal(gFullAddr);
+            appSheet.getCell('M15').value = gCountryVal;
             appSheet.getCell('B16').value = safeVal(data.gReligion);
             appSheet.getCell('B17').value = safeVal(data.gStatus) || 'Single';
 
@@ -110,8 +106,8 @@ export class ExcelGenerator {
             appSheet.getCell('L22').value = safeVal(data.gFathL);
 
             appSheet.getCell('B26').value = safeVal(data.gMothF);
-            appSheet.getCell('H26').value = safeVal(data.gMothM);
-            appSheet.getCell('L26').value = safeVal(data.gMothL);
+            appSheet.getCell('G26').value = safeVal(data.gMothM);
+            appSheet.getCell('K26').value = safeVal(data.gMothL);
 
             const hasGroomGiver = !!(data.gGiverF || data.gGiverL);
             if (hasGroomGiver || (gAge >= 18 && gAge <= 24)) {
@@ -132,11 +128,11 @@ export class ExcelGenerator {
 
             const bCountryVal = safeVal(data.bCountry) || 'Philippines';
             appSheet.getCell('AE12').value = bCountryVal;
-            appSheet.getCell('AF15').value = bCountryVal;
 
             appSheet.getCell('U13').value = "Female";
             appSheet.getCell('Z13').value = safeVal(data.bCitizen) || 'Filipino';
             appSheet.getCell('U15').value = safeVal(bFullAddr);
+            appSheet.getCell('AF15').value = bCountryVal;
             appSheet.getCell('U16').value = safeVal(data.bReligion);
             appSheet.getCell('U17').value = safeVal(data.bStatus) || 'Single';
 
@@ -181,9 +177,9 @@ export class ExcelGenerator {
                             extension: ext as any,
                         });
 
-                        // Standard template coordinates for Picture 3 in 'Notice'
+                        // Anchor coordinates for U11: col index 20, row index 10
                         noticeSheet.addImage(imageId, {
-                            tl: { col: 19, row: 10 } as any,
+                            tl: { col: 20, row: 10 } as any,
                             ext: { cx: 2057400, cy: 1343025 } as any,
                             editAs: 'oneCell'
                         });
