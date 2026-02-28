@@ -44,6 +44,10 @@ export function ValidationFeedback({ data, prefix }: { data: any, prefix: 'g' | 
         if (!data[f.key]) missingFields.push(f.label);
     });
 
+    if (data[`${prefix}Religion`] === "Others" && !data[`${prefix}CustomReligion`]) {
+        missingFields.push('Specify Religion');
+    }
+
     const age = data[`${prefix}Age`];
     if (age && age >= 18 && age <= 24) {
         if (!data[`${prefix}GiverRelation`]) missingFields.push('Giver Relationship');
@@ -191,17 +195,25 @@ export function FamilySubSection({ prefix, person, data, setData, toTitleCase }:
             <div>
                 <LabelWithIcon icon={<GraduationCap className="w-3 h-3" />} text={`${person}'s Father`} />
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
-                    <Input placeholder="First Name" className="bg-white" value={data[`${prefix}FathF`]} onChange={e => setData({ ...data, [`${prefix}FathF`]: toTitleCase(e.target.value) })} />
-                    <Input placeholder="Middle Name" className="bg-white" value={data[`${prefix}FathM`]} onChange={e => setData({ ...data, [`${prefix}FathM`]: toTitleCase(e.target.value) })} />
-                    <Input placeholder="Last Name" className="bg-white" value={data[`${prefix}FathL`]} onChange={e => setData({ ...data, [`${prefix}FathL`]: toTitleCase(e.target.value) })} />
-                    <select
-                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                        value={data[`${prefix}FathSuffix`]}
-                        onChange={e => setData({ ...data, [`${prefix}FathSuffix`]: e.target.value })}
-                    >
-                        <option value="">Suffix</option>
-                        {SUFFIX_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
+                    <Field label="First Name" required>
+                        <Input placeholder="First Name" className="bg-white" value={data[`${prefix}FathF`]} onChange={e => setData({ ...data, [`${prefix}FathF`]: toTitleCase(e.target.value) })} />
+                    </Field>
+                    <Field label="Middle Name">
+                        <Input placeholder="Middle Name" className="bg-white" value={data[`${prefix}FathM`]} onChange={e => setData({ ...data, [`${prefix}FathM`]: toTitleCase(e.target.value) })} />
+                    </Field>
+                    <Field label="Last Name" required>
+                        <Input placeholder="Last Name" className="bg-white" value={data[`${prefix}FathL`]} onChange={e => setData({ ...data, [`${prefix}FathL`]: toTitleCase(e.target.value) })} />
+                    </Field>
+                    <Field label="Suffix">
+                        <select
+                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                            value={data[`${prefix}FathSuffix`]}
+                            onChange={e => setData({ ...data, [`${prefix}FathSuffix`]: e.target.value })}
+                        >
+                            <option value="">Suffix</option>
+                            {SUFFIX_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                    </Field>
                 </div>
                 {data[`${prefix}FathSuffix`] === "Others" && (
                     <div className="grid grid-cols-4 gap-3 mt-2">
@@ -218,22 +230,30 @@ export function FamilySubSection({ prefix, person, data, setData, toTitleCase }:
                     <span className="text-[9px] font-bold text-rose-500 italic bg-rose-50 px-2 py-0.5 rounded-full">MAIDEN NAME REQUIRED</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
-                    <Input placeholder="First Name" className="bg-white" value={data[`${prefix}MothF`]} onChange={e => setData({ ...data, [`${prefix}MothF`]: toTitleCase(e.target.value) })} />
-                    <Input placeholder="Middle Name" className="bg-white" value={data[`${prefix}MothM`]} onChange={e => setData({ ...data, [`${prefix}MothM`]: toTitleCase(e.target.value) })} />
-                    <Input
-                        placeholder="Maiden Last Name"
-                        className={`bg-white transition-colors ${isSameLastName ? 'border-orange-400 ring-2 ring-orange-100' : ''}`}
-                        value={data[`${prefix}MothL`]}
-                        onChange={e => setData({ ...data, [`${prefix}MothL`]: toTitleCase(e.target.value) })}
-                    />
-                    <select
-                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                        value={data[`${prefix}MothSuffix`]}
-                        onChange={e => setData({ ...data, [`${prefix}MothSuffix`]: e.target.value })}
-                    >
-                        <option value="">Suffix</option>
-                        {SUFFIX_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
+                    <Field label="First Name" required>
+                        <Input placeholder="First Name" className="bg-white" value={data[`${prefix}MothF`]} onChange={e => setData({ ...data, [`${prefix}MothF`]: toTitleCase(e.target.value) })} />
+                    </Field>
+                    <Field label="Middle Name">
+                        <Input placeholder="Middle Name" className="bg-white" value={data[`${prefix}MothM`]} onChange={e => setData({ ...data, [`${prefix}MothM`]: toTitleCase(e.target.value) })} />
+                    </Field>
+                    <Field label="Last Name" required>
+                        <Input
+                            placeholder="Maiden Last Name"
+                            className={`bg-white transition-colors ${isSameLastName ? 'border-orange-400 ring-2 ring-orange-100' : ''}`}
+                            value={data[`${prefix}MothL`]}
+                            onChange={e => setData({ ...data, [`${prefix}MothL`]: toTitleCase(e.target.value) })}
+                        />
+                    </Field>
+                    <Field label="Suffix">
+                        <select
+                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                            value={data[`${prefix}MothSuffix`]}
+                            onChange={e => setData({ ...data, [`${prefix}MothSuffix`]: e.target.value })}
+                        >
+                            <option value="">Suffix</option>
+                            {SUFFIX_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                    </Field>
                 </div>
                 {data[`${prefix}MothSuffix`] === "Others" && (
                     <div className="grid grid-cols-4 gap-3 mt-2">

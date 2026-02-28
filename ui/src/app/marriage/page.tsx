@@ -79,9 +79,6 @@ export default function MarriageForm() {
 
     return (
         <div className="min-h-screen bg-slate-50/50 pb-20">
-            <datalist id="religion-list">
-                {RELIGIONS.map((rel) => <option key={rel} value={rel} />)}
-            </datalist>
 
             {/*PRIVACY & LAW MODALS*/}
             <AnimatePresence>
@@ -274,9 +271,9 @@ export default function MarriageForm() {
                                         <SectionCard title="Groom's Information" color="blue">
                                             {/* (Existing Groom Content) */}
                                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                                <Field label="First Name"><Input placeholder="Juan" className="bg-white" value={formData.gFirst} onChange={e => setFormData({ ...formData, gFirst: toTitleCase(e.target.value) })} /></Field>
+                                                <Field label="First Name" required><Input placeholder="Juan" className="bg-white" value={formData.gFirst} onChange={e => setFormData({ ...formData, gFirst: toTitleCase(e.target.value) })} /></Field>
                                                 <Field label="Middle Name"><Input placeholder="Dela" className="bg-white" value={formData.gMiddle} onChange={e => setFormData({ ...formData, gMiddle: toTitleCase(e.target.value) })} /></Field>
-                                                <Field label="Last Name"><Input placeholder="Cruz" className="bg-white" value={formData.gLast} onChange={e => setFormData({ ...formData, gLast: toTitleCase(e.target.value) })} /></Field>
+                                                <Field label="Last Name" required><Input placeholder="Cruz" className="bg-white" value={formData.gLast} onChange={e => setFormData({ ...formData, gLast: toTitleCase(e.target.value) })} /></Field>
                                                 <Field label="Suffix">
                                                     <select
                                                         className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
@@ -313,19 +310,48 @@ export default function MarriageForm() {
                                                 )}
                                             </AnimatePresence>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                                <Field label="Birthday">
+                                                <Field label="Birthday" required>
                                                     <Input type="date" className="bg-white" value={formData.gBday} onChange={e => {
                                                         const b = e.target.value;
                                                         setFormData({ ...formData, gBday: b, gAge: calculateAge(b) });
                                                     }} />
                                                 </Field>
-                                                <Field label="Age">
+                                                <Field label="Age" required>
                                                     <Input type="number" className="bg-white font-bold text-primary" value={formData.gAge || ""} onChange={e => handleAgeChange('g', e.target.value)} />
                                                 </Field>
-                                                <Field label="Religion" className="col-span-2 md:col-span-1">
-                                                    <Input list="religion-list" placeholder="Select..." className="bg-white" value={formData.gReligion} onChange={e => setFormData({ ...formData, gReligion: e.target.value })} />
+                                                <Field label="Religion" className="col-span-2 md:col-span-1" required>
+                                                    <select
+                                                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                                        value={formData.gReligion}
+                                                        onChange={e => setFormData({ ...formData, gReligion: e.target.value })}
+                                                    >
+                                                        <option value="" disabled hidden>Select Religion</option>
+                                                        {RELIGIONS.map(rel => (
+                                                            <option key={rel} value={rel}>{rel}</option>
+                                                        ))}
+                                                    </select>
                                                 </Field>
                                             </div>
+                                            <AnimatePresence>
+                                                {formData.gReligion === "Others" && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4"
+                                                    >
+                                                        <div className="md:col-span-3"></div>
+                                                        <Field label="Specify Religion" required>
+                                                            <Input
+                                                                placeholder="Type religion..."
+                                                                className="bg-white border-blue-200"
+                                                                value={formData.gCustomReligion}
+                                                                onChange={e => setFormData({ ...formData, gCustomReligion: toTitleCase(e.target.value) })}
+                                                            />
+                                                        </Field>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                             <AddressSection prefix="g" provincesList={provincesList} townOptions={townOptions} brgyOptions={gBrgyOptions} formData={formData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} />
                                             <BirthPlaceSection prefix="g" sameAsAddress={gSameAsAddress} setSameAsAddress={setGSameAsAddress} formData={formData} setFormData={setFormData} provincesList={provincesList} birthTownOptions={gBirthTownOptions} birthBrgyOptions={gBirthBrgyOptions} handleBirthProvinceChange={handleBirthProvinceChange} handleBirthTownChange={handleBirthTownChange} />
                                             <FamilySubSection prefix="g" person="Groom" data={formData} setData={setFormData} toTitleCase={toTitleCase} />
@@ -336,9 +362,9 @@ export default function MarriageForm() {
                                         <SectionCard title="Bride's Information" color="yellow">
                                             {/* (Existing Bride Content) */}
                                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                                <Field label="First Name"><Input placeholder="Maria" className="bg-white" value={formData.bFirst} onChange={e => setFormData({ ...formData, bFirst: toTitleCase(e.target.value) })} /></Field>
+                                                <Field label="First Name" required><Input placeholder="Maria" className="bg-white" value={formData.bFirst} onChange={e => setFormData({ ...formData, bFirst: toTitleCase(e.target.value) })} /></Field>
                                                 <Field label="Middle Name"><Input placeholder="Clara" className="bg-white" value={formData.bMiddle} onChange={e => setFormData({ ...formData, bMiddle: toTitleCase(e.target.value) })} /></Field>
-                                                <Field label="Last Name"><Input placeholder="Santos" className="bg-white" value={formData.bLast} onChange={e => setFormData({ ...formData, bLast: toTitleCase(e.target.value) })} /></Field>
+                                                <Field label="Last Name" required><Input placeholder="Santos" className="bg-white" value={formData.bLast} onChange={e => setFormData({ ...formData, bLast: toTitleCase(e.target.value) })} /></Field>
                                                 <Field label="Suffix">
                                                     <select
                                                         className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
@@ -375,19 +401,48 @@ export default function MarriageForm() {
                                                 )}
                                             </AnimatePresence>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                                <Field label="Birthday">
+                                                <Field label="Birthday" required>
                                                     <Input type="date" className="bg-white" value={formData.bBday} onChange={e => {
                                                         const b = e.target.value;
                                                         setFormData({ ...formData, bBday: b, bAge: calculateAge(b) });
                                                     }} />
                                                 </Field>
-                                                <Field label="Age">
+                                                <Field label="Age" required>
                                                     <Input type="number" className="bg-white font-bold text-primary" value={formData.bAge || ""} onChange={e => handleAgeChange('b', e.target.value)} />
                                                 </Field>
-                                                <Field label="Religion" className="col-span-2 md:col-span-1">
-                                                    <Input list="religion-list" placeholder="Select..." className="bg-white" value={formData.bReligion} onChange={e => setFormData({ ...formData, bReligion: e.target.value })} />
+                                                <Field label="Religion" className="col-span-2 md:col-span-1" required>
+                                                    <select
+                                                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                                        value={formData.bReligion}
+                                                        onChange={e => setFormData({ ...formData, bReligion: e.target.value })}
+                                                    >
+                                                        <option value="" disabled hidden>Select Religion</option>
+                                                        {RELIGIONS.map(rel => (
+                                                            <option key={rel} value={rel}>{rel}</option>
+                                                        ))}
+                                                    </select>
                                                 </Field>
                                             </div>
+                                            <AnimatePresence>
+                                                {formData.bReligion === "Others" && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4"
+                                                    >
+                                                        <div className="md:col-span-3"></div>
+                                                        <Field label="Specify Religion" required>
+                                                            <Input
+                                                                placeholder="Type religion..."
+                                                                className="bg-white border-blue-200"
+                                                                value={formData.bCustomReligion}
+                                                                onChange={e => setFormData({ ...formData, bCustomReligion: toTitleCase(e.target.value) })}
+                                                            />
+                                                        </Field>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                             <AddressSection prefix="b" provincesList={provincesList} townOptions={townOptions} brgyOptions={bBrgyOptions} formData={formData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} />
                                             <BirthPlaceSection prefix="b" sameAsAddress={bSameAsAddress} setSameAsAddress={setBSameAsAddress} formData={formData} setFormData={setFormData} provincesList={provincesList} birthTownOptions={bBirthTownOptions} birthBrgyOptions={bBirthBrgyOptions} handleBirthProvinceChange={handleBirthProvinceChange} handleBirthTownChange={handleBirthTownChange} />
                                             <FamilySubSection prefix="b" person="Bride" data={formData} setData={setFormData} toTitleCase={toTitleCase} />

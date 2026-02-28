@@ -185,6 +185,9 @@ export function useMarriageForm() {
 
             if (mainFields.some(f => !f || f.toString().trim() === "")) return false;
 
+            // Religion validation for "Others"
+            if (formData[`${prefix}Religion`] === "Others" && (!formData[`${prefix}CustomReligion`] || formData[`${prefix}CustomReligion`].trim() === "")) return false;
+
             // Parents (First and Last are required)
             const parentFields = [
                 formData[`${prefix}FathF`],

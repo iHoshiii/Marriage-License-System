@@ -13,6 +13,7 @@ export interface ExcelData {
     gCountry: string;
     gCitizen: string;
     gReligion: string;
+    gCustomReligion?: string;
     gStatus: string;
     gFathF: string;
     gFathM: string;
@@ -56,6 +57,7 @@ export interface ExcelData {
     bCountry: string;
     bCitizen: string;
     bReligion: string;
+    bCustomReligion?: string;
     bStatus: string;
     bFathF: string;
     bFathM: string;

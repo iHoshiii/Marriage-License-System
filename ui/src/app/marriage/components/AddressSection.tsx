@@ -24,7 +24,7 @@ export function AddressSection({
 }: AddressSectionProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
-            <Field label="Province">
+            <Field label="Province" required>
                 <select
                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                     value={provincesList.find(p => p.province_name === formData[`${prefix}Prov`])?.province_code || ""}
@@ -41,7 +41,7 @@ export function AddressSection({
                     ))}
                 </select>
             </Field>
-            <Field label="Town/Municipality">
+            <Field label="Town/Municipality" required>
                 <select
                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                     value={townOptions.find(t => t.city_name === formData[`${prefix}Town`])?.city_code || ""}
@@ -56,7 +56,7 @@ export function AddressSection({
                     ))}
                 </select>
             </Field>
-            <Field label="Barangay">
+            <Field label="Barangay" required>
                 <select
                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm disabled:opacity-50 focus:ring-2 focus:ring-primary outline-none"
                     value={formData[`${prefix}Brgy`]}

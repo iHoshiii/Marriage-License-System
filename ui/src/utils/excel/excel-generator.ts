@@ -115,7 +115,8 @@ export class ExcelGenerator {
             appSheet.getCell('H13').value = this.sanitize(data.gCitizen) || 'Filipino';
             appSheet.getCell('B15').value = this.sanitize(gFullAddr);
             appSheet.getCell('M15').value = gCountryVal;
-            appSheet.getCell('B16').value = this.sanitize(data.gReligion);
+            const gFullRel = data.gReligion === "Others" ? data.gCustomReligion : data.gReligion;
+            appSheet.getCell('B16').value = this.sanitize(gFullRel);
             appSheet.getCell('B17').value = this.sanitize(data.gStatus) || 'Single';
 
             appSheet.getCell('B22').value = gFath.f;
@@ -163,7 +164,8 @@ export class ExcelGenerator {
             appSheet.getCell('Z13').value = this.sanitize(data.bCitizen) || 'Filipino';
             appSheet.getCell('U15').value = this.sanitize(bFullAddr);
             appSheet.getCell('AF15').value = bCountryVal;
-            appSheet.getCell('U16').value = this.sanitize(data.bReligion);
+            const bFullRel = data.bReligion === "Others" ? data.bCustomReligion : data.bReligion;
+            appSheet.getCell('U16').value = this.sanitize(bFullRel);
             appSheet.getCell('U17').value = this.sanitize(data.bStatus) || 'Single';
 
             appSheet.getCell('U22').value = bFath.f;
