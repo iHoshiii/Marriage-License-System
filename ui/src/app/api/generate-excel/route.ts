@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
-import { createAdminClient } from "@/utils/supabase/server-utils";
+import { createAdminClient, createClient } from "@/utils/supabase/server-utils";
 import fs from "fs";
 import os from "os";
 import { ExcelGenerator } from "@/utils/excel/excel-generator";
@@ -10,6 +10,32 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json();
+
+        // Get current user for Employee Name recording
+        try {
+            const supabase = await createClient();
+            if (supabase) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    let name = user.user_metadata?.full_name;
+
+                    if (!name) {
+                        const { data: profile } = await supabase
+                            .from("profiles")
+                            .select("full_name")
+                            .eq("id", user.id)
+                            .single();
+                        name = profile?.full_name;
+                    }
+
+                    body.employeeName = name || user.email;
+                    console.log(`Setting employeeName for Excel export: ${body.employeeName}`);
+                }
+            }
+        } catch (authError) {
+            console.error("Error retrieving user session for Excel generation:", authError);
+        }
+
         const appCode = (body.applicationCode || '').toUpperCase();
 
         // 1. Handle Image Download (keep existing logic)

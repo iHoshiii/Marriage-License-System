@@ -204,6 +204,7 @@ export class ExcelGenerator {
             appSheet.getCell('AD37').value = this.sanitize(yearNow);
             appSheet.getCell('B38').value = "Solano, Nueva Vizcaya";
             appSheet.getCell('U38').value = "Solano, Nueva Vizcaya";
+            appSheet.getCell('F4').value = (data.employeeName || "").toUpperCase();
         }
 
         // --- 3. FILL EXTRA SHEET IDs ---

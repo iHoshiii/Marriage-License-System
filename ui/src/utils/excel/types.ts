@@ -92,4 +92,5 @@ export interface ExcelData {
     coupleImagePath?: string;
     imageExtension?: string;
     contactNumber?: string;
+    employeeName?: string;
 }
