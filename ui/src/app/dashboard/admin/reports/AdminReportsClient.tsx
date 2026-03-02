@@ -181,7 +181,7 @@ export default function AdminReportsClient() {
                     else if (applicant.age >= 25 && applicant.age <= 30) ageGroups["25-30"]++;
                     else if (applicant.age >= 31 && applicant.age <= 40) ageGroups["31-40"]++;
                     else if (applicant.age >= 41 && applicant.age <= 50) ageGroups["41-50"]++;
-                    else if (applicant.age >= 56) ageGroups["51+"]++; ageGroups["51+"]++;
+                    else if (applicant.age >= 51) ageGroups["51+"]++; ageGroups["51+"]++;
                 }
 
                 // Religion counts
