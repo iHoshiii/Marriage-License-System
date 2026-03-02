@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Camera, X, Loader2, Upload, Paperclip } from "lucide-react";
 import { uploadApplicationPhoto } from "@/app/dashboard/admin/applications/actions";
+import { compressImage } from "@/utils/image-utils";
 
 interface PhotoCaptureModalProps {
     isOpen: boolean;
@@ -72,40 +73,38 @@ export default function PhotoCaptureModal({
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Compress by resizing to max 800px width/height while maintaining aspect ratio
-        const maxSize = 800;
-        let { videoWidth: width, videoHeight: height } = video;
+        // Use standard canvas capture first
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
 
-        if (width > height) {
-            if (width > maxSize) {
-                height = (height * maxSize) / width;
-                width = maxSize;
-            }
-        } else {
-            if (height > maxSize) {
-                width = (width * maxSize) / height;
-                height = maxSize;
-            }
+        const rawData = canvas.toDataURL('image/jpeg');
+
+        try {
+            // Apply compression utility (800px max width for camera captures)
+            const compressed = await compressImage(rawData, 800, 0.6);
+            setCapturedImage(compressed);
+        } catch (error) {
+            console.error('Compression error:', error);
+            setCapturedImage(rawData); // Fallback to raw if compression fails
         }
-
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(video, 0, 0, width, height);
-
-        // Use lower quality for better compression
-        const imageData = canvas.toDataURL('image/jpeg', 0.6);
-        setCapturedImage(imageData);
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setCapturedImage(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+        setUploadingPhoto(true); // Show loader during compression
+        try {
+            // Automatically compress uploaded files (1200px max width for uploaded files)
+            const compressed = await compressImage(file, 1200, 0.7);
+            setCapturedImage(compressed);
+        } catch (error) {
+            console.error('File compression error:', error);
+            setPhotoMessage({ type: 'error', text: 'Failed to process image file. Please try another image.' });
+        } finally {
+            setUploadingPhoto(false);
+        }
     };
 
     const handleUpload = async () => {
