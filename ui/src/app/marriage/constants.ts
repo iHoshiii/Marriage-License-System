@@ -26,6 +26,7 @@ export const INITIAL_FORM_STATE = {
     // Groom ID
     gIdType: "", gIdNo: "", gIdCustomType: "", gIncludeId: false,
     gGiverIdType: "", gGiverIdNo: "", gGiverIdCustomType: "", gGiverIncludeId: false,
+    gSameAsAddress: true,
 
     contactNumber: "",
 
@@ -41,4 +42,5 @@ export const INITIAL_FORM_STATE = {
     // Bride ID
     bIdType: "", bIdNo: "", bIdCustomType: "", bIncludeId: false,
     bGiverIdType: "", bGiverIdNo: "", bGiverIdCustomType: "", bGiverIncludeId: false,
+    bSameAsAddress: true,
 };

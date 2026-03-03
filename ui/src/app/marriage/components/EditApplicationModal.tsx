@@ -1,20 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, Heart, Edit2, Save, ArrowRight } from 'lucide-react';
+import { ArrowRight, Edit2, Save, X } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { updateApplicationDetails } from "../../dashboard/admin/applications/actions";
+import { RELIGIONS, SUFFIX_OPTIONS } from "../constants";
+import { useMarriageForm } from "../hooks/useMarriageForm";
+import { mapAppToFormData } from "../mapping-utils";
+import { toTitleCase } from "../utils";
 import { AddressSection } from "./AddressSection";
 import { BirthPlaceSection } from "./BirthPlaceSection";
 import { FamilySubSection, Field, GiverSubSection } from "./FormComponents";
 import { SectionCard } from "./SectionCard";
-import { RELIGIONS, SUFFIX_OPTIONS } from "../constants";
-import { useMarriageForm } from "../hooks/useMarriageForm";
-import { toTitleCase } from "../utils";
-import { updateApplicationDetails } from "../../dashboard/admin/applications/actions";
-import { mapAppToFormData } from "../mapping-utils";
 
 interface EditApplicationModalProps {
     isOpen: boolean;
@@ -55,12 +54,9 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
             const initialData = mapAppToFormData(selectedApp);
             setFormData(initialData);
 
-            // Check if birth place is same as address to set the toggle correctly
-            const gAddr = initialData.gTown && initialData.gProv ? `${initialData.gTown}, ${initialData.gProv}` : "";
-            const bAddr = initialData.bTown && initialData.bProv ? `${initialData.bTown}, ${initialData.bProv}` : "";
-
-            setGSameAsAddress(initialData.gBirthPlace === gAddr);
-            setBSameAsAddress(initialData.bBirthPlace === bAddr);
+            // Use the pre-calculated flags from mapAppToFormData
+            setGSameAsAddress(!!initialData.gSameAsAddress);
+            setBSameAsAddress(!!initialData.bSameAsAddress);
         }
     }, [selectedApp, setFormData, setGSameAsAddress, setBSameAsAddress]);
 

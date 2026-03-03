@@ -26,8 +26,8 @@ export function useMarriageForm() {
     const [applicationCode, setApplicationCode] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const [gSameAsAddress, setGSameAsAddress] = useState(true);
-    const [bSameAsAddress, setBSameAsAddress] = useState(true);
+    const [gSameAsAddress, setGSameAsAddress] = useState(INITIAL_FORM_STATE.gSameAsAddress);
+    const [bSameAsAddress, setBSameAsAddress] = useState(INITIAL_FORM_STATE.bSameAsAddress);
 
     const [showClearAlert, setShowClearAlert] = useState(false);
 
@@ -104,8 +104,8 @@ export function useMarriageForm() {
             if (provincesList.length === 0) return;
 
             // Groom Birth
-            const gBirthParts = (formData.gBirthPlace || "").split(',');
-            const gBirthProvName = gBirthParts.pop()?.trim();
+            const gBirthParts = (formData.gBirthPlace || "").split(',').map(s => s.trim());
+            const gBirthProvName = gBirthParts.length > 1 ? gBirthParts[gBirthParts.length - 1] : gBirthParts[0];
             if (gBirthProvName) {
                 const prov = provincesList.find(p => p.province_name === gBirthProvName);
                 if (prov) {
@@ -115,8 +115,8 @@ export function useMarriageForm() {
             }
 
             // Bride Birth
-            const bBirthParts = (formData.bBirthPlace || "").split(',');
-            const bBirthProvName = bBirthParts.pop()?.trim();
+            const bBirthParts = (formData.bBirthPlace || "").split(',').map(s => s.trim());
+            const bBirthProvName = bBirthParts.length > 1 ? bBirthParts[bBirthParts.length - 1] : bBirthParts[0];
             if (bBirthProvName) {
                 const prov = provincesList.find(p => p.province_name === bBirthProvName);
                 if (prov) {
@@ -133,6 +133,23 @@ export function useMarriageForm() {
             initializeBirthOptions();
         }
     }, [formData.gProv, formData.gTown, formData.bProv, formData.bTown, formData.gBirthPlace, formData.bBirthPlace, provincesList.length]);
+
+    useEffect(() => {
+        const normalize = (s: string) => (s || "").trim().toLowerCase().replace(/\(capital\)/gi, "").trim();
+        const gAddr = normalize(`${formData.gTown}, ${formData.gProv}`);
+        const bAddr = normalize(`${formData.bTown}, ${formData.bProv}`);
+        const gBirth = normalize(formData.gBirthPlace);
+        const bBirth = normalize(formData.bBirthPlace);
+
+        // Update the toggle state based on the content
+        // If they match, it's "Same As Address". If they don't, it's "Different".
+        if (gBirth && gAddr) {
+            setGSameAsAddress(gBirth === gAddr);
+        }
+        if (bBirth && bAddr) {
+            setBSameAsAddress(bBirth === bAddr);
+        }
+    }, [formData.gTown, formData.gProv, formData.gBirthPlace, formData.bTown, formData.bProv, formData.bBirthPlace]);
 
     const handleAgeChange = (prefix: 'g' | 'b', ageValue: string) => {
         const age = parseInt(ageValue) || 0;

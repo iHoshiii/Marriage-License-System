@@ -89,15 +89,23 @@ export function BirthPlaceSection({
                             className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm disabled:opacity-50 focus:ring-2 focus:ring-primary outline-none"
                             disabled={!birthTownOptions.length}
                             value={(() => {
-                                const parts = (formData[`${prefix}BirthPlace`] || "").split(',').map((s: string) => s.trim());
+                                const fullBirth = formData[`${prefix}BirthPlace`] || "";
+                                if (!fullBirth) return "";
+                                const parts = fullBirth.split(',').map((s: string) => s.trim());
                                 if (parts.length < 2) return "";
                                 const cityName = parts[0];
-                                return birthTownOptions.find(t => t.city_name === cityName)?.city_code || "";
+                                const found = birthTownOptions.find(t => {
+                                    const n1 = (t.city_name || "").toLowerCase().replace(/\(capital\)/gi, "").trim();
+                                    const n2 = cityName.toLowerCase().replace(/\(capital\)/gi, "").trim();
+                                    return n1 === n2;
+                                });
+                                return found ? found.city_code : "";
                             })()}
                             onChange={(e) => {
+                                if (e.target.value === "") return;
                                 const town = birthTownOptions.find(t => t.city_code === e.target.value);
                                 const parts = (formData[`${prefix}BirthPlace`] || "").split(',').map((s: string) => s.trim());
-                                const prov = parts.length > 1 ? parts.pop() : parts[0];
+                                const prov = parts.length > 1 ? parts[parts.length - 1] : parts[0];
                                 handleBirthTownChange(prefix, e.target.value, town?.city_name || "", prov || "");
                             }}
                         >
@@ -107,22 +115,6 @@ export function BirthPlaceSection({
                             ))}
                         </select>
                     </Field>
-                    <div className="md:col-span-2 flex justify-end">
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setSameAsAddress(true);
-                                const place = `${formData[`${prefix}Town`]}, ${formData[`${prefix}Prov`]}`;
-                                setFormData((prev: any) => ({ ...prev, [`${prefix}BirthPlace`]: place }));
-                            }}
-                            className="text-[9px] font-black text-primary hover:text-primary/80 flex items-center gap-1 uppercase tracking-widest bg-primary/5 px-3 py-1.5 rounded-full transition-all border border-primary/10 hover:border-primary/20"
-                        >
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                            Back to Current Address
-                        </button>
-                    </div>
                 </div>
             )}
         </div>
