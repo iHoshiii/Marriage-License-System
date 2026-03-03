@@ -168,6 +168,7 @@ export default function GlobalOversightClient({
                 gFirst: app.groom?.first_name || '',
                 gMiddle: app.groom?.middle_name || '',
                 gLast: app.groom?.last_name || '',
+                gSuffix: app.groom?.suffix || '',
                 gBday: app.groom?.birth_date ? new Date(app.groom.birth_date).toLocaleDateString('en-US') : '',
                 gAge: app.groom?.age || 0,
                 gTown: app.groom?.addresses?.municipality || '',
@@ -191,6 +192,7 @@ export default function GlobalOversightClient({
                 bFirst: app.bride?.first_name || '',
                 bMiddle: app.bride?.middle_name || '',
                 bLast: app.bride?.last_name || '',
+                bSuffix: app.bride?.suffix || '',
                 bBday: app.bride?.birth_date ? new Date(app.bride.birth_date).toLocaleDateString('en-US') : '',
                 bAge: app.bride?.age || 0,
                 bTown: app.bride?.addresses?.municipality || '',
@@ -210,6 +212,22 @@ export default function GlobalOversightClient({
                 bGiverM: brideGiver.middle,
                 bGiverL: brideGiver.last,
                 bGiverRelation: app.bride?.giver_relationship || '',
+
+                // Groom ID fields
+                gIdType: app.groom?.id_type || '',
+                gIdNo: app.groom?.id_no || '',
+                gIncludeId: !!app.groom?.include_id,
+                gGiverIdType: app.groom?.giver_id_type || '',
+                gGiverIdNo: app.groom?.giver_id_no || '',
+                gGiverIncludeId: !!app.groom?.giver_include_id,
+
+                // Bride ID fields
+                bIdType: app.bride?.id_type || '',
+                bIdNo: app.bride?.id_no || '',
+                bIncludeId: !!app.bride?.include_id,
+                bGiverIdType: app.bride?.giver_id_type || '',
+                bGiverIdNo: app.bride?.giver_id_no || '',
+                bGiverIncludeId: !!app.bride?.giver_include_id,
             };
 
             const response = await fetch('/api/generate-excel', {
