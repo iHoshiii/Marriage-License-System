@@ -18,6 +18,16 @@ export const mapAppToFormData = (app: any) => {
 
     const isCustomSuffix = (suffix: string) => suffix && !SUFFIX_OPTIONS.includes(suffix) && suffix !== "";
     const isCustomReligion = (religion: string) => religion && !RELIGIONS.includes(religion) && religion !== "";
+    const isCustomValidId = (idType: string) => idType && !VALID_ID_TYPES.includes(idType) && idType !== "";
+
+    const parseGiverRelation = (rel: string) => {
+        if (!rel) return { relation: "", other: "" };
+        if (rel === "Father" || rel === "Mother") return { relation: rel, other: "" };
+        return { relation: "Other", other: rel };
+    };
+
+    const groomGiverRel = parseGiverRelation(groom.giver_relationship);
+    const brideGiverRel = parseGiverRelation(bride.giver_relationship);
 
     return {
         ...INITIAL_FORM_STATE,
@@ -32,6 +42,7 @@ export const mapAppToFormData = (app: any) => {
         gBrgy: groom.addresses?.barangay || "",
         gTown: groom.addresses?.municipality || "",
         gProv: groom.addresses?.province || "Nueva Vizcaya",
+        gBirthPlace: groom.birth_place || "",
         gReligion: isCustomReligion(groom.religion) ? "Others" : (groom.religion || ""),
         gCustomReligion: isCustomReligion(groom.religion) ? groom.religion : "",
         gFathF: groomFather.first,
@@ -43,12 +54,14 @@ export const mapAppToFormData = (app: any) => {
         gGiverF: groomGiver.first,
         gGiverM: groomGiver.middle,
         gGiverL: groomGiver.last,
+        gGiverRelation: groomGiverRel.relation,
+        gGiverOtherTitle: groomGiverRel.other,
         // Groom ID
-        gIdType: groom.id_type || "",
+        gIdType: isCustomValidId(groom.id_type) ? "Others" : (groom.id_type || ""),
         gIdNo: groom.id_no || "",
         gIdCustomType: isCustomValidId(groom.id_type) ? groom.id_type : "",
         gIncludeId: !!groom.include_id,
-        gGiverIdType: groom.giver_id_type || "",
+        gGiverIdType: isCustomValidId(groom.giver_id_type) ? "Others" : (groom.giver_id_type || ""),
         gGiverIdNo: groom.giver_id_no || "",
         gGiverIdCustomType: isCustomValidId(groom.giver_id_type) ? groom.giver_id_type : "",
         gGiverIncludeId: !!groom.giver_include_id,
@@ -64,6 +77,7 @@ export const mapAppToFormData = (app: any) => {
         bBrgy: bride.addresses?.barangay || "",
         bTown: bride.addresses?.municipality || "",
         bProv: bride.addresses?.province || "Nueva Vizcaya",
+        bBirthPlace: bride.birth_place || "",
         bReligion: isCustomReligion(bride.religion) ? "Others" : (bride.religion || ""),
         bCustomReligion: isCustomReligion(bride.religion) ? bride.religion : "",
         bFathF: brideFather.first,
@@ -75,23 +89,20 @@ export const mapAppToFormData = (app: any) => {
         bGiverF: brideGiver.first,
         bGiverM: brideGiver.middle,
         bGiverL: brideGiver.last,
-        bGiverRelation: bride.giver_relationship || "",
+        bGiverRelation: brideGiverRel.relation,
+        bGiverOtherTitle: brideGiverRel.other,
 
         // Bride ID
-        bIdType: bride.id_type || "",
+        bIdType: isCustomValidId(bride.id_type) ? "Others" : (bride.id_type || ""),
         bIdNo: bride.id_no || "",
         bIdCustomType: isCustomValidId(bride.id_type) ? bride.id_type : "",
         bIncludeId: !!bride.include_id,
-        bGiverIdType: bride.giver_id_type || "",
+        bGiverIdType: isCustomValidId(bride.giver_id_type) ? "Others" : (bride.giver_id_type || ""),
         bGiverIdNo: bride.giver_id_no || "",
         bGiverIdCustomType: isCustomValidId(bride.giver_id_type) ? bride.giver_id_type : "",
         bGiverIncludeId: !!bride.giver_include_id,
 
         contactNumber: app.contact_number || "",
     };
-};
-
-const isCustomValidId = (idType: string) => {
-    return idType && !VALID_ID_TYPES.includes(idType) && idType !== "";
 };
 
