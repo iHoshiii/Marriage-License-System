@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import { ExcelData } from './types';
 
 export class ExcelGenerator {
@@ -108,13 +108,12 @@ export class ExcelGenerator {
             appSheet.getCell('B11').value = this.sanitize(data.gBday);
             appSheet.getCell('N11').value = data.gAge || 0;
             // B12 = Place of Birth (municipality, province only — not current address)
-            appSheet.getCell('B12').value = this.sanitize(data.gBirthPlace || "").toUpperCase();
+            appSheet.getCell('B12').value = this.sanitize(data.gBirthPlace || "");
 
             const gCountryVal = this.sanitize(data.gCountry) || 'Philippines';
             appSheet.getCell('L12').value = gCountryVal;
             appSheet.getCell('B13').value = "Male";
             appSheet.getCell('H13').value = this.sanitize(data.gCitizen) || 'Filipino';
-            appSheet.getCell('B14').value = "Current Address";
             appSheet.getCell('B15').value = this.sanitize(gFullAddr);
             appSheet.getCell('M15').value = gCountryVal;
             const gFullRel = data.gReligion === "Others" ? data.gCustomReligion : data.gReligion;
@@ -159,13 +158,12 @@ export class ExcelGenerator {
             appSheet.getCell('U11').value = this.sanitize(data.bBday);
             appSheet.getCell('AF11').value = data.bAge || 0;
             // U12 = Place of Birth (municipality, province only — not current address)
-            appSheet.getCell('U12').value = this.sanitize(data.bBirthPlace || "").toUpperCase();
+            appSheet.getCell('U12').value = this.sanitize(data.bBirthPlace || "");
 
             const bCountryVal = this.sanitize(data.bCountry) || 'Philippines';
             appSheet.getCell('AE12').value = bCountryVal;
             appSheet.getCell('U13').value = "Female";
             appSheet.getCell('Z13').value = this.sanitize(data.bCitizen) || 'Filipino';
-            appSheet.getCell('U14').value = "Current Address";
             appSheet.getCell('U15').value = this.sanitize(bFullAddr);
             appSheet.getCell('AF15').value = bCountryVal;
             const bFullRel = data.bReligion === "Others" ? data.bCustomReligion : data.bReligion;
@@ -231,32 +229,28 @@ export class ExcelGenerator {
             }
         }
 
-        // --- 4. NOTICE SHEET FILTERING ---
+        // --- 4. NOTICE SHEET: E44/E45/E46 = non-Solano locations (groom & bride current + birth) ---
+        // Same logic for groom and bride: current address and birthplace. Do not print "Solano, Nueva Vizcaya".
+        // Order: groom current, groom birth, bride current, bride birth — first 3 non-Solano go to E44, E45, E46.
         const noticeSheet = workbook.getWorksheet('Notice');
         if (noticeSheet) {
-            const gIsSolano = gCleanTown.toLowerCase().includes("solano");
-            const bIsSolano = bCleanTown.toLowerCase().includes("solano");
+            const groomCurrentStr = (gTownProv || "").trim();
+            const brideCurrentStr = (bTownProv || "").trim();
+            const groomBirthStr = (data.gBirthPlace || "").trim();
+            const brideBirthStr = (data.bBirthPlace || "").trim();
 
-            const gNonSolano = !gIsSolano;
-            const bNonSolano = !bIsSolano;
+            const isSolano = (s: string) => (s || "").toLowerCase().includes("solano");
 
-            if (bNonSolano && gNonSolano) {
-                // Both NOT from Solano
-                noticeSheet.getCell('E44').value = this.sanitize(`${bCleanTown}, ${data.bProv || 'Nueva Vizcaya'}`);
-                noticeSheet.getCell('E45').value = this.sanitize(`${gCleanTown}, ${data.gProv || 'Nueva Vizcaya'}`);
-            } else if (bNonSolano) {
-                // Only Bride NOT from Solano
-                noticeSheet.getCell('E44').value = this.sanitize(`${bCleanTown}, ${data.bProv || 'Nueva Vizcaya'}`);
-                noticeSheet.getCell('E45').value = "";
-            } else if (gNonSolano) {
-                // Only Groom NOT from Solano
-                noticeSheet.getCell('E44').value = this.sanitize(`${gCleanTown}, ${data.gProv || 'Nueva Vizcaya'}`);
-                noticeSheet.getCell('E45').value = "";
-            } else {
-                // Both ARE from Solano
-                noticeSheet.getCell('E44').value = "";
-                noticeSheet.getCell('E45').value = "";
-            }
+            const candidates = [
+                groomCurrentStr,
+                groomBirthStr,
+                brideCurrentStr,
+                brideBirthStr,
+            ].filter((s) => s && !isSolano(s)).map((s) => this.sanitize(s));
+
+            noticeSheet.getCell('E44').value = candidates[0] ?? "";
+            noticeSheet.getCell('E45').value = candidates[1] ?? "";
+            noticeSheet.getCell('E46').value = candidates[2] ?? "";
         }
 
         // --- 5. HANDLE IMAGE REPLACEMENT ---
