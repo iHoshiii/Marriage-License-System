@@ -109,7 +109,14 @@ export function BirthPlaceSection({
                             <select
                                 className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                                 value={formData[`${prefix}BirthCountry`] || "Philippines"}
-                                onChange={(e) => setFormData((prev: any) => ({ ...prev, [`${prefix}BirthCountry`]: e.target.value || "Philippines" }))}
+                                onChange={(e) => {
+                                    const newCountry = e.target.value || "Philippines";
+                                    setFormData((prev: any) => ({
+                                        ...prev,
+                                        [`${prefix}BirthCountry`]: newCountry,
+                                        [`${prefix}BirthPlace`]: "",
+                                    }));
+                                }}
                             >
                                 <option value="" disabled hidden>Select Country</option>
                                 {countryOptions.map((c) => (
