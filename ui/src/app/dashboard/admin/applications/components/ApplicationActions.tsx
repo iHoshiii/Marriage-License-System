@@ -1,12 +1,13 @@
 "use client";
 
-import { Eye, FileDown, MoreHorizontal, Loader2, Trash2 } from "lucide-react";
+import { Eye, FileDown, MoreHorizontal, Loader2, Trash2, ClipboardList } from "lucide-react";
 
 interface ActionDropdownProps {
     app: any;
     onView: () => void;
     onDownloadExcel: (app: any) => void;
     onManualUpdate: (app: any) => void;
+    onRegistry: (app: any) => void;
     onDelete?: (app: any) => void;
     isUpdating: boolean;
     isDownloading: boolean;
@@ -17,6 +18,7 @@ export function ActionDropdown({
     onView,
     onDownloadExcel,
     onManualUpdate,
+    onRegistry,
     onDelete,
     isUpdating,
     isDownloading,
@@ -43,6 +45,15 @@ export function ActionDropdown({
                     ? <Loader2 className="h-4 w-4 animate-spin" />
                     : <FileDown className="h-4 w-4" />
                 }
+            </button>
+
+            <button
+                title="Registry Number"
+                onClick={() => onRegistry(app)}
+                className="h-9 w-9 rounded-xl bg-orange-50 hover:bg-orange-600 hover:text-white text-orange-600 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-90"
+                suppressHydrationWarning
+            >
+                <ClipboardList className="h-4 w-4" />
             </button>
 
             <button

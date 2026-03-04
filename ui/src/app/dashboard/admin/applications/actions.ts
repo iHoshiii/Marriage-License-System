@@ -162,6 +162,41 @@ export async function updateApplicationStatus(applicationId: string, newStatus: 
     return { success: true };
 }
 
+export async function updateRegistryNumber(applicationId: string, registryCode: string) {
+    console.log("updateRegistryNumber called with:", { applicationId, registryCode });
+
+    const role = await getCurrentUserRole();
+    if (!role || !(['admin', 'employee'].includes(role))) {
+        return { success: false, error: "Unauthorized: Only staff can edit registry numbers." };
+    }
+
+    const supabase = createAdminClient();
+
+    // Get current year
+    const year = new Date().getFullYear();
+    const fullRegistryNumber = `${year}-${registryCode}`;
+
+    // Update registry number and mark as completed
+    const { data, error } = await supabase
+        .from("marriage_applications")
+        .update({
+            registry_number: fullRegistryNumber,
+            status: 'completed',
+            updated_at: new Date().toISOString()
+        })
+        .eq("id", applicationId)
+        .select();
+
+    if (error) {
+        console.error("Error updating registry number:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath("/dashboard/admin/applications");
+    revalidatePath("/dashboard/admin");
+    return { success: true, registryNumber: fullRegistryNumber };
+}
+
 export async function uploadApplicationPhoto(formData: FormData) {
     // IMPORTANT: Always check for null after createClient() - TypeScript requires this
     // DO NOT REMOVE THIS NULL CHECK - it prevents 'supabase' is possibly 'null' errors

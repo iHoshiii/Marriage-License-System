@@ -6,11 +6,12 @@ import {
     FileText, Search, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, Loader2, X
 } from "lucide-react";
 import { Alert } from "@/components/ui/alert";
-import { updateApplicationStatus, deleteApplication } from "./actions";
+import { updateApplicationStatus, deleteApplication, updateRegistryNumber } from "./actions";
 import PhotoCaptureModal from "@/components/PhotoCaptureModal";
 import AdminMarriageForm from "./AdminMarriageForm";
 import DeleteApplicationModal from "./components/DeleteApplicationModal";
 import AdminOnlyModal from "./components/AdminOnlyModal";
+import RegistryNumberModal from "./components/RegistryNumberModal";
 
 import { toTitleCase, calculateAge, splitName } from "../../../marriage/utils";
 
@@ -80,6 +81,9 @@ export default function GlobalOversightClient({
     // Admin only restriction modal
     const [showAdminOnlyModal, setShowAdminOnlyModal] = useState(false);
 
+    // Registry Number modal state
+    const [registryApp, setRegistryApp] = useState<any | null>(null);
+
     const handleRefresh = () => {
         window.location.reload();
     };
@@ -148,6 +152,27 @@ export default function GlobalOversightClient({
         } finally {
             setRowManualUpdating(false);
         }
+    }
+
+    async function handleRegistryUpdate(appId: string, registryCode: string) {
+        const result = await updateRegistryNumber(appId, registryCode);
+        if (result.success) {
+            // Update local state
+            setApps(prev => prev.map(a => a.id === appId ? {
+                ...a,
+                registry_number: result.registryNumber,
+                status: 'completed'
+            } : a));
+
+            if (selectedApp?.id === appId) {
+                setSelectedApp((prev: any) => ({
+                    ...prev,
+                    registry_number: result.registryNumber,
+                    status: 'completed'
+                }));
+            }
+        }
+        return result;
     }
 
     async function handleDeleteApplication() {
@@ -284,6 +309,7 @@ export default function GlobalOversightClient({
                 body: JSON.stringify({
                     ...excelData,
                     applicationCode: app.application_code,
+                    registryNumber: app.registry_number,
                 }),
             });
 
@@ -422,6 +448,9 @@ export default function GlobalOversightClient({
                     setRowManualStatus(app.status || "approved");
                     setRowManualMessage(null);
                 }}
+                onRegistry={(app) => {
+                    setRegistryApp(app);
+                }}
                 onDelete={(app) => {
                     if (userRole !== 'admin') {
                         setShowAdminOnlyModal(true);
@@ -547,6 +576,14 @@ export default function GlobalOversightClient({
                 isOpen={showAdminOnlyModal}
                 onClose={() => setShowAdminOnlyModal(false)}
             />
+
+            {registryApp && (
+                <RegistryNumberModal
+                    app={registryApp}
+                    onClose={() => setRegistryApp(null)}
+                    onUpdate={handleRegistryUpdate}
+                />
+            )}
         </div>
     );
 }

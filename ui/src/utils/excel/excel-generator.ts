@@ -219,6 +219,18 @@ export class ExcelGenerator {
             appSheet.getCell('B38').value = "Solano, Nueva Vizcaya";
             appSheet.getCell('U38').value = "Solano, Nueva Vizcaya";
             appSheet.getCell('F4').value = (data.employeeName || "").toUpperCase();
+
+            // Registry Number Logic
+            if (data.registryNumber) {
+                const parts = data.registryNumber.split('-');
+                if (parts.length === 2) {
+                    appSheet.getCell('X3').value = parts[0]; // Year (e.g. 2026)
+                    appSheet.getCell('AD3').value = parts[1]; // Code (e.g. 01)
+                } else {
+                    // Fallback if format is unexpected
+                    appSheet.getCell('AD3').value = data.registryNumber;
+                }
+            }
         }
 
         // --- 3. FILL EXTRA SHEET IDs ---

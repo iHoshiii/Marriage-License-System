@@ -9,6 +9,7 @@ interface ApplicationTableProps {
     onView: (app: any) => void;
     onDownloadExcel: (app: any) => void;
     onManualUpdate: (app: any) => void;
+    onRegistry: (app: any) => void;
     updatingId: string | null;
     downloadingId: string | null;
     onDelete: (app: any) => void;
@@ -20,6 +21,7 @@ export default function ApplicationTable({
     onView,
     onDownloadExcel,
     onManualUpdate,
+    onRegistry,
     updatingId,
     downloadingId,
     onDelete,
@@ -93,6 +95,7 @@ export default function ApplicationTable({
                                     onView={() => onView(app)}
                                     onDownloadExcel={onDownloadExcel}
                                     onManualUpdate={onManualUpdate}
+                                    onRegistry={onRegistry}
                                     onDelete={onDelete}
                                     isUpdating={updatingId === app.id}
                                     isDownloading={downloadingId === app.id}
@@ -170,6 +173,7 @@ export default function ApplicationTable({
                                             onView={() => onView(app)}
                                             onDownloadExcel={onDownloadExcel}
                                             onManualUpdate={onManualUpdate}
+                                            onRegistry={onRegistry}
                                             onDelete={onDelete}
                                             isUpdating={updatingId === app.id}
                                             isDownloading={downloadingId === app.id}
