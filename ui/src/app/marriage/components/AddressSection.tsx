@@ -1,5 +1,5 @@
-import { Field } from "./FormComponents";
 import { Input } from "@/components/ui/input";
+import { Field } from "./FormComponents";
 
 interface AddressSectionProps {
     prefix: 'g' | 'b';
@@ -120,7 +120,7 @@ export function AddressSection({
                                 ))}
                             </select>
                         </Field>
-                        <Field label="Town/Municipality" required>
+                        <Field label="Municipality" required>
                             <select
                                 className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                                 value={finalTownOptions.find((t: any) => t.city_name === formData[`${prefix}Town`])?.city_code || ""}
@@ -159,9 +159,9 @@ export function AddressSection({
                                 onChange={(e) => updateFormData(`${prefix}Prov`, e.target.value)}
                             />
                         </Field>
-                        <Field label="Town/Municipality" required>
+                        <Field label="Municipality" required>
                             <Input
-                                placeholder="Type town/municipality"
+                                placeholder="Type municipality"
                                 className="bg-white"
                                 value={formData[`${prefix}Town`] || ""}
                                 onChange={(e) => updateFormData(`${prefix}Town`, e.target.value)}

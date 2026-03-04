@@ -1,5 +1,5 @@
-import { Field } from "./FormComponents";
 import { Input } from "@/components/ui/input";
+import { Field } from "./FormComponents";
 
 interface BirthPlaceSectionProps {
     prefix: 'g' | 'b';
@@ -105,7 +105,7 @@ export function BirthPlaceSection({
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-1">
                     {!!formData[`${prefix}IsNotBornInPh`] && (
-                        <Field label="Birth Country" required>
+                        <Field label="Country" required>
                             <select
                                 className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                                 value={formData[`${prefix}BirthCountry`] || "Philippines"}
@@ -120,7 +120,7 @@ export function BirthPlaceSection({
                     )}
                     {(formData[`${prefix}BirthCountry`] || "Philippines") === "Philippines" ? (
                         <>
-                            <Field label="Birth Province">
+                            <Field label="Province">
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                                     value={(() => {
@@ -147,7 +147,7 @@ export function BirthPlaceSection({
                                     ))}
                                 </select>
                             </Field>
-                            <Field label="Birth Town/Municipality">
+                            <Field label="Municipality">
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm disabled:opacity-50 focus:ring-2 focus:ring-primary outline-none"
                                     disabled={!birthTownOptions.length}
@@ -182,7 +182,7 @@ export function BirthPlaceSection({
                         </>
                     ) : (
                         <>
-                            <Field label="Birth Province" required>
+                            <Field label="Province" required>
                                 <Input
                                     placeholder="Type province/state"
                                     className="bg-white"
@@ -204,7 +204,7 @@ export function BirthPlaceSection({
                                     }}
                                 />
                             </Field>
-                            <Field label="Birth Town/Municipality" required>
+                            <Field label="Municipality " required>
                                 <Input
                                     placeholder="Type town/municipality"
                                     className="bg-white"
