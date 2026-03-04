@@ -66,6 +66,32 @@ export function BirthPlaceSection({
                 </button>
             </div>
 
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-2">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                    <div className="relative flex items-center">
+                        <input
+                            type="checkbox"
+                            className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:bg-primary checked:border-primary focus:outline-none"
+                            checked={!!formData[`${prefix}IsNotBornInPh`]}
+                            onChange={(e) => {
+                                const checked = e.target.checked;
+                                setFormData((prev: any) => ({
+                                    ...prev,
+                                    [`${prefix}IsNotBornInPh`]: checked,
+                                    [`${prefix}BirthCountry`]: checked ? prev[`${prefix}BirthCountry`] : "Philippines"
+                                }));
+                            }}
+                        />
+                        <svg className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span className="text-xs font-black text-slate-600 uppercase tracking-wide group-hover:text-primary transition-colors">
+                        Are you not born in the Philippines?
+                    </span>
+                </label>
+            </div>
+
             {sameAsAddress ? (
                 <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 animate-in fade-in zoom-in-95 duration-300">
                     <p className="text-[10px] font-bold text-primary/70 mb-1 flex items-center gap-2 uppercase tracking-wider">
@@ -77,18 +103,20 @@ export function BirthPlaceSection({
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-1">
-                    <Field label="Birth Country">
-                        <select
-                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                            value={formData[`${prefix}BirthCountry`] || "Philippines"}
-                            onChange={(e) => setFormData((prev: any) => ({ ...prev, [`${prefix}BirthCountry`]: e.target.value || "Philippines" }))}
-                        >
-                            <option value="" disabled hidden>Select Country</option>
-                            {countryOptions.map((c) => (
-                                <option key={`${prefix}birth-country-${c}`} value={c}>{c}</option>
-                            ))}
-                        </select>
-                    </Field>
+                    {!!formData[`${prefix}IsNotBornInPh`] && (
+                        <Field label="Birth Country" required>
+                            <select
+                                className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                value={formData[`${prefix}BirthCountry`] || "Philippines"}
+                                onChange={(e) => setFormData((prev: any) => ({ ...prev, [`${prefix}BirthCountry`]: e.target.value || "Philippines" }))}
+                            >
+                                <option value="" disabled hidden>Select Country</option>
+                                {countryOptions.map((c) => (
+                                    <option key={`${prefix}birth-country-${c}`} value={c}>{c}</option>
+                                ))}
+                            </select>
+                        </Field>
+                    )}
                     {(formData[`${prefix}BirthCountry`] || "Philippines") === "Philippines" ? (
                         <>
                             <Field label="Birth Province">

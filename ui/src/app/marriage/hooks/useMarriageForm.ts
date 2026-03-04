@@ -286,6 +286,12 @@ export function useMarriageForm() {
 
             if (mainFields.some(f => !f || f.toString().trim() === "")) return false;
 
+            // Country validation if foreigner
+            if (formData[`${prefix}IsForeigner`] && !formData[`${prefix}Country`]) return false;
+
+            // Birth Country validation if not born in PH
+            if (formData[`${prefix}IsNotBornInPh`] && !formData[`${prefix}BirthCountry`]) return false;
+
             // Religion validation for "Others"
             if (formData[`${prefix}Religion`] === "Others" && (!formData[`${prefix}CustomReligion`] || formData[`${prefix}CustomReligion`].trim() === "")) return false;
 

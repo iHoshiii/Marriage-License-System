@@ -33,6 +33,7 @@ export async function submitApplication(formData: any, generatedCode: string, us
             province: formData.gProv,
             municipality: formData.gTown,
             country: formData.gCountry || "Philippines",
+            is_foreigner: !!formData.gIsForeigner,
         };
 
         console.log('Inserting groom address:', groomAddressPayload);
@@ -59,6 +60,7 @@ export async function submitApplication(formData: any, generatedCode: string, us
             province: formData.bProv,
             municipality: formData.bTown,
             country: formData.bCountry || "Philippines",
+            is_foreigner: !!formData.bIsForeigner,
         };
 
         console.log('Inserting bride address:', brideAddressPayload);
@@ -114,6 +116,8 @@ export async function submitApplication(formData: any, generatedCode: string, us
         age: formData.gAge,
         citizenship: formData.gCitizen,
         birth_place: formData.gBirthPlace || null,
+        birth_country: formData.gBirthCountry || "Philippines",
+        is_not_born_in_ph: !!formData.gIsNotBornInPh,
         religion: formData.gReligion === "Others" ? formData.gCustomReligion : (formData.gReligion || null),
         father_name: [formData.gFathF, formData.gFathM, formData.gFathL].filter(Boolean).join(' ') || null,
         mother_name: [formData.gMothF, formData.gMothM, formData.gMothL].filter(Boolean).join(' ') || null,
@@ -152,6 +156,8 @@ export async function submitApplication(formData: any, generatedCode: string, us
         age: formData.bAge,
         citizenship: formData.bCitizen,
         birth_place: formData.bBirthPlace || null,
+        birth_country: formData.bBirthCountry || "Philippines",
+        is_not_born_in_ph: !!formData.bIsNotBornInPh,
         religion: formData.bReligion === "Others" ? formData.bCustomReligion : (formData.bReligion || null),
         father_name: [formData.bFathF, formData.bFathM, formData.bFathL].filter(Boolean).join(' ') || null,
         mother_name: [formData.bMothF, formData.bMothM, formData.bMothL].filter(Boolean).join(' ') || null,

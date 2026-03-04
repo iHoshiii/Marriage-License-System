@@ -14,6 +14,7 @@ interface AddressSectionProps {
     handleProvinceChange: (prefix: 'g' | 'b', provinceCode: string, provinceName: string) => void;
     handleTownChange: (prefix: 'g' | 'b', cityCode: string, cityName: string) => void;
     handleBrgyChange: (prefix: 'g' | 'b', brgyName: string) => void;
+    countryOptions?: string[];
 }
 
 export function AddressSection({
@@ -27,11 +28,19 @@ export function AddressSection({
     setFormData,
     handleProvinceChange,
     handleTownChange,
-    handleBrgyChange
+    handleBrgyChange,
+    countryOptions = []
 }: AddressSectionProps) {
     const currentTownOptions = prefix === 'g' ? gTownOptions : bTownOptions;
     const finalTownOptions = currentTownOptions.length > 0 ? currentTownOptions : townOptions;
-    const isPhilippines = (formData[`${prefix}Country`] || "Philippines") === "Philippines";
+
+    const isForeigner = !!formData[`${prefix}IsForeigner`];
+    const currentCountry = formData[`${prefix}Country`] || "Philippines";
+    const isPhilippines = currentCountry === "Philippines";
+
+    const updateFormData = (key: string, value: any) => {
+        setFormData?.((prev: any) => ({ ...prev, [key]: value }));
+    };
 
     return (
         <div className="space-y-4 pt-6 border-t border-slate-100">
@@ -46,10 +55,52 @@ export function AddressSection({
                     <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">Current Address</h3>
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-2">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                    <div className="relative flex items-center">
+                        <input
+                            type="checkbox"
+                            className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:bg-primary checked:border-primary focus:outline-none"
+                            checked={isForeigner}
+                            onChange={(e) => {
+                                const checked = e.target.checked;
+                                setFormData?.((prev: any) => ({
+                                    ...prev,
+                                    [`${prefix}IsForeigner`]: checked,
+                                    [`${prefix}Country`]: checked ? prev[`${prefix}Country`] : "Philippines"
+                                }));
+                            }}
+                        />
+                        <svg className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span className="text-xs font-black text-slate-600 uppercase tracking-wide group-hover:text-primary transition-colors">
+                        Are you a foreigner? (Not filipino)
+                    </span>
+                </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1">
+                {isForeigner && (
+                    <Field label="Country" required>
+                        <select
+                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                            value={currentCountry}
+                            onChange={(e) => updateFormData(`${prefix}Country`, e.target.value)}
+                        >
+                            <option value="" disabled hidden>Select Country</option>
+                            {countryOptions.map((c) => (
+                                <option key={`addr-country-${c}`} value={c}>{c}</option>
+                            ))}
+                        </select>
+                    </Field>
+                )}
+
                 {isPhilippines ? (
                     <>
-                        <Field label="Province" required>
+                        <Field label="Province" required className={!isForeigner ? "md:col-start-1" : ""}>
                             <select
                                 className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                                 value={provincesList.find(p => p.province_name === formData[`${prefix}Prov`])?.province_code || ""}
@@ -102,7 +153,7 @@ export function AddressSection({
                                 placeholder="Type province/state"
                                 className="bg-white"
                                 value={formData[`${prefix}Prov`] || ""}
-                                onChange={(e) => setFormData?.((prev: any) => ({ ...prev, [`${prefix}Prov`]: e.target.value }))}
+                                onChange={(e) => updateFormData(`${prefix}Prov`, e.target.value)}
                             />
                         </Field>
                         <Field label="Town/Municipality" required>
@@ -110,7 +161,7 @@ export function AddressSection({
                                 placeholder="Type town/municipality"
                                 className="bg-white"
                                 value={formData[`${prefix}Town`] || ""}
-                                onChange={(e) => setFormData?.((prev: any) => ({ ...prev, [`${prefix}Town`]: e.target.value }))}
+                                onChange={(e) => updateFormData(`${prefix}Town`, e.target.value)}
                             />
                         </Field>
                         <Field label="Barangay" required>
@@ -118,7 +169,7 @@ export function AddressSection({
                                 placeholder="Type barangay/district"
                                 className="bg-white"
                                 value={formData[`${prefix}Brgy`] || ""}
-                                onChange={(e) => setFormData?.((prev: any) => ({ ...prev, [`${prefix}Brgy`]: e.target.value }))}
+                                onChange={(e) => updateFormData(`${prefix}Brgy`, e.target.value)}
                             />
                         </Field>
                     </>

@@ -192,18 +192,6 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                             onChange={e => setFormData({ ...formData, gCitizen: toTitleCase(e.target.value) })}
                                         />
                                     </Field>
-                                    <Field label="Country">
-                                        <select
-                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                                            value={formData.gCountry}
-                                            onChange={(e) => setFormData({ ...formData, gCountry: e.target.value })}
-                                        >
-                                            <option value="" disabled hidden>Select Country</option>
-                                            {COUNTRY_OPTIONS.map((c) => (
-                                                <option key={`g-country-${c}`} value={c}>{c}</option>
-                                            ))}
-                                        </select>
-                                    </Field>
                                 </div>
                                 <AnimatePresence>
                                     {formData.gReligion === "Others" && (
@@ -225,7 +213,7 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
-                                <AddressSection prefix="g" provincesList={provincesList} gTownOptions={gTownOptions} bTownOptions={bTownOptions} brgyOptions={gBrgyOptions} formData={formData} setFormData={setFormData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} />
+                                <AddressSection prefix="g" provincesList={provincesList} gTownOptions={gTownOptions} bTownOptions={bTownOptions} brgyOptions={gBrgyOptions} formData={formData} setFormData={setFormData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} countryOptions={COUNTRY_OPTIONS} />
                                 <BirthPlaceSection prefix="g" sameAsAddress={gSameAsAddress} setSameAsAddress={setGSameAsAddress} formData={formData} setFormData={setFormData} provincesList={provincesList} birthTownOptions={gBirthTownOptions} countryOptions={COUNTRY_OPTIONS} handleBirthProvinceChange={handleBirthProvinceChange} handleBirthTownChange={handleBirthTownChange} />
                                 <FamilySubSection prefix="g" person="Groom" data={formData} setData={setFormData} toTitleCase={toTitleCase} />
                                 <GiverSubSection prefix="g" age={formData.gAge} data={formData} setData={setFormData} toTitleCase={toTitleCase} />
@@ -303,18 +291,6 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                             onChange={e => setFormData({ ...formData, bCitizen: toTitleCase(e.target.value) })}
                                         />
                                     </Field>
-                                    <Field label="Country">
-                                        <select
-                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                                            value={formData.bCountry}
-                                            onChange={(e) => setFormData({ ...formData, bCountry: e.target.value })}
-                                        >
-                                            <option value="" disabled hidden>Select Country</option>
-                                            {COUNTRY_OPTIONS.map((c) => (
-                                                <option key={`b-country-${c}`} value={c}>{c}</option>
-                                            ))}
-                                        </select>
-                                    </Field>
                                 </div>
                                 <AnimatePresence>
                                     {formData.bReligion === "Others" && (
@@ -336,7 +312,7 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
-                                <AddressSection prefix="b" provincesList={provincesList} gTownOptions={gTownOptions} bTownOptions={bTownOptions} brgyOptions={bBrgyOptions} formData={formData} setFormData={setFormData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} />
+                                <AddressSection prefix="b" provincesList={provincesList} gTownOptions={gTownOptions} bTownOptions={bTownOptions} brgyOptions={bBrgyOptions} formData={formData} setFormData={setFormData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} countryOptions={COUNTRY_OPTIONS} />
                                 <BirthPlaceSection prefix="b" sameAsAddress={bSameAsAddress} setSameAsAddress={setBSameAsAddress} formData={formData} setFormData={setFormData} provincesList={provincesList} birthTownOptions={bBirthTownOptions} countryOptions={COUNTRY_OPTIONS} handleBirthProvinceChange={handleBirthProvinceChange} handleBirthTownChange={handleBirthTownChange} />
                                 <FamilySubSection prefix="b" person="Bride" data={formData} setData={setFormData} toTitleCase={toTitleCase} />
                                 <GiverSubSection prefix="b" age={formData.bAge} data={formData} setData={setFormData} toTitleCase={toTitleCase} />

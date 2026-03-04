@@ -26,6 +26,10 @@ export const INITIAL_FORM_STATE = {
     // Groom ID
     gIdType: "", gIdNo: "", gIdCustomType: "", gIncludeId: false,
     gGiverIdType: "", gGiverIdNo: "", gGiverIdCustomType: "", gGiverIncludeId: false,
+    gIsForeigner: false,
+    bIsForeigner: false,
+    gIsNotBornInPh: false,
+    bIsNotBornInPh: false,
     gSameAsAddress: true,
 
     contactNumber: "",

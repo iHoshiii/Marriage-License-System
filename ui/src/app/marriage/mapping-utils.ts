@@ -34,6 +34,9 @@ export const mapAppToFormData = (app: any) => {
             ? normalize(bride.birth_place) === normalize(bAddrShort)
             : true;
 
+    const gAddrCountry = groom.addresses?.country || "Philippines";
+    const bAddrCountry = bride.addresses?.country || "Philippines";
+
     return {
         ...INITIAL_FORM_STATE,
         // Groom
@@ -45,13 +48,15 @@ export const mapAppToFormData = (app: any) => {
         gBday: groom.birth_date || "",
         gAge: groom.age || 0,
         gBirthPlace: (groom.birth_place != null && groom.birth_place.trim() !== "") ? groom.birth_place : gAddrShort,
-        gBirthCountry: "Philippines",
         gBrgy: groom.addresses?.barangay || "",
         gTown: groom.addresses?.municipality || "",
         gProv: groom.addresses?.province || "Nueva Vizcaya",
         gReligion: isCustomReligion(groom.religion) ? "Others" : (groom.religion || ""),
         gCustomReligion: isCustomReligion(groom.religion) ? groom.religion : "",
-        gCountry: groom.addresses?.country || "Philippines",
+        gCountry: gAddrCountry,
+        gIsForeigner: !!groom.addresses?.is_foreigner,
+        gIsNotBornInPh: !!groom.is_not_born_in_ph,
+        gBirthCountry: groom.birth_country || "Philippines",
         gCitizen: groom.citizenship || "",
         gSameAsAddress: !!gSameAsAddress,
         gFathF: groomFather.first,
@@ -86,13 +91,15 @@ export const mapAppToFormData = (app: any) => {
         bBday: bride.birth_date || "",
         bAge: bride.age || 0,
         bBirthPlace: (bride.birth_place != null && bride.birth_place.trim() !== "") ? bride.birth_place : bAddrShort,
-        bBirthCountry: "Philippines",
         bBrgy: bride.addresses?.barangay || "",
         bTown: bride.addresses?.municipality || "",
         bProv: bride.addresses?.province || "Nueva Vizcaya",
         bReligion: isCustomReligion(bride.religion) ? "Others" : (bride.religion || ""),
         bCustomReligion: isCustomReligion(bride.religion) ? bride.religion : "",
-        bCountry: bride.addresses?.country || "Philippines",
+        bCountry: bAddrCountry,
+        bIsForeigner: !!bride.addresses?.is_foreigner,
+        bIsNotBornInPh: !!bride.is_not_born_in_ph,
+        bBirthCountry: bride.birth_country || "Philippines",
         bCitizen: bride.citizenship || "",
         bSameAsAddress: !!bSameAsAddress,
         bFathF: brideFather.first,
