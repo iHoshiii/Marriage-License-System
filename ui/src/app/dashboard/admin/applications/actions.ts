@@ -58,7 +58,8 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
                     country,
                     is_foreigner
                 )
-            )
+            ),
+            application_photos (id)
         `)
         .order("created_at", { ascending: false })
         .range(offset, offset + limit - 1);
@@ -76,6 +77,9 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
         // Use the submitter's name if available, otherwise use the processor's name (for walk-ins)
         const submittedBy = (app as any).submitter?.full_name || (app as any).processor?.full_name || 'Walk-in / Anonymous';
 
+        const photos = Array.isArray(app.application_photos) ? app.application_photos : [];
+        const hasPhoto = photos.length > 0;
+
         return {
             ...app,
             groom_name: groom ? `${groom.first_name} ${groom.last_name}` : 'Unknown',
@@ -83,6 +87,7 @@ export async function getAllApplications(page: number = 1, limit: number = 50) {
             submitted_by: submittedBy,
             groom: groom || null,
             bride: bride || null,
+            has_photo: hasPhoto
         };
     });
 
@@ -118,6 +123,41 @@ export async function updateApplicationStatus(applicationId: string, newStatus: 
     if (fetchError) {
         console.error("Error fetching application:", fetchError);
         return { success: false, error: fetchError.message };
+    }
+
+    // Restriction 1: Cannot mark as "approved" if no photo exists
+    if (newStatus === "approved") {
+        const { count, error: photoError } = await supabase
+            .from("application_photos")
+            .select("id", { count: 'exact', head: true })
+            .eq("application_id", applicationId);
+
+        if (photoError) {
+            console.error("Error checking photo for status update:", photoError);
+            return { success: false, error: "Failed to verify application photo." };
+        }
+
+        if (!count || count === 0) {
+            return { success: false, error: "Application cannot be approved without a couple photo. Use the Camera icon to capture a photo first." };
+        }
+    }
+
+    // Restriction 2: Cannot mark as "completed" if no registry code/number
+    if (newStatus === "completed") {
+        const { data: registryCheck, error: registryError } = await supabase
+            .from("marriage_applications")
+            .select("registry_number")
+            .eq("id", applicationId)
+            .single();
+
+        if (registryError) {
+            console.error("Error checking registry number for status update:", registryError);
+            return { success: false, error: "Failed to verify registry number." };
+        }
+
+        if (!registryCheck.registry_number) {
+            return { success: false, error: "Application cannot be marked as completed without a Registry Number. Use the Registry icon to assign one first." };
+        }
     }
 
     console.log("Application data:", appData);
@@ -171,6 +211,21 @@ export async function updateRegistryNumber(applicationId: string, registryCode: 
     }
 
     const supabase = createAdminClient();
+
+    // Verify photo exists before allowing registry number
+    const { count, error: photoCheckError } = await supabase
+        .from("application_photos")
+        .select("id", { count: 'exact', head: true })
+        .eq("application_id", applicationId);
+
+    if (photoCheckError) {
+        console.error("Error checking for photo:", photoCheckError);
+        return { success: false, error: "Failed to verify application photo." };
+    }
+
+    if (!count || count === 0) {
+        return { success: false, error: "Cannot assign registry number: Application photo has not been submitted yet." };
+    }
 
     // Get current year
     const year = new Date().getFullYear();

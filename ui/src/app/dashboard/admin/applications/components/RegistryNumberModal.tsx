@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Loader2, Clipboard } from "lucide-react";
+import { X, Loader2, Clipboard, AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 interface RegistryNumberModalProps {
@@ -81,6 +81,20 @@ export default function RegistryNumberModal({
                 </div>
 
                 <div className="space-y-6">
+                    {!app.has_photo && (
+                        <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3">
+                            <div className="h-8 w-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0">
+                                <AlertCircle className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <p className="text-xs font-black text-rose-800 uppercase tracking-tight">Photo Required</p>
+                                <p className="text-[10px] text-rose-600 font-bold leading-tight mt-0.5">
+                                    Capture the couple's photo first before assigning a registry number.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-100">
                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Application</p>
                         <p className="text-sm font-bold text-zinc-900">{app.application_code}</p>
@@ -99,7 +113,8 @@ export default function RegistryNumberModal({
                                 placeholder="01"
                                 value={registryCode}
                                 onChange={(e) => setRegistryCode(e.target.value)}
-                                className="w-full h-16 bg-zinc-50 border-2 border-zinc-100 rounded-3xl px-6 text-center text-xl font-black focus:outline-none focus:ring-8 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all shadow-sm text-zinc-900 placeholder:text-zinc-200"
+                                disabled={!app.has_photo}
+                                className="w-full h-16 bg-zinc-50 border-2 border-zinc-100 rounded-3xl px-6 text-center text-xl font-black focus:outline-none focus:ring-8 focus:ring-zinc-900/5 focus:border-zinc-900 transition-all shadow-sm text-zinc-900 placeholder:text-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 autoFocus
                             />
                         </div>
@@ -113,7 +128,7 @@ export default function RegistryNumberModal({
 
                     <button
                         onClick={handleUpdate}
-                        disabled={isUpdating || !registryCode.trim()}
+                        disabled={isUpdating || !registryCode.trim() || !app.has_photo}
                         className="w-full h-14 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-100 disabled:text-zinc-400 text-white rounded-2xl font-bold text-sm transition-all shadow-xl shadow-zinc-900/10 disabled:cursor-not-allowed group"
                     >
                         {isUpdating ? (
