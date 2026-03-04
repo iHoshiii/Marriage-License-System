@@ -38,6 +38,18 @@ export class ExcelGenerator {
         return town.replace(/\(Capital\)/gi, "").trim();
     }
 
+    private formatBirthday(dateStr: string): string {
+        if (!dateStr) return "";
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return this.sanitize(dateStr);
+
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    }
+
     async generate(data: ExcelData): Promise<Buffer> {
         if (!fs.existsSync(this.templatePath)) {
             throw new Error(`Template not found at ${this.templatePath}`);
@@ -105,7 +117,7 @@ export class ExcelGenerator {
             appSheet.getCell('B8').value = groom.f;
             appSheet.getCell('B9').value = groom.m;
             appSheet.getCell('B10').value = groom.l;
-            appSheet.getCell('B11').value = this.sanitize(data.gBday);
+            appSheet.getCell('B11').value = this.formatBirthday(data.gBday);
             appSheet.getCell('N11').value = data.gAge || 0;
             appSheet.getCell('B12').value = this.sanitize(data.gBirthPlace || "");
 
@@ -155,7 +167,7 @@ export class ExcelGenerator {
             appSheet.getCell('U8').value = bride.f;
             appSheet.getCell('U9').value = bride.m;
             appSheet.getCell('U10').value = bride.l;
-            appSheet.getCell('U11').value = this.sanitize(data.bBday);
+            appSheet.getCell('U11').value = this.formatBirthday(data.bBday);
             appSheet.getCell('AF11').value = data.bAge || 0;
             appSheet.getCell('U12').value = this.sanitize(data.bBirthPlace || "");
 
