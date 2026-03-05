@@ -133,7 +133,7 @@ export function AddressSection({
                             <select
                                 className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm disabled:opacity-50 focus:ring-2 focus:ring-primary outline-none"
                                 disabled={!finalTownOptions.length}
-                                value={finalTownOptions.find((t: any) => t.city_name === formData[`${prefix}Town`])?.city_code || ""}
+                                value={finalTownOptions.find((t: any) => (t.city_name || "").replace(/\(capital\)/gi, "").trim() === (formData[`${prefix}Town`] || "").replace(/\(capital\)/gi, "").trim())?.city_code || ""}
                                 onChange={(e) => {
                                     const town = finalTownOptions.find((t: any) => t.city_code === e.target.value);
                                     handleTownChange(prefix, e.target.value, town?.city_name || "");
