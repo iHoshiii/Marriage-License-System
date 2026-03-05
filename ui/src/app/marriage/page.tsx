@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, ChevronLeft, Clock, FileText, Heart, MapPin, Phone, Scale, ShieldCheck, Trash2, Edit2 } from 'lucide-react';
+import { ArrowRight, ChevronLeft, Clock, FileText, Heart, MapPin, Phone, Scale, ShieldCheck, Trash2, Edit2, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AddressSection } from "./components/AddressSection";
@@ -136,7 +136,10 @@ export default function MarriageForm() {
                                         I Accept & Continue
                                     </Button>
                                     <Link href="/dashboard" className="sm:w-1/3">
-                                        <Button variant="ghost" className="w-full h-14 rounded-2xl text-slate-500">Go Back</Button>
+                                        <Button variant="outline" className="w-full h-14 rounded-2xl border-slate-200 text-slate-600 hover:text-primary hover:border-primary/50 transition-all flex items-center justify-center gap-2 font-semibold">
+                                            <LogIn className="w-4 h-4" />
+                                            Log in
+                                        </Button>
                                     </Link>
                                 </div>
                             </motion.div>
