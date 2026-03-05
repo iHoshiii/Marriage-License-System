@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X, FileText, Heart, Trash2, ArrowRight, Clock } from 'lucide-react';
 import { AddressSection } from "../../../marriage/components/AddressSection";
 import { BirthPlaceSection } from "../../../marriage/components/BirthPlaceSection";
-import { FamilySubSection, Field, GiverSubSection } from "../../../marriage/components/FormComponents";
+import { FamilySubSection, Field, GiverSubSection, DissolutionFields } from "../../../marriage/components/FormComponents";
 import { SectionCard } from "../../../marriage/components/SectionCard";
 import { RELIGIONS, SUFFIX_OPTIONS } from "../../../marriage/constants";
 import { useMarriageForm } from "../../../marriage/hooks/useMarriageForm";
@@ -37,6 +37,8 @@ export default function AdminMarriageForm({ isOpen, onClose, onSuccess }: AdminM
         bBrgyOptions,
         gBirthTownOptions,
         bBirthTownOptions,
+        gDissolvedTownOptions,
+        bDissolvedTownOptions,
         loading,
         gSameAsAddress,
         setGSameAsAddress,
@@ -50,6 +52,8 @@ export default function AdminMarriageForm({ isOpen, onClose, onSuccess }: AdminM
         handleBrgyChange,
         handleBirthProvinceChange,
         handleBirthTownChange,
+        handleDissolvedProvinceChange,
+        handleDissolvedTownChange,
         handleReset,
         calculateAge,
         isFormValid,
@@ -102,14 +106,14 @@ export default function AdminMarriageForm({ isOpen, onClose, onSuccess }: AdminM
                 className="w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-white rounded-[2rem] shadow-2xl relative"
             >
                 {/* Header */}
-                <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b px-8 py-6 flex justify-between items-center z-10 rounded-t-[2rem]">
+                <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b px-4 md:px-8 py-4 md:py-6 flex justify-between items-center z-10 rounded-t-[2rem]">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-primary/10 text-primary rounded-2xl">
-                            <Heart className="w-6 h-6 fill-current" />
+                        <div className="p-2 md:p-3 bg-blue-100 text-blue-600 rounded-2xl">
+                            <FileText className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-tight italic">Create Marriage Application</h2>
-                            <p className="text-sm text-slate-500 font-medium">Office use - Fill application details</p>
+                            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight italic">Marriage Registration</h2>
+                            <p className="text-[10px] md:text-sm text-slate-500 font-medium">Capture details for the official marriage license</p>
                         </div>
                     </div>
                     <button
@@ -121,13 +125,13 @@ export default function AdminMarriageForm({ isOpen, onClose, onSuccess }: AdminM
                 </div>
 
                 {/* Form Content */}
-                <div className="p-8">
+                <div className="p-4 md:p-8">
                     <AnimatePresence mode="wait">
                         {!isSubmitted ? (
                             <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}>
-                                <div className="text-center mb-12">
-                                    <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight italic">Marriage License Application</h1>
-                                    <p className="text-slate-500 mt-3 text-lg">Make sure that all data you entered is correct!</p>
+                                <div className="text-center mb-8 md:mb-12">
+                                    <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight italic uppercase">Marriage License Application</h1>
+                                    <p className="text-slate-500 mt-2 md:mt-3 text-sm md:text-lg">Please fill up all the required fields below!</p>
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-8">
@@ -195,6 +199,39 @@ export default function AdminMarriageForm({ isOpen, onClose, onSuccess }: AdminM
                                                     </select>
                                                 </Field>
                                             </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <Field label="Nationality" required>
+                                                    <Input
+                                                        placeholder="e.g. Filipino"
+                                                        className="bg-white"
+                                                        value={formData.gCitizen}
+                                                        onChange={e => setFormData({ ...formData, gCitizen: toTitleCase(e.target.value) })}
+                                                    />
+                                                </Field>
+                                                <Field label="Civil Status" required>
+                                                    <select
+                                                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                                        value={formData.gStatus || "Single"}
+                                                        onChange={e => setFormData({ ...formData, gStatus: e.target.value })}
+                                                    >
+                                                        <option value="Single">Single</option>
+                                                        <option value="Widowed">Widowed</option>
+                                                        <option value="Divorced">Divorced</option>
+                                                        <option value="Annulled">Annulled</option>
+                                                    </select>
+                                                </Field>
+                                            </div>
+                                            <DissolutionFields
+                                                prefix="g"
+                                                data={formData}
+                                                setData={setFormData}
+                                                toTitleCase={toTitleCase}
+                                                countryOptions={COUNTRY_OPTIONS}
+                                                provincesList={provincesList}
+                                                dissolvedTownOptions={gDissolvedTownOptions}
+                                                handleDissolvedProvinceChange={handleDissolvedProvinceChange}
+                                                handleDissolvedTownChange={handleDissolvedTownChange}
+                                            />
                                             <AnimatePresence>
                                                 {formData.gReligion === "Others" && (
                                                     <motion.div
@@ -284,6 +321,39 @@ export default function AdminMarriageForm({ isOpen, onClose, onSuccess }: AdminM
                                                     </select>
                                                 </Field>
                                             </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <Field label="Nationality" required>
+                                                    <Input
+                                                        placeholder="e.g. Filipino"
+                                                        className="bg-white"
+                                                        value={formData.bCitizen}
+                                                        onChange={e => setFormData({ ...formData, bCitizen: toTitleCase(e.target.value) })}
+                                                    />
+                                                </Field>
+                                                <Field label="Civil Status" required>
+                                                    <select
+                                                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                                        value={formData.bStatus || "Single"}
+                                                        onChange={e => setFormData({ ...formData, bStatus: e.target.value })}
+                                                    >
+                                                        <option value="Single">Single</option>
+                                                        <option value="Widowed">Widowed</option>
+                                                        <option value="Divorced">Divorced</option>
+                                                        <option value="Annulled">Annulled</option>
+                                                    </select>
+                                                </Field>
+                                            </div>
+                                            <DissolutionFields
+                                                prefix="b"
+                                                data={formData}
+                                                setData={setFormData}
+                                                toTitleCase={toTitleCase}
+                                                countryOptions={COUNTRY_OPTIONS}
+                                                provincesList={provincesList}
+                                                dissolvedTownOptions={bDissolvedTownOptions}
+                                                handleDissolvedProvinceChange={handleDissolvedProvinceChange}
+                                                handleDissolvedTownChange={handleDissolvedTownChange}
+                                            />
                                             <AnimatePresence>
                                                 {formData.bReligion === "Others" && (
                                                     <motion.div

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Edit2, Save, X } from 'lucide-react';
+import { ArrowRight, Edit2, Save, X, FileText } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { updateApplicationDetails } from "../../dashboard/admin/applications/actions";
 import { RELIGIONS, SUFFIX_OPTIONS } from "../constants";
@@ -12,7 +12,7 @@ import { mapAppToFormData } from "../mapping-utils";
 import { toTitleCase } from "../utils";
 import { AddressSection } from "./AddressSection";
 import { BirthPlaceSection } from "./BirthPlaceSection";
-import { FamilySubSection, Field, GiverSubSection } from "./FormComponents";
+import { FamilySubSection, Field, GiverSubSection, DissolutionFields } from "./FormComponents";
 import { SectionCard } from "./SectionCard";
 import { COUNTRY_OPTIONS } from "@/utils/countries";
 
@@ -36,6 +36,8 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
         bBrgyOptions,
         gBirthTownOptions,
         bBirthTownOptions,
+        gDissolvedTownOptions,
+        bDissolvedTownOptions,
         gSameAsAddress,
         setGSameAsAddress,
         bSameAsAddress,
@@ -46,6 +48,8 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
         handleBrgyChange,
         handleBirthProvinceChange,
         handleBirthTownChange,
+        handleDissolvedProvinceChange,
+        handleDissolvedTownChange,
         calculateAge,
         isFormValid,
     } = useMarriageForm();
@@ -93,14 +97,14 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                 className="w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-white rounded-[2rem] shadow-2xl relative"
             >
                 {/* Header */}
-                <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b px-8 py-6 flex justify-between items-center z-10 rounded-t-[2rem]">
+                <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b px-4 md:px-8 py-4 md:py-6 flex justify-between items-center z-10 rounded-t-[2rem]">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-100 text-blue-600 rounded-2xl">
-                            <Edit2 className="w-6 h-6" />
+                        <div className="p-2 md:p-3 bg-blue-100 text-blue-600 rounded-2xl">
+                            <FileText className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-tight italic">Edit Application</h2>
-                            <p className="text-sm text-slate-500 font-medium">Updating details for #{selectedApp?.application_code}</p>
+                            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight italic">Edit Application</h2>
+                            <p className="text-[10px] md:text-sm text-slate-500 font-medium tracking-wide italic">Modify marriage license details</p>
                         </div>
                     </div>
                     <button
@@ -112,7 +116,7 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                 </div>
 
                 {/* Form Content */}
-                <div className="p-8">
+                <div className="p-4 md:p-8">
                     <div className="text-center mb-12">
                         <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight italic">Marriage License Application</h1>
                         <p className="text-slate-500 mt-3 text-lg">Make sure that all data you entered is correct!</p>
@@ -192,7 +196,30 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                             onChange={e => setFormData({ ...formData, gCitizen: toTitleCase(e.target.value) })}
                                         />
                                     </Field>
+                                    <Field label="Civil Status" required>
+                                        <select
+                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                            value={formData.gStatus || "Single"}
+                                            onChange={e => setFormData({ ...formData, gStatus: e.target.value })}
+                                        >
+                                            <option value="Single">Single</option>
+                                            <option value="Widowed">Widowed</option>
+                                            <option value="Divorced">Divorced</option>
+                                            <option value="Annulled">Annulled</option>
+                                        </select>
+                                    </Field>
                                 </div>
+                                <DissolutionFields
+                                    prefix="g"
+                                    data={formData}
+                                    setData={setFormData}
+                                    toTitleCase={toTitleCase}
+                                    countryOptions={COUNTRY_OPTIONS}
+                                    provincesList={provincesList}
+                                    dissolvedTownOptions={gDissolvedTownOptions}
+                                    handleDissolvedProvinceChange={handleDissolvedProvinceChange}
+                                    handleDissolvedTownChange={handleDissolvedTownChange}
+                                />
                                 <AnimatePresence>
                                     {formData.gReligion === "Others" && (
                                         <motion.div
@@ -291,7 +318,30 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                             onChange={e => setFormData({ ...formData, bCitizen: toTitleCase(e.target.value) })}
                                         />
                                     </Field>
+                                    <Field label="Civil Status" required>
+                                        <select
+                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                            value={formData.bStatus || "Single"}
+                                            onChange={e => setFormData({ ...formData, bStatus: e.target.value })}
+                                        >
+                                            <option value="Single">Single</option>
+                                            <option value="Widowed">Widowed</option>
+                                            <option value="Divorced">Divorced</option>
+                                            <option value="Annulled">Annulled</option>
+                                        </select>
+                                    </Field>
                                 </div>
+                                <DissolutionFields
+                                    prefix="b"
+                                    data={formData}
+                                    setData={setFormData}
+                                    toTitleCase={toTitleCase}
+                                    countryOptions={COUNTRY_OPTIONS}
+                                    provincesList={provincesList}
+                                    dissolvedTownOptions={bDissolvedTownOptions}
+                                    handleDissolvedProvinceChange={handleDissolvedProvinceChange}
+                                    handleDissolvedTownChange={handleDissolvedTownChange}
+                                />
                                 <AnimatePresence>
                                     {formData.bReligion === "Others" && (
                                         <motion.div

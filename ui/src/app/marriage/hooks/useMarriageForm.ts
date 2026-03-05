@@ -22,6 +22,10 @@ export function useMarriageForm() {
     const [gBirthTownOptions, setGBirthTownOptions] = useState<any[]>([]);
     const [bBirthTownOptions, setBBirthTownOptions] = useState<any[]>([]);
 
+    // Dissolved Place Options
+    const [gDissolvedTownOptions, setGDissolvedTownOptions] = useState<any[]>([]);
+    const [bDissolvedTownOptions, setBDissolvedTownOptions] = useState<any[]>([]);
+
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [applicationCode, setApplicationCode] = useState("");
     const [loading, setLoading] = useState(false);
@@ -145,7 +149,45 @@ export function useMarriageForm() {
         if (formData.bBirthPlace && bBirthTownOptions.length === 0) {
             initializeBirthOptions();
         }
-    }, [formData.gProv, formData.gTown, formData.bProv, formData.bTown, formData.gBirthPlace, formData.bBirthPlace, provincesList.length]);
+
+        // --- NEW: Initialize Dissolved Place Options ---
+        const initializeDissolvedOptions = async () => {
+            if (provincesList.length === 0) return;
+
+            // Groom Dissolved
+            if (formData.gDissolvedIsPh) {
+                const parts = (formData.gDissolvedPlace || "").split(',').map(s => s.trim());
+                const provName = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+                if (provName) {
+                    const prov = provincesList.find(p => p.province_name === provName);
+                    if (prov) {
+                        const towns = await cities(prov.province_code);
+                        setGDissolvedTownOptions(towns);
+                    }
+                }
+            }
+
+            // Bride Dissolved
+            if (formData.bDissolvedIsPh) {
+                const parts = (formData.bDissolvedPlace || "").split(',').map(s => s.trim());
+                const provName = parts.length > 1 ? parts[parts.length - 1] : parts[0];
+                if (provName) {
+                    const prov = provincesList.find(p => p.province_name === provName);
+                    if (prov) {
+                        const towns = await cities(prov.province_code);
+                        setBDissolvedTownOptions(towns);
+                    }
+                }
+            }
+        };
+
+        if (formData.gStatus && formData.gStatus !== "Single" && formData.gDissolvedIsPh && gDissolvedTownOptions.length === 0) {
+            initializeDissolvedOptions();
+        }
+        if (formData.bStatus && formData.bStatus !== "Single" && formData.bDissolvedIsPh && bDissolvedTownOptions.length === 0) {
+            initializeDissolvedOptions();
+        }
+    }, [formData.gProv, formData.gTown, formData.bProv, formData.bTown, formData.gBirthPlace, formData.bBirthPlace, formData.gDissolvedPlace, formData.bDissolvedPlace, provincesList.length]);
 
     const handleAgeChange = (prefix: 'g' | 'b', ageValue: string) => {
         const age = parseInt(ageValue) || 0;
@@ -225,6 +267,24 @@ export function useMarriageForm() {
         const cleanProvinceName = provinceName.replace(/\(capital\)/gi, "").replace(/\s+/g, " ").replace(/\s+,/g, ",").trim();
 
         setFormData(prev => ({ ...prev, [`${prefix}BirthPlace`]: `${cleanCityName}, ${cleanProvinceName}` }));
+    };
+
+    const handleDissolvedProvinceChange = async (prefix: 'g' | 'b', provinceCode: string, provinceName: string) => {
+        const cleanProvinceName = provinceName.replace(/\(capital\)/gi, "").replace(/\s+/g, " ").replace(/\s+,/g, ",").trim();
+        const res = await cities(provinceCode);
+        if (prefix === 'g') {
+            setGDissolvedTownOptions(res);
+        } else {
+            setBDissolvedTownOptions(res);
+        }
+        setFormData(prev => ({ ...prev, [`${prefix}DissolvedPlace`]: cleanProvinceName }));
+    };
+
+    const handleDissolvedTownChange = async (prefix: 'g' | 'b', cityCode: string, cityName: string, provinceName: string) => {
+        const cleanCityName = cityName.replace(/\(capital\)/gi, "").replace(/\s+/g, " ").replace(/\s+,/g, ",").trim();
+        const cleanProvinceName = provinceName.replace(/\(capital\)/gi, "").replace(/\s+/g, " ").replace(/\s+,/g, ",").trim();
+
+        setFormData(prev => ({ ...prev, [`${prefix}DissolvedPlace`]: `${cleanCityName}, ${cleanProvinceName}` }));
     };
 
     const handleCopyAddressToBirthplace = (prefix: 'g' | 'b') => {
@@ -336,6 +396,15 @@ export function useMarriageForm() {
                 if (formData[`${prefix}IdType`] === "Others" && !formData[`${prefix}IdCustomType`]) return false;
             }
 
+            // Dissolution validation
+            if (formData[`${prefix}Status`] && formData[`${prefix}Status`] !== "Single") {
+                if (!formData[`${prefix}DissolvedHow`] || formData[`${prefix}DissolvedHow`].trim() === "") return false;
+                if (!formData[`${prefix}DissolvedDate`]) return false;
+                if (!formData[`${prefix}DissolvedPlace`] || formData[`${prefix}DissolvedPlace`].trim() === "") return false;
+                if (!formData[`${prefix}DissolvedIsPh`] && !formData[`${prefix}DissolvedCountry`]) return false;
+                if (!formData[`${prefix}RelationshipDegree`] || formData[`${prefix}RelationshipDegree`].trim() === "") return false;
+            }
+
             return true;
         };
 
@@ -355,6 +424,8 @@ export function useMarriageForm() {
         bBrgyOptions,
         gBirthTownOptions,
         bBirthTownOptions,
+        gDissolvedTownOptions,
+        bDissolvedTownOptions,
         isSubmitted,
         setIsSubmitted,
         applicationCode,
@@ -372,6 +443,8 @@ export function useMarriageForm() {
         handleBrgyChange,
         handleBirthProvinceChange,
         handleBirthTownChange,
+        handleDissolvedProvinceChange,
+        handleDissolvedTownChange,
         handleCopyAddressToBirthplace,
         handleReset,
         generateExcel,

@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AddressSection } from "./components/AddressSection";
 import { BirthPlaceSection } from "./components/BirthPlaceSection";
-import { FamilySubSection, Field, GiverSubSection } from "./components/FormComponents";
+import { FamilySubSection, Field, GiverSubSection, DissolutionFields } from "./components/FormComponents";
 import { SectionCard } from "./components/SectionCard";
 import { RELIGIONS } from "./constants";
 import { useMarriageForm } from "./hooks/useMarriageForm";
@@ -47,6 +47,8 @@ export default function MarriageForm() {
         bBrgyOptions,
         gBirthTownOptions,
         bBirthTownOptions,
+        gDissolvedTownOptions,
+        bDissolvedTownOptions,
         isSubmitted,
         setIsSubmitted,
         applicationCode,
@@ -64,6 +66,8 @@ export default function MarriageForm() {
         handleBrgyChange,
         handleBirthProvinceChange,
         handleBirthTownChange,
+        handleDissolvedProvinceChange,
+        handleDissolvedTownChange,
         handleReset,
         generateExcel,
         calculateAge,
@@ -194,7 +198,7 @@ export default function MarriageForm() {
             </AnimatePresence>
 
             <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
-                <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
                     <Link href="/dashboard" className="flex items-center gap-2 text-slate-600 hover:text-primary transition-colors font-medium">
                         <ChevronLeft className="w-4 h-4" />
                         <span>Login</span>
@@ -207,7 +211,7 @@ export default function MarriageForm() {
                 </div>
             </nav>
 
-            <main className="max-w-6xl mx-auto px-4 mt-12">
+            <main className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12">
                 {hasAcceptedPrivacy && (
                     <AnimatePresence mode="wait">
                         {/* MarriageForm  */}
@@ -343,7 +347,30 @@ export default function MarriageForm() {
                                                         onChange={e => setFormData({ ...formData, gCitizen: toTitleCase(e.target.value) })}
                                                     />
                                                 </Field>
+                                                <Field label="Civil Status" required>
+                                                    <select
+                                                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                                        value={formData.gStatus || "Single"}
+                                                        onChange={e => setFormData({ ...formData, gStatus: e.target.value })}
+                                                    >
+                                                        <option value="Single">Single</option>
+                                                        <option value="Widowed">Widowed</option>
+                                                        <option value="Divorced">Divorced</option>
+                                                        <option value="Annulled">Annulled</option>
+                                                    </select>
+                                                </Field>
                                             </div>
+                                            <DissolutionFields
+                                                prefix="g"
+                                                data={formData}
+                                                setData={setFormData}
+                                                toTitleCase={toTitleCase}
+                                                countryOptions={COUNTRY_OPTIONS}
+                                                provincesList={provincesList}
+                                                dissolvedTownOptions={gDissolvedTownOptions}
+                                                handleDissolvedProvinceChange={handleDissolvedProvinceChange}
+                                                handleDissolvedTownChange={handleDissolvedTownChange}
+                                            />
                                             <AnimatePresence>
                                                 {formData.gReligion === "Others" && (
                                                     <motion.div
@@ -444,7 +471,30 @@ export default function MarriageForm() {
                                                         onChange={e => setFormData({ ...formData, bCitizen: toTitleCase(e.target.value) })}
                                                     />
                                                 </Field>
+                                                <Field label="Civil Status" required>
+                                                    <select
+                                                        className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                                        value={formData.bStatus || "Single"}
+                                                        onChange={e => setFormData({ ...formData, bStatus: e.target.value })}
+                                                    >
+                                                        <option value="Single">Single</option>
+                                                        <option value="Widowed">Widowed</option>
+                                                        <option value="Divorced">Divorced</option>
+                                                        <option value="Annulled">Annulled</option>
+                                                    </select>
+                                                </Field>
                                             </div>
+                                            <DissolutionFields
+                                                prefix="b"
+                                                data={formData}
+                                                setData={setFormData}
+                                                toTitleCase={toTitleCase}
+                                                countryOptions={COUNTRY_OPTIONS}
+                                                provincesList={provincesList}
+                                                dissolvedTownOptions={bDissolvedTownOptions}
+                                                handleDissolvedProvinceChange={handleDissolvedProvinceChange}
+                                                handleDissolvedTownChange={handleDissolvedTownChange}
+                                            />
                                             <AnimatePresence>
                                                 {formData.bReligion === "Others" && (
                                                     <motion.div

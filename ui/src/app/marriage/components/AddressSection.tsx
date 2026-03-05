@@ -62,16 +62,16 @@ export function AddressSection({
                         <input
                             type="checkbox"
                             className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:bg-primary checked:border-primary focus:outline-none"
-                            checked={isForeigner}
+                            checked={!isForeigner}
                             onChange={(e) => {
-                                const checked = e.target.checked;
+                                const isFilipino = e.target.checked;
                                 setFormData?.((prev: any) => ({
                                     ...prev,
-                                    [`${prefix}IsForeigner`]: checked,
-                                    [`${prefix}Country`]: checked ? (prev[`${prefix}Country`] === "Philippines" ? "" : prev[`${prefix}Country`]) : "Philippines",
-                                    [`${prefix}Prov`]: checked ? "" : prev[`${prefix}Prov`],
-                                    [`${prefix}Town`]: checked ? "" : prev[`${prefix}Town`],
-                                    [`${prefix}Brgy`]: checked ? "" : prev[`${prefix}Brgy`],
+                                    [`${prefix}IsForeigner`]: !isFilipino,
+                                    [`${prefix}Country`]: isFilipino ? "Philippines" : (prev[`${prefix}Country`] === "Philippines" ? "" : prev[`${prefix}Country`]),
+                                    [`${prefix}Prov`]: isFilipino ? prev[`${prefix}Prov`] : "",
+                                    [`${prefix}Town`]: isFilipino ? prev[`${prefix}Town`] : "",
+                                    [`${prefix}Brgy`]: isFilipino ? prev[`${prefix}Brgy`] : "",
                                 }));
                             }}
                         />
@@ -80,13 +80,13 @@ export function AddressSection({
                         </svg>
                     </div>
                     <span className="text-xs font-black text-slate-600 uppercase tracking-wide group-hover:text-primary transition-colors">
-                        Are you a foreigner? (Not filipino)
+                        Are you a Filipino?
                     </span>
                 </label>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-1">
-                {isForeigner && (
+                {!isForeigner ? null : (
                     <Field label="Country" required>
                         <select
                             className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"

@@ -72,14 +72,14 @@ export function BirthPlaceSection({
                         <input
                             type="checkbox"
                             className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:bg-primary checked:border-primary focus:outline-none disabled:cursor-not-allowed"
-                            checked={formData[`${prefix}IsNotBornInPh`] === true}
+                            checked={formData[`${prefix}IsNotBornInPh`] !== true}
                             disabled={sameAsAddress === true}
                             onChange={(e) => {
-                                const checked = e.target.checked;
+                                const bornInPh = e.target.checked;
                                 setFormData((prev: any) => ({
                                     ...prev,
-                                    [`${prefix}IsNotBornInPh`]: checked,
-                                    [`${prefix}BirthCountry`]: checked ? prev[`${prefix}BirthCountry`] : "Philippines"
+                                    [`${prefix}IsNotBornInPh`]: !bornInPh,
+                                    [`${prefix}BirthCountry`]: bornInPh ? "Philippines" : prev[`${prefix}BirthCountry`]
                                 }));
                             }}
                         />
@@ -88,7 +88,7 @@ export function BirthPlaceSection({
                         </svg>
                     </div>
                     <span className="text-xs font-black text-slate-600 uppercase tracking-wide group-hover:text-primary transition-colors">
-                        Are you not born in the Philippines? {sameAsAddress === true && <span className="text-[10px] text-primary/50 normal-case font-bold">(Managed by Current Address)</span>}
+                        Are you born in the Philippines? {sameAsAddress === true && <span className="text-[10px] text-primary/50 normal-case font-bold">(Managed by Current Address)</span>}
                     </span>
                 </label>
             </div>
