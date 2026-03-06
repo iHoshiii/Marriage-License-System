@@ -277,21 +277,34 @@ export class ExcelGenerator {
         }
 
         // --- 4. NOTICE SHEET FILTERING (E44, E45, E46) ---
+        // Law: Post notice at LCR of every municipality the applicants are from.
+        // Priority: current addresses first, then birthplaces.
+        // Rules: Skip "Solano, Nueva Vizcaya" (the filing office). Deduplicate case-insensitively.
         const noticeSheet = workbook.getWorksheet('Notice');
         if (noticeSheet) {
             const isSolano = (s: string) => (s || "").toLowerCase().includes("solano");
 
-            const candidates = [
-                gTownProv,          // Groom Current
-                data.gBirthPlace,   // Groom Birth
-                bTownProv,          // Bride Current
-                data.bBirthPlace    // Bride Birth
-            ]
-                .filter(s => s && typeof s === 'string' && s.trim() !== "" && !isSolano(s))
-                .map(s => clean(this.sanitize(s)).trim());
+            // Order: current addresses first, then birthplaces
+            const rawCandidates = [
+                gTownProv,          // Groom current address  (highest priority)
+                bTownProv,          // Bride current address  (second priority)
+                data.gBirthPlace,   // Groom birthplace
+                data.bBirthPlace,   // Bride birthplace
+            ];
 
-            // Deduplicate while preserving order
-            const uniqueCandidates = candidates.filter((item, index) => candidates.indexOf(item) === index);
+            // Clean, filter and deduplicate (case-insensitive)
+            const seen = new Set<string>();
+            const uniqueCandidates: string[] = [];
+            for (const raw of rawCandidates) {
+                if (!raw || typeof raw !== 'string' || raw.trim() === '') continue;
+                const cleaned = clean(this.sanitize(raw)).trim();
+                if (!cleaned || isSolano(cleaned)) continue;
+                const key = cleaned.toUpperCase();
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniqueCandidates.push(cleaned);
+                }
+            }
 
             noticeSheet.getCell('E44').value = uniqueCandidates[0] ?? "";
             noticeSheet.getCell('E45').value = uniqueCandidates[1] ?? "";
