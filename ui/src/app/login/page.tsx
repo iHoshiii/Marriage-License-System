@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { NotificationHandler } from "@/components/ui/notification-handler";
-import { Mail, Lock, ShieldCheck, ArrowRight } from "lucide-react";
+import { Mail, Lock, ShieldCheck, ArrowRight, FileText } from "lucide-react";
 import { Suspense } from "react";
 
 export default async function LoginPage() {
@@ -83,6 +83,26 @@ export default async function LoginPage() {
               Sign In <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-zinc-100"></div>
+            </div>
+            <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest text-zinc-400">
+              <span className="bg-white/70 backdrop-blur-xl px-4">Or</span>
+            </div>
+          </div>
+
+          <Link href="/marriage" className="block">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 rounded-xl border-zinc-200 font-black uppercase tracking-widest text-xs transition-all hover:bg-zinc-50 flex items-center justify-center gap-2"
+            >
+              Fill up first <FileText className="h-4 w-4" />
+            </Button>
+          </Link>
+
         </Card>
 
         <p className="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">

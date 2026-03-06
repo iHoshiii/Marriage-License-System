@@ -208,7 +208,7 @@ export default function MarriageForm() {
                     </Link>
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-primary/10 rounded-lg text-primary"><Heart className="w-5 h-5 fill-current" /></div>
-                        <span className="font-bold tracking-tight text-slate-900">Marriage Portal</span>
+                        <span className="font-bold tracking-tight text-slate-900">Kasal Link</span>
                     </div>
                     <div className="w-20"></div>
                 </div>
