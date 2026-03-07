@@ -19,6 +19,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 -- 2. TABLES
 
 -- Table: addresses
+-- We use a DO block to ensure the column exists even if the table was already created
 CREATE TABLE IF NOT EXISTS public.addresses (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     province text NULL,
@@ -29,9 +30,17 @@ CREATE TABLE IF NOT EXISTS public.addresses (
     updated_at timestamptz NULL DEFAULT now(),
     country text NULL DEFAULT 'Philippines'::text,
     is_foreigner bool NULL DEFAULT false,
-    created_by uuid NULL, -- Added to fix RLS during insertion
+    created_by uuid NULL,
     CONSTRAINT addresses_pkey PRIMARY KEY (id)
 );
+
+-- Ensure created_by exists if the table already existed without it
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'addresses' AND column_name = 'created_by') THEN
+        ALTER TABLE public.addresses ADD COLUMN created_by uuid NULL;
+    END IF;
+END $$;
 
 -- Table: profiles
 CREATE TABLE IF NOT EXISTS public.profiles (
