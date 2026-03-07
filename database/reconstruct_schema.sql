@@ -1,5 +1,5 @@
 -- ==========================================================
--- SUPABASE SCHEMA RECONSTRUCTION (UPDATED FOR RLS FIX)
+-- SUPABASE SCHEMA RECONSTRUCTION (JSON-MATCHING VERSION)
 -- ==========================================================
 
 -- 1. FUNCTIONS & EXTENSIONS
@@ -19,7 +19,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 -- 2. TABLES
 
 -- Table: addresses
--- We use a DO block to ensure the column exists even if the table was already created
 CREATE TABLE IF NOT EXISTS public.addresses (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     province text NULL,
@@ -30,17 +29,8 @@ CREATE TABLE IF NOT EXISTS public.addresses (
     updated_at timestamptz NULL DEFAULT now(),
     country text NULL DEFAULT 'Philippines'::text,
     is_foreigner bool NULL DEFAULT false,
-    created_by uuid NULL,
     CONSTRAINT addresses_pkey PRIMARY KEY (id)
 );
-
--- Ensure created_by exists if the table already existed without it
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'addresses' AND column_name = 'created_by') THEN
-        ALTER TABLE public.addresses ADD COLUMN created_by uuid NULL;
-    END IF;
-END $$;
 
 -- Table: profiles
 CREATE TABLE IF NOT EXISTS public.profiles (
@@ -239,22 +229,24 @@ ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_document_uploads ENABLE ROW LEVEL SECURITY;
 
--- 5. POLICIES (CLEANED UP WITH DROP)
+-- 5. POLICIES
 
 -- addresses
 DROP POLICY IF EXISTS "addresses_secure_select" ON public.addresses;
 CREATE POLICY "addresses_secure_select" ON public.addresses FOR SELECT TO public 
 USING (
-    created_by = auth.uid() 
-    OR 
     is_admin_or_employee()
     OR
-    EXISTS ( SELECT 1 FROM public.applicants a JOIN public.marriage_applications ma ON ma.id = a.application_id WHERE a.address_id = addresses.id AND (ma.created_by = auth.uid() OR is_admin_or_employee()))
+    EXISTS ( 
+        SELECT 1 FROM public.applicants a 
+        JOIN public.marriage_applications ma ON ma.id = a.application_id 
+        WHERE a.address_id = addresses.id AND (ma.created_by = auth.uid() OR is_admin_or_employee())
+    )
 );
 
 DROP POLICY IF EXISTS "addresses_insert_authenticated_only" ON public.addresses;
 CREATE POLICY "addresses_insert_authenticated_only" ON public.addresses FOR INSERT TO authenticated 
-WITH CHECK (created_by = auth.uid());
+WITH CHECK (true);
 
 -- profiles
 DROP POLICY IF EXISTS "profiles_select_policy" ON public.profiles;
@@ -273,8 +265,6 @@ DROP POLICY IF EXISTS "staff_only_view_unclaimed" ON public.marriage_application
 CREATE POLICY "staff_only_view_unclaimed" ON public.marriage_applications FOR SELECT TO public USING (((created_by IS NULL) AND is_admin_or_employee()) OR (created_by = auth.uid()));
 DROP POLICY IF EXISTS "staff_update_access" ON public.marriage_applications;
 CREATE POLICY "staff_update_access" ON public.marriage_applications FOR UPDATE TO public USING (is_admin_or_employee());
-DROP POLICY IF EXISTS "service_role_full_access" ON public.marriage_applications;
-CREATE POLICY "service_role_full_access" ON public.marriage_applications FOR ALL TO public USING (auth.role() = 'service_role'::text);
 
 -- applicants
 DROP POLICY IF EXISTS "applicants_insert_authenticated_only" ON public.applicants;

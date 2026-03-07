@@ -104,21 +104,21 @@ BEGIN
         );
 
         -- Create Groom Address
-        g_addr_id := gen_random_uuid();
-        INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_by, created_at)
+        groom_addr_id := gen_random_uuid();
+        INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_at)
         VALUES (
-            g_addr_id, 'Nueva Vizcaya', 'Solano', barangays[floor(random()*20 + 1)], 
+            groom_addr_id, 'Nueva Vizcaya', 'Solano', barangays[floor(random()*20 + 1)], 
             format('Block %s, Lot %s, %s St.', floor(random()*20+1), floor(random()*50+1), i), 
-            'Philippines', u_id, created_ts
+            'Philippines', created_ts
         );
 
         -- Create Bride Address
-        b_addr_id := gen_random_uuid();
-        INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_by, created_at)
+        bride_addr_id := gen_random_uuid();
+        INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_at)
         VALUES (
-            b_addr_id, 'Nueva Vizcaya', 'Solano', barangays[floor(random()*20 + 1)], 
+            bride_addr_id, 'Nueva Vizcaya', 'Solano', barangays[floor(random()*20 + 1)], 
             format('Purok %s, %s Subd.', floor(random()*8+1), surnames[floor(random()*50+1)]), 
-            'Philippines', u_id, created_ts
+            'Philippines', created_ts
         );
 
         -- Create Groom Applicant (Filipino)

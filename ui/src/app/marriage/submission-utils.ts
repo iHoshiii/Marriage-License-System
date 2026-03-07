@@ -25,60 +25,56 @@ export async function submitApplication(formData: any, generatedCode: string, us
     }
 
     // Step A: Insert addresses for Groom and Bride, capture IDs
-    let groom_address_id = null;
+    let groom_address_id: string | null = null;
     if (formData.gBrgy && formData.gProv && formData.gTown) {
+        groom_address_id = crypto.randomUUID(); // Generate UUID for groom address
         const groomAddressPayload = {
+            id: groom_address_id, // Assign generated ID
             street_address: "",
             barangay: formData.gBrgy,
             province: formData.gProv,
             municipality: formData.gTown,
             country: formData.gCountry || "Philippines",
             is_foreigner: !!formData.gIsForeigner,
-            created_by: userId,
+            // created_by: userId, // Removed as per instruction
         };
 
         console.log('Inserting groom address:', groomAddressPayload);
-        const { data: groomAddr, error: groomAddrError } = await supabase
+        const { error: groomAddrError } = await supabase
             .from('addresses')
-            .insert([groomAddressPayload])
-            .select()
-            .single();
+            .insert([groomAddressPayload]); // Removed .select().single()
 
         if (groomAddrError) {
             console.error('Groom address insert error:', groomAddrError.message, groomAddrError.details, groomAddrError.hint);
             throw new Error(`Groom address insert error: ${groomAddrError.message}`);
         }
-        if (!groomAddr) throw new Error('Failed to insert groom address - no data returned');
-        groom_address_id = groomAddr.id;
-        console.log('Groom address ID:', groom_address_id);
+        console.log('Groom address inserted successfully with ID:', groom_address_id);
     }
 
-    let bride_address_id = null;
+    let bride_address_id: string | null = null;
     if (formData.bBrgy && formData.bProv && formData.bTown) {
+        bride_address_id = crypto.randomUUID(); // Generate UUID for bride address
         const brideAddressPayload = {
+            id: bride_address_id, // Assign generated ID
             street_address: "",
             barangay: formData.bBrgy,
             province: formData.bProv,
             municipality: formData.bTown,
             country: formData.bCountry || "Philippines",
             is_foreigner: !!formData.bIsForeigner,
-            created_by: userId,
+            // created_by: userId, // Removed as per instruction
         };
 
         console.log('Inserting bride address:', brideAddressPayload);
-        const { data: brideAddr, error: brideAddrError } = await supabase
+        const { error: brideAddrError } = await supabase
             .from('addresses')
-            .insert([brideAddressPayload])
-            .select()
-            .single();
+            .insert([brideAddressPayload]); // Removed .select().single()
 
         if (brideAddrError) {
             console.error('Bride address insert error:', brideAddrError.message, brideAddrError.details, brideAddrError.hint);
             throw new Error(`Bride address insert error: ${brideAddrError.message}`);
         }
-        if (!brideAddr) throw new Error('Failed to insert bride address - no data returned');
-        bride_address_id = brideAddr.id;
-        console.log('Bride address ID:', bride_address_id);
+        console.log('Bride address inserted successfully with ID:', bride_address_id);
     }
 
     // Step B: Insert marriage_applications row, capture ID
