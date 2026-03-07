@@ -71,15 +71,6 @@
           ],
           "policies": [
             {
-              "name": "addresses_secure_select",
-              "command": "SELECT",
-              "roles": [
-                "public"
-              ],
-              "using": "(EXISTS ( SELECT 1\n   FROM (applicants a\n     JOIN marriage_applications ma ON ((ma.id = a.application_id)))\n  WHERE ((a.address_id = addresses.id) AND ((ma.created_by = auth.uid()) OR is_admin_or_employee()))))",
-              "check": null
-            },
-            {
               "name": "addresses_insert_authenticated_only",
               "command": "INSERT",
               "roles": [
@@ -87,6 +78,15 @@
               ],
               "using": null,
               "check": "true"
+            },
+            {
+              "name": "addresses_secure_select",
+              "command": "SELECT",
+              "roles": [
+                "public"
+              ],
+              "using": "(is_admin_or_employee() OR (EXISTS ( SELECT 1\n   FROM (applicants a\n     JOIN marriage_applications ma ON ((ma.id = a.application_id)))\n  WHERE ((a.address_id = addresses.id) AND ((ma.created_by = auth.uid()) OR is_admin_or_employee())))))",
+              "check": null
             }
           ],
           "foreign_keys": []
@@ -377,15 +377,6 @@
           ],
           "policies": [
             {
-              "name": "applicants_insert_authenticated_only",
-              "command": "INSERT",
-              "roles": [
-                "authenticated"
-              ],
-              "using": null,
-              "check": "true"
-            },
-            {
               "name": "applicants_secure_select",
               "command": "SELECT",
               "roles": [
@@ -393,6 +384,15 @@
               ],
               "using": "(EXISTS ( SELECT 1\n   FROM marriage_applications ma\n  WHERE ((ma.id = applicants.application_id) AND ((ma.created_by = auth.uid()) OR is_admin_or_employee()))))",
               "check": null
+            },
+            {
+              "name": "applicants_insert_authenticated_only",
+              "command": "INSERT",
+              "roles": [
+                "authenticated"
+              ],
+              "using": null,
+              "check": "true"
             }
           ],
           "foreign_keys": [
