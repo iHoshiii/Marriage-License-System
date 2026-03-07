@@ -69,8 +69,8 @@ export async function createPickupNotification(userId: string, applicationCode: 
     // Create notification for applicant
     const { error } = await supabase.rpc('create_notification', {
         p_user_id: userId,
-        p_title: 'Application Completed',
-        p_message: `Your application (${applicationCode}) is ready for pick up. Registry number: ${registryNumber}`,
+        p_title: 'Application Ready for Pickup',
+        p_message: `Your application (${applicationCode}) is ready for pickup. Please visit the Solano Municipal Office to claim your documents. Registry number: ${registryNumber}`,
         p_type: 'ready_for_pickup',
         p_related_application_id: applicationId
     });
