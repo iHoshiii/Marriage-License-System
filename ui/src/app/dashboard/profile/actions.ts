@@ -64,13 +64,29 @@ export async function updatePassword(formData: FormData) {
 
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
+    const currentPassword = formData.get("currentPassword") as string;
+
+    if (!currentPassword) {
+        return { error: "Current password is required" };
+    }
 
     if (!password || password.length < 6) {
-        return { error: "Password must be at least 6 characters long" };
+        return { error: "New password must be at least 6 characters long" };
     }
 
     if (password !== confirmPassword) {
         return { error: "Passwords do not match" };
+    }
+
+    // Verify current password by attempting to sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email!,
+        password: currentPassword,
+    });
+
+    if (signInError) {
+        console.error("Current password verification failed:", signInError);
+        return { error: "Incorrect current password" };
     }
 
     const { error } = await supabase.auth.updateUser({

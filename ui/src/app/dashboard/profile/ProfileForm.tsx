@@ -147,6 +147,21 @@ export function ProfileForm({ profile, application, userEmail }: ProfileFormProp
                                             <Lock className="h-4 w-4" />
                                         </div>
                                         <Input
+                                            name="currentPassword"
+                                            type={showPassword ? "text" : "password"}
+                                            className="pl-12 h-14 bg-white border-primary/20 focus:border-primary rounded-2xl font-bold text-zinc-900 transition-all shadow-sm"
+                                            placeholder="Current Password"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="h-px bg-zinc-100 my-2" />
+
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
+                                            <Lock className="h-4 w-4" />
+                                        </div>
+                                        <Input
                                             name="password"
                                             type={showPassword ? "text" : "password"}
                                             className="pl-12 h-14 bg-white border-primary/20 focus:border-primary rounded-2xl font-bold text-zinc-900 transition-all shadow-sm"
