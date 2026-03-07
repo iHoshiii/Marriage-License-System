@@ -1,121 +1,146 @@
 -- ==========================================================
--- DUMMY STARTING DATA
--- Run this in your Supabase SQL Editor AFTER running reconstruct_schema.sql
+-- REALISTIC FILIPINO DUMMY DATA FOR MARRIAGE APPLICATIONS
+-- 50 Marriage Applications (1 Groom, 1 Bride each)
 -- ==========================================================
 
 DO $$
 DECLARE
-    user_id UUID;
+    u_id UUID;
     app_id UUID;
-    groom_addr_id UUID;
-    bride_addr_id UUID;
+    g_addr_id UUID;
+    b_addr_id UUID;
     
-    -- Name arrays for variety
-    first_names TEXT[] := ARRAY['Liam', 'Noah', 'Oliver', 'James', 'Elijah', 'William', 'Henry', 'Lucas', 'Benjamin', 'Theodore', 'Mateo', 'Levi', 'Sebastian', 'Daniel', 'Jack', 'Wyatt', 'Alexander', 'Owen', 'Asher', 'Samuel', 'Ethan', 'Leo', 'Jackson', 'Mason', 'Ezra', 'John', 'Hudson', 'Luca', 'Aiden', 'Joseph', 'David', 'Jacob', 'Logan', 'Luke', 'Julian', 'Gabriel', 'Grayson', 'Isaac', 'Anthony', 'Josiah', 'Dylan', 'Elias', 'Caleb', 'Thomas', 'Christopher', 'Ezekiel', 'Miles', 'Josiah', 'Isaiah', 'Andrew'];
-    last_names TEXT[] := ARRAY['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'];
-    female_names TEXT[] := ARRAY['Olivia', 'Emma', 'Charlotte', 'Amelia', 'Sophia', 'Mia', 'Isabella', 'Ava', 'Evelyn', 'Luna', 'Harper', 'Sofia', 'Scarlett', 'Eleanor', 'Hazel', 'Abigail', 'Aurora', 'Elena', 'Penelope', 'Aria', 'Ellie', 'Layla', 'Nora', 'Mila', 'Lily', 'Violet', 'Nova', 'Maya', 'Lily', 'Grace', 'Chloe', 'Zoe', 'Riley', 'Victoria', 'Stella', 'Serenity', 'Emma', 'Willow', 'Emilia', 'Hannah', 'Stella', 'Leah', 'Lila', 'Audrey', 'Lucy', 'Anna', 'Alice', 'Eliana', 'Avery', 'Celia'];
-    
+    -- COMMON FILIPINO SURNAMES
+    surnames TEXT[] := ARRAY[
+        'Santos', 'Reyes', 'Cruz', 'Bautista', 'Ocampo', 'Garcia', 'Mendoza', 'Torres', 'Tomas', 'Andaya',
+        'Perez', 'Villanueva', 'Ramos', 'Castro', 'Rivera', 'Santiago', 'Soriano', 'Aquino', 'Del Rosario', 'Lopez',
+        'Gomez', 'Salvador', 'Marquez', 'Sarmiento', 'Pascual', 'Quinto', 'Corpuz', 'Agustin', 'Francisco', 'Bernardo',
+        'Dela Cruz', 'Dela Rosa', 'Gutierrez', 'Valdez', 'Fernando', 'Castillo', 'Espinoza', 'Navarro', 'Mercado', 'De Guzman',
+        'Abad', 'Solis', 'Suarez', 'Gonzales', 'Enriquez', 'Lazaro', 'Alfonso', 'David', 'Lim', 'Tan'
+    ];
+
+    -- COMMON FILIPINO MALE NAMES
+    male_names TEXT[] := ARRAY[
+        'Juan', 'Jose', 'Ricardo', 'Antonio', 'Manuel', 'Rogelio', 'Roberto', 'Eduardo', 'Gabriel', 'Bener',
+        'Danilo', 'Edgardo', 'Felipe', 'Gerardo', 'Homer', 'Ismael', 'Jaime', 'Kevin', 'Leonardo', 'Mario',
+        'Nestor', 'Orlando', 'Paquito', 'Quentin', 'Romeo', 'Samuel', 'Teodoro', 'Urbano', 'Victor', 'Wilfredo',
+        'Zaldy', 'Christian', 'Mark', 'Angelo', 'Paolo', 'Vincent', 'Bryan', 'Darwin', 'Erwin', 'Ferdinand',
+        'Gregorio', 'Hezekiah', 'Ibarra', 'Jerome', 'Kenji', 'Leonel', 'Michael', 'Nathan', 'Oscar', 'Patrick'
+    ];
+
+    -- COMMON FILIPINO FEMALE NAMES
+    female_names TEXT[] := ARRAY[
+        'Maria', 'Elena', 'Cristina', 'Teresita', 'Imelda', 'Corazon', 'Luzviminda', 'Gloria', 'Flordeliza', 'Bernadette',
+        'Carmela', 'Divina', 'Evelyn', 'Fe', 'Gina', 'Hilda', 'Irene', 'Julieta', 'Katrina', 'Liza',
+        'Myrna', 'Nelia', 'Ofelia', 'Perla', 'Queenie', 'Rosalie', 'Sonia', 'Thelma', 'Ursula', 'Virginia',
+        'Winnie', 'Xandra', 'Yolanda', 'Zenaida', 'Aileen', 'Bianca', 'Cynthia', 'Daisy', 'Estrella', 'Felicidad',
+        'Gemma', 'Hazel', 'Isabella', 'Janice', 'Kristine', 'Lilibeth', 'Maricel', 'Nanette', 'Olive', 'Patricia'
+    ];
+
+    -- SOLANO BARANGAYS
+    barangays TEXT[] := ARRAY[
+        'Aggub', 'Bangaan', 'Bangar', 'Bascaran', 'Curifang', 'Dadap', 'Lactawan', 'Mabasin', 'Magsaysay', 'Osmeña',
+        'Poblacion South', 'Poblacion North', 'Quezon', 'Quirino', 'Roxas', 'San Juan', 'San Luis', 'Tucal', 'Udaidi', 'Wacal'
+    ];
+
     i INTEGER;
-    b_first_idx INTEGER;
-    b_last_idx INTEGER;
+    created_ts TIMESTAMPTZ;
 BEGIN
-    -- Ensure pgcrypto is enabled for encryption
+    -- Ensure pgcrypto is enabled
     CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-    -- 1. CREATE ADMIN (Password: Admin12345)
+    -- 1. CLEANUP (Optional)
+    -- DELETE FROM auth.users WHERE email LIKE 'test.couple%@example.com'; -- Uncomment if you want to reset
+
+    -- 2. CREATE ADMIN (Admin12345)
     IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = 'admin@example.com') THEN
-        user_id := gen_random_uuid();
+        u_id := gen_random_uuid();
         INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, raw_user_meta_data, aud, role)
-        VALUES (
-            user_id,
-            'admin@example.com',
-            crypt('Admin12345', gen_salt('bf')),
-            now(),
-            jsonb_build_object('full_name', 'System Admin'),
-            'authenticated',
-            'authenticated'
-        );
-        -- Override role to admin
-        UPDATE public.profiles SET role = 'admin' WHERE id = user_id;
+        VALUES (u_id, 'admin@example.com', crypt('Admin12345', gen_salt('bf')), now(), jsonb_build_object('full_name', 'System Administrator'), 'authenticated', 'authenticated');
+        UPDATE public.profiles SET role = 'admin' WHERE id = u_id;
     END IF;
 
-    -- 2. CREATE EMPLOYEES (3) (Password: Employee12345)
+    -- 3. CREATE EMPLOYEES (3) (Employee12345)
     FOR i IN 1..3 LOOP
         IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = format('employee%s@example.com', i)) THEN
-            user_id := gen_random_uuid();
+            u_id := gen_random_uuid();
             INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, raw_user_meta_data, aud, role)
-            VALUES (
-                user_id,
-                format('employee%s@example.com', i),
-                crypt('Employee12345', gen_salt('bf')),
-                now(),
-                jsonb_build_object('full_name', format('Staff Member %s', i)),
-                'authenticated',
-                'authenticated'
-            );
-            UPDATE public.profiles SET role = 'employee', employee_id = format('EMP-%s', floor(random()*9000 + 1000)) WHERE id = user_id;
+            VALUES (u_id, format('employee%s@example.com', i), crypt('Employee12345', gen_salt('bf')), now(), jsonb_build_object('full_name', format('Staff Member %s', i)), 'authenticated', 'authenticated');
+            UPDATE public.profiles SET role = 'employee', employee_id = format('SOL-EMP-%s', floor(random()*900 + 100)) WHERE id = u_id;
         END IF;
     END LOOP;
 
-    -- 3. CREATE 50 USERS WITH APPLICATIONS (Password: User12345)
+    -- 4. CREATE 50 MARRIAGE APPLICATIONS
     FOR i IN 1..50 LOOP
-        IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = format('user%s@example.com', i)) THEN
-            user_id := gen_random_uuid();
-            INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, raw_user_meta_data, aud, role)
-            VALUES (
-                user_id,
-                format('user%s@example.com', i),
-                crypt('User12345', gen_salt('bf')),
-                now(),
-                jsonb_build_object('full_name', format('%s %s', first_names[i], last_names[i])),
-                'authenticated',
-                'authenticated'
-            );
+        -- Random creation time over the last 90 days to look realistic
+        created_ts := now() - (random() * interval '90 days');
 
-            -- Create Application
-            app_id := gen_random_uuid();
-            INSERT INTO public.marriage_applications (id, created_by, status, contact_number, created_at, updated_at)
-            VALUES (
-                app_id,
-                user_id,
-                'pending',
-                format('0917%s', floor(random() * 8999999 + 1000000)),
-                now() - (random() * interval '60 days'),
-                now()
-            );
+        -- Create Auth User (Representing one of the couple or a common account)
+        u_id := gen_random_uuid();
+        INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, raw_user_meta_data, aud, role, created_at)
+        VALUES (
+            u_id, 
+            format('couple%s@example.com', i), 
+            crypt('User12345', gen_salt('bf')), 
+            created_ts, 
+            jsonb_build_object('full_name', format('%s %s', male_names[i], surnames[i])), 
+            'authenticated', 
+            'authenticated',
+            created_ts
+        );
 
-            -- Create Groom Address
-            groom_addr_id := gen_random_uuid();
-            INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_by)
-            VALUES (groom_addr_id, 'Nueva Vizcaya', 'Solano', 'Poblacion', format('%s Apple St', i), 'Philippines', user_id);
+        -- Create Application
+        app_id := gen_random_uuid();
+        INSERT INTO public.marriage_applications (
+            id, application_code, status, created_by, created_at, updated_at, contact_number
+        ) VALUES (
+            app_id, 
+            substring(md5(random()::text), 1, 6),
+            'pending',
+            u_id,
+            created_ts,
+            created_ts + (random() * interval '2 days'),
+            format('091%s%s', floor(random()*9 + 1), floor(random()*8999999 + 1000000))
+        );
 
-            -- Create Bride Address
-            bride_addr_id := gen_random_uuid();
-            INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_by)
-            VALUES (bride_addr_id, 'Nueva Vizcaya', 'Solano', 'Quirino', format('%s Mango Ave', i), 'Philippines', user_id);
+        -- Create Groom Address
+        g_addr_id := gen_random_uuid();
+        INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_by, created_at)
+        VALUES (
+            g_addr_id, 'Nueva Vizcaya', 'Solano', barangays[floor(random()*20 + 1)], 
+            format('Block %s, Lot %s, %s St.', floor(random()*20+1), floor(random()*50+1), i), 
+            'Philippines', u_id, created_ts
+        );
 
-            -- Create Groom Applicant
-            INSERT INTO public.applicants (
-                application_id, type, first_name, last_name, birth_date, age, citizenship, address_id, religion, created_at
-            ) VALUES (
-                app_id, 'Groom', first_names[i], last_names[i], 
-                (now() - interval '25 years' - (random() * interval '10 years'))::date,
-                25 + floor(random() * 10), 'Filipino', groom_addr_id, 'Catholic', now()
-            );
+        -- Create Bride Address
+        b_addr_id := gen_random_uuid();
+        INSERT INTO public.addresses (id, province, municipality, barangay, street_address, country, created_by, created_at)
+        VALUES (
+            b_addr_id, 'Nueva Vizcaya', 'Solano', barangays[floor(random()*20 + 1)], 
+            format('Purok %s, %s Subd.', floor(random()*8+1), surnames[floor(random()*50+1)]), 
+            'Philippines', u_id, created_ts
+        );
 
-            -- Indices for variety
-            b_first_idx := (i % 50) + 1;
-            b_last_idx := ((i + 13) % 50) + 1;
+        -- Create Groom Applicant (Filipino)
+        INSERT INTO public.applicants (
+            application_id, type, first_name, last_name, middle_name, birth_date, age, citizenship, 
+            address_id, religion, created_at, updated_at, civil_status
+        ) VALUES (
+            app_id, 'groom', male_names[i], surnames[i], surnames[floor(random()*50 + 1)],
+            (created_ts - interval '25 years' - (random() * interval '10 years'))::date,
+            25 + floor(random()*10), 'Filipino', g_addr_id, 'Catholic', created_ts, created_ts, 'Single'
+        );
 
-            -- Create Bride Applicant
-            INSERT INTO public.applicants (
-                application_id, type, first_name, last_name, birth_date, age, citizenship, address_id, religion, created_at
-            ) VALUES (
-                app_id, 'Bride', female_names[b_first_idx], last_names[b_last_idx],
-                (now() - interval '23 years' - (random() * interval '10 years'))::date,
-                23 + floor(random() * 10), 'Filipino', bride_addr_id, 'Catholic', now()
-            );
-        END IF;
+        -- Create Bride Applicant (Filipino)
+        INSERT INTO public.applicants (
+            application_id, type, first_name, last_name, middle_name, birth_date, age, citizenship, 
+            address_id, religion, created_at, updated_at, civil_status
+        ) VALUES (
+            app_id, 'bride', female_names[i], surnames[floor(random()*50 + 1)], surnames[floor(random()*40 + 1)],
+            (created_ts - interval '23 years' - (random() * interval '10 years'))::date,
+            23 + floor(random()*10), 'Filipino', b_addr_id, 'Catholic', created_ts, created_ts, 'Single'
+        );
+
     END LOOP;
 END;
 $$;
