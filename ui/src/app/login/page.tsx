@@ -61,12 +61,6 @@ export default async function LoginPage() {
                 >
                   Password
                 </label>
-                <Link
-                  href="/login/forgot-password"
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-black transition-colors"
-                >
-                  Forgot?
-                </Link>
               </div>
               <Input
                 id="password"

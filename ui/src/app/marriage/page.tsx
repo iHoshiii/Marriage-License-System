@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 import { AddressSection } from "./components/AddressSection";
 import { BirthPlaceSection } from "./components/BirthPlaceSection";
 import { FamilySubSection, Field, GiverSubSection, DissolutionFields, ValidIDSection } from "./components/FormComponents";
-import { PersonalInfoSection } from "./components/PersonalInfoSection";
 import { SectionCard } from "./components/SectionCard";
 import { RELIGIONS } from "./constants";
 import { useMarriageForm } from "./hooks/useMarriageForm";
