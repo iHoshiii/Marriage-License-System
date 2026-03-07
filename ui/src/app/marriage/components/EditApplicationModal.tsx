@@ -226,13 +226,12 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
-                                            className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4"
+                                            className="mt-4"
                                         >
-                                            <div className="md:col-span-3"></div>
                                             <Field label="Specify Religion" required>
                                                 <Input
-                                                    placeholder="Type religion..."
-                                                    className="bg-white border-blue-200"
+                                                    placeholder="Type religion (e.g., Philippines independent church)..."
+                                                    className="bg-white border-blue-200 w-full"
                                                     value={formData.gCustomReligion}
                                                     onChange={e => setFormData({ ...formData, gCustomReligion: toTitleCase(e.target.value) })}
                                                 />
@@ -345,16 +344,15 @@ export default function EditApplicationModal({ isOpen, onClose, onSuccess, selec
                                 <AnimatePresence>
                                     {formData.bReligion === "Others" && (
                                         <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
+                                                initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: 'auto' }}
                                             exit={{ opacity: 0, height: 0 }}
-                                            className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4"
+                                            className="mt-4"
                                         >
-                                            <div className="md:col-span-3"></div>
                                             <Field label="Specify Religion" required>
                                                 <Input
-                                                    placeholder="Type religion..."
-                                                    className="bg-white border-blue-200"
+                                                    placeholder="Type religion (e.g., Philippines independent church)..."
+                                                    className="bg-white border-blue-200 w-full"
                                                     value={formData.bCustomReligion}
                                                     onChange={e => setFormData({ ...formData, bCustomReligion: toTitleCase(e.target.value) })}
                                                 />

@@ -354,6 +354,25 @@ export default function MarriageForm() {
                                                     </select>
                                                 </Field>
                                             </div>
+                                            <AnimatePresence>
+                                                {formData.gReligion === "Others" && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="mt-4"
+                                                    >
+                                                        <Field label="Specify Religion" required>
+                                                            <Input
+                                                                placeholder="Type religion (e.g., Philippines independent church)..."
+                                                                className="bg-white border-blue-200 w-full"
+                                                                value={formData.gCustomReligion}
+                                                                onChange={e => setFormData({ ...formData, gCustomReligion: toTitleCase(e.target.value) })}
+                                                            />
+                                                        </Field>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <Field label="Nationality" required>
                                                     <Input
@@ -387,26 +406,7 @@ export default function MarriageForm() {
                                                 handleDissolvedProvinceChange={handleDissolvedProvinceChange}
                                                 handleDissolvedTownChange={handleDissolvedTownChange}
                                             />
-                                            <AnimatePresence>
-                                                {formData.gReligion === "Others" && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, height: 0 }}
-                                                        animate={{ opacity: 1, height: 'auto' }}
-                                                        exit={{ opacity: 0, height: 0 }}
-                                                        className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4"
-                                                    >
-                                                        <div className="md:col-span-3"></div>
-                                                        <Field label="Specify Religion" required>
-                                                            <Input
-                                                                placeholder="Type religion..."
-                                                                className="bg-white border-blue-200"
-                                                                value={formData.gCustomReligion}
-                                                                onChange={e => setFormData({ ...formData, gCustomReligion: toTitleCase(e.target.value) })}
-                                                            />
-                                                        </Field>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                        
                                             <AddressSection prefix="g" provincesList={provincesList} gTownOptions={gTownOptions} bTownOptions={bTownOptions} brgyOptions={gBrgyOptions} formData={formData} setFormData={setFormData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} countryOptions={COUNTRY_OPTIONS} />
                                             <BirthPlaceSection prefix="g" sameAsAddress={gSameAsAddress} setSameAsAddress={setGSameAsAddress} formData={formData} setFormData={setFormData} provincesList={provincesList} birthTownOptions={gBirthTownOptions} countryOptions={COUNTRY_OPTIONS} handleBirthProvinceChange={handleBirthProvinceChange} handleBirthTownChange={handleBirthTownChange} />
                                             <FamilySubSection prefix="g" person="Groom" data={formData} setData={setFormData} toTitleCase={toTitleCase} />
@@ -478,6 +478,25 @@ export default function MarriageForm() {
                                                     </select>
                                                 </Field>
                                             </div>
+                                            <AnimatePresence>
+                                                {formData.bReligion === "Others" && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="mt-4"
+                                                    >
+                                                        <Field label="Specify Religion" required>
+                                                            <Input
+                                                                placeholder="Type religion (e.g., Philippines independent church)..."
+                                                                className="bg-white border-blue-200 w-full"
+                                                                value={formData.bCustomReligion}
+                                                                onChange={e => setFormData({ ...formData, bCustomReligion: toTitleCase(e.target.value) })}
+                                                            />
+                                                        </Field>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <Field label="Nationality" required>
                                                     <Input
@@ -511,27 +530,6 @@ export default function MarriageForm() {
                                                 handleDissolvedProvinceChange={handleDissolvedProvinceChange}
                                                 handleDissolvedTownChange={handleDissolvedTownChange}
                                             />
-                                            <AnimatePresence>
-                                                {formData.bReligion === "Others" && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, height: 0 }}
-                                                        animate={{ opacity: 1, height: 'auto' }}
-                                                        exit={{ opacity: 0, height: 0 }}
-                                                        className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4"
-                                                    >
-                                                        <div className="md:col-span-3"></div>
-                                                        <Field label="Specify Religion" required>
-                                                            <Input
-                                                                placeholder="Type religion..."
-                                                                className="bg-white border-blue-200"
-                                                                value={formData.bCustomReligion}
-                                                                onChange={e => setFormData({ ...formData, bCustomReligion: toTitleCase(e.target.value) })}
-                                                            />
-                                                        </Field>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                            <AddressSection prefix="b" provincesList={provincesList} gTownOptions={gTownOptions} bTownOptions={bTownOptions} brgyOptions={bBrgyOptions} formData={formData} setFormData={setFormData} handleProvinceChange={handleProvinceChange} handleTownChange={handleTownChange} handleBrgyChange={handleBrgyChange} countryOptions={COUNTRY_OPTIONS} />
                                             <BirthPlaceSection prefix="b" sameAsAddress={bSameAsAddress} setSameAsAddress={setBSameAsAddress} formData={formData} setFormData={setFormData} provincesList={provincesList} birthTownOptions={bBirthTownOptions} countryOptions={COUNTRY_OPTIONS} handleBirthProvinceChange={handleBirthProvinceChange} handleBirthTownChange={handleBirthTownChange} />
                                             <FamilySubSection prefix="b" person="Bride" data={formData} setData={setFormData} toTitleCase={toTitleCase} />
                                             <GiverSubSection prefix="b" age={formData.bAge} data={formData} setData={setFormData} toTitleCase={toTitleCase} />
