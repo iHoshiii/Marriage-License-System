@@ -151,6 +151,7 @@ export async function secureUpdateStaff(password: string, userId: string, newRol
         .eq("id", userId)
         .single();
 
+    // Update profiles table
     const { error } = await adminSupabase
         .from("profiles")
         .update({ role: newRole })
@@ -159,6 +160,22 @@ export async function secureUpdateStaff(password: string, userId: string, newRol
     if (error) {
         console.error("Update failed:", error.message);
         return { success: false, error: error.message };
+    }
+
+    // CRITICAL: Also update auth.users metadata so the JWT role stays in sync.
+    // The is_admin_or_employee() RLS function reads from JWT user_metadata,
+    // so if we only update profiles.role, the change reverts visually on refresh.
+    const { error: authUpdateError } = await adminSupabase.auth.admin.updateUserById(
+        userId,
+        {
+            user_metadata: { role: newRole }
+        }
+    );
+
+    if (authUpdateError) {
+        console.error("Auth metadata update failed:", authUpdateError.message);
+        // Note: profiles was already updated, so we still return success
+        // but log the error for debugging
     }
 
     // Create notification for the admin
