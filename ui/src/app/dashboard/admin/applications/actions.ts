@@ -100,7 +100,7 @@ export async function getAllApplications(page: number = 1, limit: number = 50, s
             ),
             application_photos (id)
         `)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
         .range(offset, offset + limit - 1);
 
     if (error) {
@@ -310,10 +310,10 @@ export async function updateRegistryNumber(applicationId: string, registryCode: 
     if (data && data.length > 0) {
         const application = data[0];
         const supabase = await createClient();
-        
+
         if (supabase) {
             const { data: { user }, error: userError } = await supabase.auth.getUser();
-            
+
             if (!userError && user) {
                 // Create notification for the staff member
                 await supabase.rpc('create_notification', {
