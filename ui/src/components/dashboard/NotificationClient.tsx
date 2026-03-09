@@ -203,13 +203,55 @@ export default function NotificationClient({
         router.push(`?${params.toString()}`);
     };
 
+    const markAllAsRead = async () => {
+        try {
+            // Get all unread notifications
+            const unreadNotifications = localNotifications.filter(n => !n.read_at);
+            
+            if (unreadNotifications.length === 0) return;
+
+            // Mark all as read in database
+            const { error } = await supabase
+                .from('notifications')
+                .update({ read_at: new Date().toISOString() })
+                .in('id', unreadNotifications.map(n => n.id));
+
+            if (error) {
+                console.error('Error marking all notifications as read:', error);
+                return;
+            }
+
+            // Update local state
+            setLocalNotifications(prev => 
+                prev.map(notif => 
+                    ({ ...notif, read_at: new Date().toISOString() })
+                )
+            );
+            setLocalUnreadCount(0);
+        } catch (error) {
+            console.error('Error marking all notifications as read:', error);
+        }
+    };
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Notifications</h1>
-                <Badge variant="secondary" className="text-sm">
-                    {localUnreadCount} unread
-                </Badge>
+                <div className="flex items-center gap-3">
+                    {localUnreadCount > 0 && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={markAllAsRead}
+                            className="text-xs"
+                        >
+                            Mark All as Read
+                        </Button>
+                    )}
+                    <Badge variant="secondary" className="text-sm">
+                        {localUnreadCount} unread
+                    </Badge>
+                </div>
             </div>
 
             <div className="space-y-4">
