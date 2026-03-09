@@ -504,7 +504,13 @@ $$ language plpgsql security definer;`}
 
                 notifications={enrichedNotifications || []} 
 
-                unreadCount={unreadCount || 0} 
+                unreadCount={unreadCount || 0}
+
+                currentPage={currentPage}
+
+                totalPages={totalPages}
+
+                totalCount={totalCount || 0}
 
             />
 
@@ -513,4 +519,3 @@ $$ language plpgsql security definer;`}
     );
 
 }
-
