@@ -251,7 +251,10 @@ $$ language plpgsql security definer;`}
         <div className="max-w-7xl mx-auto">
             <NotificationClient 
                 notifications={enrichedNotifications || []} 
-                unreadCount={unreadCount || 0} 
+                unreadCount={unreadCount || 0}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalCount={totalCount || 0}
             />
         </div>
     );

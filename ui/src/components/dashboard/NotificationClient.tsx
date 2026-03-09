@@ -27,9 +27,18 @@ interface Notification {
 interface NotificationClientProps {
     notifications: Notification[];
     unreadCount: number;
+    currentPage?: number;
+    totalPages?: number;
+    totalCount?: number;
 }
 
-export default function NotificationClient({ notifications, unreadCount }: NotificationClientProps) {
+export default function NotificationClient({ 
+    notifications, 
+    unreadCount, 
+    currentPage = 1,
+    totalPages = 1,
+    totalCount = 0
+}: NotificationClientProps) {
     const [localNotifications, setLocalNotifications] = useState(notifications);
     const [localUnreadCount, setLocalUnreadCount] = useState(unreadCount);
     const [pressedNotificationId, setPressedNotificationId] = useState<string | null>(null);
@@ -131,6 +140,30 @@ export default function NotificationClient({ notifications, unreadCount }: Notif
         }
     };
 
+    const handleTouchStart = (e: React.TouchEvent, notificationId: string) => {
+        e.preventDefault();
+        const timer = setTimeout(() => {
+            setPressedNotificationId(notificationId);
+        }, 500); // 500ms for long press
+        setPressTimer(timer);
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        e.preventDefault();
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            setPressTimer(null);
+        }
+    };
+
+    const handleTouchMove = () => {
+        if (pressTimer) {
+            clearTimeout(pressTimer);
+            setPressTimer(null);
+        }
+        setPressedNotificationId(null);
+    };
+
     const handleMouseDown = (notificationId: string) => {
         const timer = setTimeout(() => {
             setPressedNotificationId(notificationId);
@@ -153,7 +186,8 @@ export default function NotificationClient({ notifications, unreadCount }: Notif
         setPressedNotificationId(null);
     };
 
-    const handleMarkAsUnread = (e: React.MouseEvent, notificationId: string) => {
+    const handleMarkAsUnread = (e: React.MouseEvent | React.TouchEvent, notificationId: string) => {
+        e.preventDefault();
         e.stopPropagation();
         markAsUnread(notificationId);
         setPressedNotificationId(null);
@@ -170,93 +204,113 @@ export default function NotificationClient({ notifications, unreadCount }: Notif
 
             <div className="space-y-4">
                 {localNotifications && localNotifications.length > 0 ? (
-                    <div className="space-y-4">
-                        {localNotifications.map((notification: Notification) => (
-                            <Card 
-                                key={notification.id} 
-                                className={`transition-all cursor-pointer hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] ${
-                                    !notification.read_at 
-                                        ? 'border-l-4 border-l-blue-500 bg-blue-50/30 hover:bg-blue-50/50' 
-                                        : 'hover:bg-zinc-50/50'
-                                }`}
-                                onClick={() => handleNotificationClick(notification)}
-                                onMouseDown={() => handleMouseDown(notification.id)}
-                                onMouseUp={handleMouseUp}
-                                onMouseLeave={handleMouseLeave}
-                            >
-                                <CardContent className="p-6">
-                                    <div className="flex items-start gap-4">
-                                        <div className={`p-2 rounded-full ${getNotificationColor(notification.type)} transition-transform group-hover:scale-110`}>
-                                            {getNotificationIcon(notification.type)}
-                                        </div>
-                                        <div className="flex-1 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className={`font-semibold transition-colors ${
+                    <>
+                        <div className="space-y-4">
+                            {localNotifications.map((notification: Notification) => (
+                                <Card 
+                                    key={notification.id} 
+                                    className={`transition-all cursor-pointer hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] ${
+                                        !notification.read_at 
+                                            ? 'border-l-4 border-l-blue-500 bg-blue-50/30 hover:bg-blue-50/50' 
+                                            : 'hover:bg-zinc-50/50'
+                                    }`}
+                                    onClick={() => handleNotificationClick(notification)}
+                                    // Touch events for mobile
+                                    onTouchStart={(e) => handleTouchStart(e, notification.id)}
+                                    onTouchEnd={handleTouchEnd}
+                                    onTouchMove={handleTouchMove}
+                                    // Mouse events for desktop
+                                    onMouseDown={() => handleMouseDown(notification.id)}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseLeave={handleMouseLeave}
+                                >
+                                    <CardContent className="p-6">
+                                        <div className="flex items-start gap-4">
+                                            <div className={`p-2 rounded-full ${getNotificationColor(notification.type)} transition-transform group-hover:scale-110`}>
+                                                {getNotificationIcon(notification.type)}
+                                            </div>
+                                            <div className="flex-1 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className={`font-semibold transition-colors ${
+                                                        !notification.read_at 
+                                                            ? 'text-zinc-900' 
+                                                            : 'text-zinc-700'
+                                                    }`}>
+                                                        {notification.title}
+                                                    </h3>
+                                                    <div className="flex items-center gap-2 text-sm text-zinc-500">
+                                                        <Clock className="h-3 w-3" />
+                                                        {new Date(notification.created_at).toLocaleDateString()} at {new Date(notification.created_at).toLocaleTimeString()}
+                                                    </div>
+                                                </div>
+                                                <p className={`transition-colors ${
                                                     !notification.read_at 
-                                                        ? 'text-zinc-900' 
-                                                        : 'text-zinc-700'
+                                                        ? 'text-zinc-700 font-medium' 
+                                                        : 'text-zinc-600'
                                                 }`}>
-                                                    {notification.title}
-                                                </h3>
-                                                <div className="flex items-center gap-2 text-sm text-zinc-500">
-                                                    <Clock className="h-3 w-3" />
-                                                    {new Date(notification.created_at).toLocaleDateString()} at {new Date(notification.created_at).toLocaleTimeString()}
-                                                </div>
-                                            </div>
-                                            <p className={`transition-colors ${
-                                                !notification.read_at 
-                                                    ? 'text-zinc-700 font-medium' 
-                                                    : 'text-zinc-600'
-                                            }`}>
-                                                {notification.message}
-                                            </p>
-                                            {notification.created_by_profile && notification.user_id !== notification.created_by && (
-                                                <div className="flex items-center gap-2 text-sm text-zinc-500">
-                                                    <User className="h-3 w-3" />
-                                                    <span>By {notification.created_by_profile.full_name} ({notification.created_by_profile.role})</span>
-                                                </div>
-                                            )}
-                                            {notification.related_application && (
-                                                <div className="flex items-center gap-2 text-sm text-zinc-500">
-                                                    <FileText className="h-3 w-3" />
-                                                    <span>Application: {notification.related_application.application_code}</span>
-                                                </div>
-                                            )}
-                                            <div className="flex items-center justify-between">
-                                                {!notification.read_at && (
-                                                    <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
-                                                        <Eye className="h-3 w-3 mr-1" />
-                                                        Unread
-                                                    </Badge>
+                                                    {notification.message}
+                                                </p>
+                                                {notification.created_by_profile && notification.user_id !== notification.created_by && (
+                                                    <div className="flex items-center gap-2 text-sm text-zinc-500">
+                                                        <User className="h-3 w-3" />
+                                                        <span>By {notification.created_by_profile.full_name} ({notification.created_by_profile.role})</span>
+                                                    </div>
                                                 )}
-                                                {notification.read_at && (
-                                                    <Badge variant="outline" className="text-xs bg-zinc-100 text-zinc-600 border-zinc-200">
-                                                        <EyeOff className="h-3 w-3 mr-1" />
-                                                        Read
-                                                    </Badge>
+                                                {notification.related_application && (
+                                                    <div className="flex items-center gap-2 text-sm text-zinc-500">
+                                                        <FileText className="h-3 w-3" />
+                                                        <span>Application: {notification.related_application.application_code}</span>
+                                                    </div>
                                                 )}
+                                                <div className="flex items-center justify-between">
+                                                    {!notification.read_at && (
+                                                        <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-200">
+                                                            <Eye className="h-3 w-3 mr-1" />
+                                                            Unread
+                                                        </Badge>
+                                                    )}
+                                                    {notification.read_at && (
+                                                        <Badge variant="outline" className="text-xs bg-zinc-100 text-zinc-600 border-zinc-200">
+                                                            <EyeOff className="h-3 w-3 mr-1" />
+                                                            Read
+                                                        </Badge>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    {/* Long press menu */}
-                                    {pressedNotificationId === notification.id && (
-                                        <div className="mt-4 pt-4 border-t border-zinc-200 animate-in slide-in-from-top-2 duration-200">
-                                            <div className="flex justify-end">
-                                                <button
-                                                    onClick={(e) => handleMarkAsUnread(e, notification.id)}
-                                                    className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors"
-                                                >
-                                                    <EyeOff className="h-3 w-3" />
-                                                    Mark as unread
-                                                </button>
+                                        
+                                        {/* Long press menu */}
+                                        {pressedNotificationId === notification.id && (
+                                            <div className="mt-4 pt-4 border-t border-zinc-200 animate-in slide-in-from-top-2 duration-200">
+                                                <div className="flex justify-end">
+                                                    <button
+                                                        onClick={(e) => handleMarkAsUnread(e, notification.id)}
+                                                        onTouchEnd={(e) => handleMarkAsUnread(e, notification.id)}
+                                                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors"
+                                                    >
+                                                        <EyeOff className="h-3 w-3" />
+                                                        Mark as unread
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+
+                        {/* Simple Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between text-sm text-zinc-600">
+                                <span>
+                                    Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, totalCount)} of {totalCount} notifications
+                                </span>
+                                <span>
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <Card>
                         <CardContent className="p-12">
