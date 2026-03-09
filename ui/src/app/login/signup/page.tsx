@@ -20,7 +20,7 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
   }, [applicationCode]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-8">
       {/* Background patterns */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-zinc-200/50 rounded-full blur-3xl" />
@@ -28,20 +28,20 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
       </div>
 
       <main className="w-full max-w-md relative z-10">
-        <div className="flex flex-col items-center mb-10">
-          <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center mb-6 shadow-xl transition-all hover:scale-105">
+        <div className="flex flex-col items-center mb-12">
+          <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center mb-8 shadow-xl transition-all hover:scale-105">
             <ShieldCheck className="text-white w-7 h-7" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter text-zinc-900 uppercase">
             Create Account
           </h1>
-          <p className="mt-1 text-zinc-500 font-medium text-sm">
+          <p className="mt-2 text-zinc-500 font-medium text-sm">
             Solano Marriage License System
           </p>
         </div>
 
-        <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] p-4 bg-white/80 backdrop-blur-xl border border-white">
-          <div className="p-6">
+        <Card className="border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-[2.5rem] p-6 bg-white/80 backdrop-blur-xl border border-white">
+          <div className="p-8">
             <Suspense fallback={<div className="h-10 w-full animate-pulse bg-zinc-100 rounded-2xl mb-6" />}>
               <NotificationHandler />
             </Suspense>
@@ -50,7 +50,7 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
           </div>
         </Card>
 
-        <p className="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">
+        <p className="mt-12 text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">
           Already have an account?{" "}
           <Link
             href="/login"

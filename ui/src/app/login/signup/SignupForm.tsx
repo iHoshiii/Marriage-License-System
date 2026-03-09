@@ -167,7 +167,7 @@ export default function SignupForm() {
 
       <Button 
         type="submit" 
-        className="w-full h-12 rounded-2xl mt-4 font-black uppercase tracking-widest text-xs shadow-lg shadow-zinc-200 transition-all hover:bg-zinc-800"
+        className="w-full h-12 rounded-2xl mt-6 mb-4 font-black uppercase tracking-widest text-xs shadow-lg shadow-zinc-200 transition-all hover:bg-zinc-800"
         disabled={!!passwordError}
       >
         Get Started →
