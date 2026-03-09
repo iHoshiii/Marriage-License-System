@@ -66,6 +66,9 @@ venv.bak/
 .ropeproject
 /site
 .mypy_cache/
+./6C657374657264616E6E6C6F70657A
+./616C6477696E6265726E6172646C6F7265746F
+./6D61726B6A6F686E626172626965746F
 .dmypy.json
 dmypy.json
 .ipynb_checkpoints
