@@ -52,7 +52,10 @@ export async function updateSession(request: NextRequest) {
     }
 
     // 2. Redirect authenticated users away from auth pages
-    if (user && (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname === "/")) {
+    //    EXCEPT for the reset-password page which requires an active session
+    if (user &&
+        ((request.nextUrl.pathname.startsWith("/login") && request.nextUrl.pathname !== "/login/reset-password") ||
+            request.nextUrl.pathname === "/")) {
         // console.log("Middleware: Redirecting authenticated user to dashboard");
         return NextResponse.redirect(new URL("/dashboard", request.url));
     }
