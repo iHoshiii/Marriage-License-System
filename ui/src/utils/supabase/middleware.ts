@@ -52,7 +52,11 @@ export async function updateSession(request: NextRequest) {
     }
 
     // 2. Redirect authenticated users away from auth pages
-    if (user && (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname === "/")) {
+    if (user &&
+        (request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname === "/") &&
+        !request.nextUrl.pathname.startsWith("/login/reset-password") &&
+        !request.nextUrl.pathname.startsWith("/login/forgot-password")
+    ) {
         // console.log("Middleware: Redirecting authenticated user to dashboard");
         return NextResponse.redirect(new URL("/dashboard", request.url));
     }
