@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { signup } from "./actions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { NotificationHandler } from "@/components/ui/notification-handler";
-import { Mail, Lock, ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Suspense, useEffect, use } from "react";
+import SignupForm from "./SignupForm";
 
 export default function SignupPage({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
   const params = use(searchParams);
@@ -47,82 +46,7 @@ export default function SignupPage({ searchParams }: { searchParams: Promise<{ c
               <NotificationHandler />
             </Suspense>
 
-            <form action={signup} className="space-y-6">
-              <div className="space-y-2">
-                <label
-                  htmlFor="full_name"
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
-                >
-                  Full Name
-                </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
-                    <CheckCircle2 className="h-4 w-4" />
-                  </div>
-                  <Input
-                    id="full_name"
-                    name="full_name"
-                    type="text"
-                    placeholder="Juan Dela Cruz"
-                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="email"
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
-                >
-                  Email Address
-                </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="name@example.com"
-                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="password"
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1"
-                >
-                  Password
-                </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-black transition-colors">
-                    <Lock className="h-4 w-4" />
-                  </div>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="••••••••"
-                    className="pl-11 h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl transition-all font-medium"
-                    minLength={6}
-                    required
-                  />
-                </div>
-                <div className="flex items-center gap-1.5 ml-1 mt-1">
-                  <CheckCircle2 className="h-3 w-3 text-zinc-300" />
-                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">6+ characters required</p>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full h-12 rounded-2xl mt-4 font-black uppercase tracking-widest text-xs shadow-lg shadow-zinc-200 transition-all hover:bg-zinc-800">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </form>
+            <SignupForm />
           </div>
         </Card>
 
